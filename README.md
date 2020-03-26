@@ -1,2 +1,2 @@
-# terraform-provider-nirmata
-Nirmata Terraform Provider
+# Terraform Provider for Nirmata
+
