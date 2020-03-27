@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/nirmata/terraform-provider-nirmata/pkg/client"
+	"github.com/nirmata/go-client/pkg/client"
 )
 
 // Provider returns a Nirmata terraform.Provider
