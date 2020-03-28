@@ -58,10 +58,10 @@ func RetryOnNirmataCodes(codes []string, f func() (interface{}, error)) (interfa
 		var err error
 		resp, err = f()
 		if err != nil {
-			clientErr, ok := err.(client.Error)
+			nirmataErr, ok := err.(client.Error)
 			if ok {
 				for _, code := range codes {
-					if clientErr.Code() == code {
+					if nirmataErr.Code() == code {
 						return resource.RetryableError(err)
 					}
 				}
