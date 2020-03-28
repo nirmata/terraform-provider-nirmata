@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	client "github.com/nirmata/go-client/pkg/client"
+
 )
 
 // Returns true if the error matches all these conditions:
