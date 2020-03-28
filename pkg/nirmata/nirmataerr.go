@@ -6,15 +6,16 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	nirmataerr "github.com/nirmata/go-client/pkg/nirmataErr"
+	client "github.com/nirmata/go-client/pkg/client"
+
 )
 
 // Returns true if the error matches all these conditions:
-//  * err is of type nirmataerr.Error
+//  * err is of type client.Error
 //  * Error.Code() matches code
 //  * Error.Message() contains message
 func isNirmataErr(err error, code string, message string) bool {
-	var nirmataErr nirmataerr.Error
+	var nirmataErr client.Error
 	if errors.As(err, &nirmataErr) {
 		return nirmataErr.Code() == code && strings.Contains(nirmataErr.Message(), message)
 	}
@@ -22,11 +23,11 @@ func isNirmataErr(err error, code string, message string) bool {
 }
 
 // Returns true if the error matches all these conditions:
-//  * err is of type nirmataerr.RequestFailure
+//  * err is of type client.RequestFailure
 //  * RequestFailure.StatusCode() matches status code
 // that sometimes only respond with status codes.
 func isNirmataErrRequestFailureStatusCode(err error, statusCode int) bool {
-	var nirmataErr nirmataerr.RequestFailure
+	var nirmataErr client.RequestFailure
 	if errors.As(err, &nirmataErr) {
 		return nirmataErr.StatusCode() == statusCode
 	}
@@ -39,7 +40,7 @@ func retryOnNirmataCode(code string, f func() (interface{}, error)) (interface{}
 		var err error
 		resp, err = f()
 		if err != nil {
-			nirmataErr, ok := err.(nirmataerr.Error)
+			nirmataErr, ok := err.(client.Error)
 			if ok && nirmataErr.Code() == code {
 				return resource.RetryableError(err)
 			}
@@ -58,7 +59,7 @@ func RetryOnNirmataCodes(codes []string, f func() (interface{}, error)) (interfa
 		var err error
 		resp, err = f()
 		if err != nil {
-			nirmataErr, ok := err.(nirmataerr.Error)
+			nirmataErr, ok := err.(client.Error)
 			if ok {
 				for _, code := range codes {
 					if nirmataErr.Code() == code {
