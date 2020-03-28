@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/nirmata/go-client/nirmata/nirmataerr"
+	nirmataerr "github.com/nirmata/go-client/pkg/nirmataErr"
 )
 
 // Returns true if the error matches all these conditions:
