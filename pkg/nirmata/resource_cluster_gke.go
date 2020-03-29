@@ -2,7 +2,6 @@ package nirmata
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 
@@ -98,8 +97,7 @@ func resourceClusterGkeCreate(d *schema.ResourceData, meta interface{}) error {
 	flagCloudProvider := d.Get("cloud_provider_flag").(string)
 
 	cpID, err := getCloudProviderID(apiClient, "GoogleCloudPlatform", flagCloudProvider)
-	log.Printf("LUL%v", err)
-	log.Printf("LUL%v", cpID)
+
 	if err != nil {
 		fmt.Println(err.Error())
 	}
