@@ -5,15 +5,15 @@ import (
 	"github.com/nirmata/go-client/pkg/client"
 )
 
-// Provider returns a Nirmata terraform.Provider
+// Provider returns the Nirmata Terraform Provider
 func Provider() *schema.Provider {
+
 	return &schema.Provider{
 
 		Schema: map[string]*schema.Schema{
-
 			"token": &schema.Schema{
 				Type:        schema.TypeString,
-				Optional:    false,
+				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_TOKEN", nil),
 				Description: "Nirmata API Access Token",
 			},
@@ -26,7 +26,9 @@ func Provider() *schema.Provider {
 			},
 		},
 
-		ResourcesMap: map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
+		},
 
 		ConfigureFunc: configureProvider,
 	}
