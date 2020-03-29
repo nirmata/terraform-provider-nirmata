@@ -2,6 +2,7 @@ package nirmata
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -59,7 +60,7 @@ func resourceClusterGke() *schema.Resource {
 				},
 			},
 
-			"cloud_provider": {
+			"cloud_provider_flag": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -93,15 +94,15 @@ func resourceClusterGkeCreate(d *schema.ResourceData, meta interface{}) error {
 	nodeType := d.Get("node_type").(string)
 	nodeCount := d.Get("node_count").(int)
 	region := d.Get("region").(string)
-	cloudProvider := d.Get("cloud_provider").(string)
 	kubernetesVersion := d.Get("kubernetes_version").(string)
+	flagCloudProvider := d.Get("cloud_provider_flag").(string)
 
-	cpID, err := getCloudProviderID(apiClient, "GoogleCloudPlatform", cloudProvider)
-	fmt.Println(cpID)
+	cpID, err := getCloudProviderID(apiClient, "GoogleCloudPlatform", flagCloudProvider)
+	log.Printf("LUL%v", err)
+	log.Printf("LUL%v", cpID)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-
 	hg := map[string]interface{}{
 		"name":         name,
 		"orchestrator": "kubernetes",
@@ -124,6 +125,7 @@ func resourceClusterGkeCreate(d *schema.ResourceData, meta interface{}) error {
 			},
 		},
 	}
+
 	data, err := apiClient.PostFromJSON(client.ServiceClusters, "hostClusters", hg, nil)
 	if err != nil {
 		return err
@@ -169,12 +171,10 @@ func resourceClusterGkeDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func getCloudProviderID(api client.Client, cpType string, cloudProvider string) (client.ID, error) {
-
-	if cloudProvider != "" {
-		return api.QueryByName(client.ServiceConfig, "cloudProviders", cloudProvider)
+func getCloudProviderID(api client.Client, cpType string, flagCloudProvider string) (client.ID, error) {
+	if flagCloudProvider != "" {
+		return api.QueryByName(client.ServiceConfig, "cloudProviders", flagCloudProvider)
 	}
-
 	opts := client.NewGetModelID(nil, client.NewQuery().FieldEqualsValue("type", cpType))
 	cIDs, err := api.GetCollection(client.ServiceConfig, "CloudProviders", opts)
 	if err != nil {
