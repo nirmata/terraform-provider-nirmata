@@ -53,7 +53,7 @@ func resourceClusterGke() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					_ = v.(string)
+					_ = v.(int)
 					//TODO : ADD Logic
 					return
 				},
@@ -91,13 +91,13 @@ func resourceClusterGkeCreate(d *schema.ResourceData, meta interface{}) error {
 	name := d.Get("name").(string)
 	diskSize := d.Get("disk_size")
 	nodeType := d.Get("node_type").(string)
-	nodeCount := d.Get("node_count").(string)
+	nodeCount := d.Get("node_count").(int)
 	region := d.Get("region").(string)
 	cloudProvider := d.Get("cloud_provider").(string)
 	kubernetesVersion := d.Get("kubernetes_version").(string)
 
 	cpID, err := getCloudProviderID(apiClient, "GoogleCloudPlatform", cloudProvider)
-
+	fmt.Println(cpID)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
