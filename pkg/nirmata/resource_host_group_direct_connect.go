@@ -12,10 +12,10 @@ import (
 func resourceHostGroupDirectConnect() *schema.Resource {
 
 	return &schema.Resource{
-		Create: resourceServerCreate,
-		Read:   resourceServerRead,
-		Update: resourceServerUpdate,
-		Delete: resourceServerDelete,
+		Create: resourceHostGroupDirectConnectCreate,
+		Read:   resourceHostGroupDirectConnectRead,
+		Update: resourceHostGroupDirectConnectUpdate,
+		Delete: resourceHostGroupDirectConnectDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -30,7 +30,7 @@ func resourceHostGroupDirectConnect() *schema.Resource {
 	}
 }
 
-func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceHostGroupDirectConnectCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(client.Client)
 	err := resource.Retry(3*time.Minute, func() *resource.RetryError {
 		name := d.Get("name").(string)
@@ -62,14 +62,15 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceServerRead(d *schema.ResourceData, m interface{}) error {
+func resourceHostGroupDirectConnectRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceHostGroupDirectConnectUpdate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
+<<<<<<< HEAD
 func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(client.Client)
 	err := resource.Retry(3*time.Minute, func() *resource.RetryError {
@@ -89,4 +90,8 @@ func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	return nil
+=======
+func resourceHostGroupDirectConnectDelete(d *schema.ResourceData, m interface{}) error {
+	return delete(d, m, client.ServiceConfig, "HostGroup")
+>>>>>>> f32a3ccac2ad49ea846bbddd3d538f9fff732d56
 }

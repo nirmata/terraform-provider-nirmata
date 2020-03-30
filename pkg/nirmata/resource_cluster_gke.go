@@ -197,12 +197,12 @@ func getCloudProviderID(api client.Client, cpType string, flagCloudProvider stri
 			names[i] = c["name"].(string)
 		}
 
-		return nil, fmt.Errorf("Flag --cloud-provider <name> is required.\nAvailable Cloud Providers: %s", strings.Join(names, ", "))
+		return nil, fmt.Errorf("cloud-provider <name> is required.\nAvailable Cloud Providers: %s", strings.Join(names, ", "))
 	}
 
-	cpObj, objectErr := client.NewObject(cIDs[0])
-	if objectErr != nil {
-		return nil, objectErr
+	cpObj, newObjErr := client.NewObject(cIDs[0])
+	if newObjErr != nil {
+		return nil, newObjErr
 	}
 
 	return cpObj.ID(), nil
