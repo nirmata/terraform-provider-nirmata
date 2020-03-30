@@ -1,7 +1,6 @@
 package nirmata
 
 import (
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
@@ -70,28 +69,6 @@ func resourceHostGroupDirectConnectUpdate(d *schema.ResourceData, m interface{})
 	return nil
 }
 
-<<<<<<< HEAD
-func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(client.Client)
-	err := resource.Retry(3*time.Minute, func() *resource.RetryError {
-
-		uuid := d.Id()
-		id := client.NewID(client.ServiceConfig, "HostGroup", uuid)
-		if err := apiClient.Delete(id, nil); err != nil {
-			if !strings.Contains(err.Error(), "404") {
-				return resource.RetryableError(err)
-			}
-		}
-
-		d.SetId("")
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-	return nil
-=======
 func resourceHostGroupDirectConnectDelete(d *schema.ResourceData, m interface{}) error {
 	return delete(d, m, client.ServiceConfig, "HostGroup")
->>>>>>> f32a3ccac2ad49ea846bbddd3d538f9fff732d56
 }
