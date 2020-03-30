@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
 )
@@ -87,50 +89,55 @@ func resourceClusterGke() *schema.Resource {
 
 func resourceClusterGkeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
+	err := resource.Retry(3*time.Minute, func() *resource.RetryError {
+		name := d.Get("name").(string)
+		diskSize := d.Get("disk_size")
+		nodeType := d.Get("node_type").(string)
+		nodeCount := d.Get("node_count").(int)
+		region := d.Get("region").(string)
+		kubernetesVersion := d.Get("kubernetes_version").(string)
+		flagCloudProvider := d.Get("cloud_provider_flag").(string)
 
-	name := d.Get("name").(string)
-	diskSize := d.Get("disk_size")
-	nodeType := d.Get("node_type").(string)
-	nodeCount := d.Get("node_count").(int)
-	region := d.Get("region").(string)
-	kubernetesVersion := d.Get("kubernetes_version").(string)
-	flagCloudProvider := d.Get("cloud_provider_flag").(string)
+		cpID, err := getCloudProviderID(apiClient, "GoogleCloudPlatform", flagCloudProvider)
 
-	cpID, err := getCloudProviderID(apiClient, "GoogleCloudPlatform", flagCloudProvider)
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	hg := map[string]interface{}{
-		"name":         name,
-		"orchestrator": "kubernetes",
-		"mode":         "providerManaged",
-		"upstreamType": "git",
-		"kubernetesCluster": map[string]interface{}{
-			"modelIndex": "KubernetesCluster",
-			"clusterConfig": map[string]interface{}{
-				"modelIndex":       "K8sClusterConfig",
-				"cloudProviderRef": cpID.Map(),
-				"version":          &kubernetesVersion,
-				"nodeCount":        &nodeCount,
-				"cloudProvider":    "GoogleCloudPlatform",
-				"providerK8sClusterConfig": map[string]interface{}{
-					"modelIndex":  "ProviderK8sClusterConfig",
-					"region":      &region,
-					"diskSize":    &diskSize,
-					"machineType": &nodeType,
+		if err != nil {
+			return resource.RetryableError(err)
+		}
+		hg := map[string]interface{}{
+			"name":         name,
+			"orchestrator": "kubernetes",
+			"mode":         "providerManaged",
+			"upstreamType": "git",
+			"kubernetesCluster": map[string]interface{}{
+				"modelIndex": "KubernetesCluster",
+				"clusterConfig": map[string]interface{}{
+					"modelIndex":       "K8sClusterConfig",
+					"cloudProviderRef": cpID.Map(),
+					"version":          &kubernetesVersion,
+					"nodeCount":        &nodeCount,
+					"cloudProvider":    "GoogleCloudPlatform",
+					"providerK8sClusterConfig": map[string]interface{}{
+						"modelIndex":  "ProviderK8sClusterConfig",
+						"region":      &region,
+						"diskSize":    &diskSize,
+						"machineType": &nodeType,
+					},
 				},
 			},
-		},
-	}
+		}
 
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "hostClusters", hg, nil)
+		data, err := apiClient.PostFromJSON(client.ServiceClusters, "hostClusters", hg, nil)
+		if err != nil {
+			return resource.RetryableError(err)
+		}
+
+		hgID := data["id"].(string)
+		d.SetId(hgID)
+		return nil
+	})
 	if err != nil {
 		return err
 	}
-
-	hgID := data["id"].(string)
-	d.SetId(hgID)
 	return nil
 }
 
@@ -147,24 +154,29 @@ func resourceClusterGkeUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceClusterGkeDelete(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
-	name := d.Get("name").(string)
+	err := resource.Retry(3*time.Minute, func() *resource.RetryError {
 
-	id, err := apiClient.QueryByName(client.ServiceClusters, "hostClusters", name)
+		name := d.Get("name").(string)
+
+		id, err := apiClient.QueryByName(client.ServiceClusters, "hostClusters", name)
+		if err != nil {
+			return resource.RetryableError(err.OrigErr())
+		}
+
+		params := map[string]string{
+			"action": "delete",
+		}
+
+		if err := apiClient.Delete(id, params); err != nil {
+			if !strings.Contains(err.Error(), "404") {
+				return resource.RetryableError(err)
+			}
+		}
+		return nil
+	})
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
-
-	params := map[string]string{
-		"action": "delete",
-	}
-
-	if err := apiClient.Delete(id, params); err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-
-	fmt.Printf("Deleted cluster %s", name)
 
 	return nil
 }
@@ -188,9 +200,9 @@ func getCloudProviderID(api client.Client, cpType string, flagCloudProvider stri
 		return nil, fmt.Errorf("Flag --cloud-provider <name> is required.\nAvailable Cloud Providers: %s", strings.Join(names, ", "))
 	}
 
-	cpObj, err := client.NewObject(cIDs[0])
-	if err != nil {
-		return nil, err
+	cpObj, objectErr := client.NewObject(cIDs[0])
+	if objectErr != nil {
+		return nil, objectErr
 	}
 
 	return cpObj.ID(), nil
