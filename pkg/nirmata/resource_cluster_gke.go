@@ -188,9 +188,9 @@ func getCloudProviderID(api client.Client, cpType string, flagCloudProvider stri
 		return nil, fmt.Errorf("cloud-provider <name> is required.\nAvailable Cloud Providers: %s", strings.Join(names, ", "))
 	}
 
-	cpObj, err := client.NewObject(cIDs[0])
-	if err != nil {
-		return nil, err
+	cpObj, newObjErr := client.NewObject(cIDs[0])
+	if newObjErr != nil {
+		return nil, newObjErr
 	}
 
 	return cpObj.ID(), nil

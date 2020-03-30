@@ -148,8 +148,8 @@ github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh
 github.com/mitchellh/reflectwalk v1.0.0/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/mitchellh/reflectwalk v1.0.1 h1:FVzMWA5RllMAKIdUSC8mdWo3XtwoecrH79BY70sEEpE=
 github.com/mitchellh/reflectwalk v1.0.1/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
-github.com/nirmata/go-client v0.0.0-20200330010314-fb55e3972817 h1:uM9veGLrlChS/aXevBlihZu3zFUeafXB4Zt6Zy8DHS8=
-github.com/nirmata/go-client v0.0.0-20200330010314-fb55e3972817/go.mod h1:cSGIv1wUPVCU8voM4BZEyEYkGvJSAtplO3EaBMWg3SA=
+github.com/nirmata/go-client v0.0.0-20200330071129-0e159b708c9c h1:0jP6Uj8mBCvm6ksIvc/oDK0Oh9qd81VziwZsdvY1fyY=
+github.com/nirmata/go-client v0.0.0-20200330071129-0e159b708c9c/go.mod h1:jUmiMEmk8PbxpJETAyB5L7PMz81u0RxHPj8/OO7rgnc=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
