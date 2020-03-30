@@ -28,6 +28,7 @@ func Provider() *schema.Provider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
+			"nirmata_cluster_direct_connect":    resourceClusterDirectConnect(),
 			"nirmata_cluster_gke":               resourceClusterGke(),
 		},
 

@@ -1,8 +1,6 @@
 package nirmata
 
 import (
-	"strings"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
 )
@@ -10,10 +8,10 @@ import (
 func resourceHostGroupDirectConnect() *schema.Resource {
 
 	return &schema.Resource{
-		Create: resourceServerCreate,
-		Read:   resourceServerRead,
-		Update: resourceServerUpdate,
-		Delete: resourceServerDelete,
+		Create: resourceHostGroupDirectConnectCreate,
+		Read:   resourceHostGroupDirectConnectRead,
+		Update: resourceHostGroupDirectConnectUpdate,
+		Delete: resourceHostGroupDirectConnectDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -28,7 +26,7 @@ func resourceHostGroupDirectConnect() *schema.Resource {
 	}
 }
 
-func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
+func resourceHostGroupDirectConnectCreate(d *schema.ResourceData, m interface{}) error {
 	apiClient := m.(client.Client)
 
 	name := d.Get("name").(string)
@@ -55,25 +53,14 @@ func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceServerRead(d *schema.ResourceData, m interface{}) error {
+func resourceHostGroupDirectConnectRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceHostGroupDirectConnectUpdate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
-	apiClient := m.(client.Client)
-
-	uuid := d.Id()
-	id := client.NewID(client.ServiceConfig, "HostGroup", uuid)
-	if err := apiClient.Delete(id, nil); err != nil {
-		if !strings.Contains(err.Error(), "404") {
-			return err
-		}
-	}
-
-	d.SetId("")
-	return nil
+func resourceHostGroupDirectConnectDelete(d *schema.ResourceData, m interface{}) error {
+	return delete(d, m, client.ServiceConfig, "HostGroup")
 }
