@@ -31,8 +31,10 @@ func resourceClusterDirectConnect() *schema.Resource {
 				Computed: true,
 			},
 			"status": &schema.Schema{
-				Type:     schema.TypeList,
-				Elem:     schema.TypeString,
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 				Computed: true,
 			},
 		},
