@@ -1,6 +1,8 @@
 package nirmata
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
 )
@@ -72,11 +74,7 @@ func resourceClusterDirectConnectCreate(d *schema.ResourceData, m interface{}) e
 }
 
 func updateClusterData(d *schema.ResourceData, data map[string]interface{}) {
-	clusterState := data["state"].(string)
-	d.Set("state", clusterState)
-
-	clusterStatus := data["status"].([]interface{})
-	d.Set("status", clusterStatus)
+	updateStateAndStatus(d, data)
 }
 
 func resourceClusterDirectConnectRead(d *schema.ResourceData, m interface{}) error {
@@ -84,6 +82,11 @@ func resourceClusterDirectConnectRead(d *schema.ResourceData, m interface{}) err
 	id := clientID(d, client.ServiceClusters, "HostCluster")
 	data, err := apiClient.Get(id, nil)
 	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
+
 		return err
 	}
 
