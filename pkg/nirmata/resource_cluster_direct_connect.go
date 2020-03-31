@@ -26,6 +26,15 @@ func resourceClusterDirectConnect() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"state": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"status": &schema.Schema{
+				Type:     schema.TypeList,
+				Elem:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -55,10 +64,28 @@ func resourceClusterDirectConnectCreate(d *schema.ResourceData, m interface{}) e
 
 	clusterID := resultData["id"].(string)
 	d.SetId(clusterID)
+	updateClusterData(d, resultData)
+
 	return nil
 }
 
+func updateClusterData(d *schema.ResourceData, data map[string]interface{}) {
+	clusterState := data["state"].(string)
+	d.Set("state", clusterState)
+
+	clusterStatus := data["status"].([]interface{})
+	d.Set("status", clusterStatus)
+}
+
 func resourceClusterDirectConnectRead(d *schema.ResourceData, m interface{}) error {
+	apiClient := m.(client.Client)
+	id := clientID(d, client.ServiceClusters, "HostCluster")
+	data, err := apiClient.Get(id, nil)
+	if err != nil {
+		return err
+	}
+
+	updateClusterData(d, data)
 	return nil
 }
 
@@ -67,5 +94,6 @@ func resourceClusterDirectConnectUpdate(d *schema.ResourceData, m interface{}) e
 }
 
 func resourceClusterDirectConnectDelete(d *schema.ResourceData, m interface{}) error {
-	return delete(d, m, client.ServiceClusters, "HostCluster")
+	params := map[string]string{"action": "delete"}
+	return delete(d, m, client.ServiceClusters, "HostCluster", params)
 }

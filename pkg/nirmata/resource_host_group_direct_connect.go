@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
 )
@@ -24,6 +25,19 @@ func resourceHostGroupDirectConnect() *schema.Resource {
 			"labels": &schema.Schema{
 				Type:     schema.TypeMap,
 				Optional: true,
+			},
+			"curl_script": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"state": &schema.Schema{
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"status": &schema.Schema{
+				Type:     schema.TypeList,
+				Elem:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
@@ -53,6 +67,17 @@ func resourceHostGroupDirectConnectCreate(d *schema.ResourceData, m interface{})
 
 		hgID := data["id"].(string)
 		d.SetId(hgID)
+
+		hgID := data["id"].(string)
+		d.SetId(hgID)
+	
+		scriptPath := "nirmata-host-agent/setup-nirmata-agent.sh"
+		curlScript := fmt.Sprintf("sudo curl -sSL %s/%s | sudo sh -s -- --cloud other --hostgroup %s",
+			apiClient.Address(), scriptPath, hgID)
+		d.Set("curl_script", curlScript)
+	
+		updateHostGroupData(d, data)
+
 		return nil
 	})
 	if err != nil {
@@ -61,7 +86,23 @@ func resourceHostGroupDirectConnectCreate(d *schema.ResourceData, m interface{})
 	return nil
 }
 
+func updateHostGroupData(d *schema.ResourceData, data map[string]interface{}) {
+	clusterState := data["state"].(string)
+	d.Set("state", clusterState)
+
+	clusterStatus := data["status"].([]interface{})
+	d.Set("status", clusterStatus)
+}
+
 func resourceHostGroupDirectConnectRead(d *schema.ResourceData, m interface{}) error {
+	apiClient := m.(client.Client)
+	id := clientID(d, client.ServiceConfig, "HostGroup")
+	data, err := apiClient.Get(id, nil)
+	if err != nil {
+		return err
+	}
+
+	updateClusterData(d, data)
 	return nil
 }
 
@@ -70,5 +111,5 @@ func resourceHostGroupDirectConnectUpdate(d *schema.ResourceData, m interface{})
 }
 
 func resourceHostGroupDirectConnectDelete(d *schema.ResourceData, m interface{}) error {
-	return delete(d, m, client.ServiceConfig, "HostGroup")
+	return delete(d, m, client.ServiceConfig, "HostGroup", nil)
 }
