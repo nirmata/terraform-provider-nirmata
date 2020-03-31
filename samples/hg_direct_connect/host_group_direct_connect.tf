@@ -11,5 +11,5 @@ resource "nirmata_host_group_direct_connect" "dc-host-group" {
 resource "nirmata_cluster_direct_connect" "dc-cluster-1" {
   name = "dc-cluster-1"
   policy = "default-v1.16.0"
-  host_group = "${nirmata_host_group_direct_connect.dc-host-group.name}"
+  host_group = nirmata_host_group_direct_connect.dc-host-group.name
 }
