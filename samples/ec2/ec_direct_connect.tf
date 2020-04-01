@@ -25,10 +25,12 @@ provider "aws" {
 provider "nirmata" {
   // Set NIRMATA_TOKEN with your API Key
   // You can also set NIRMATA_URL with the Nirmata URL address
+  // NIRMATA_TOKEN=foo terraform <what ever>
 }
 
 resource "nirmata_host_group_direct_connect" "dc-host-group" {
-  name = "sam-hg-1"
+  // This can't exist in Nirmata
+  name = "aws-hg-1"
 }
 
 resource "aws_security_group" "nirmata-dc-sg" {
@@ -66,7 +68,9 @@ resource "aws_instance" "nirmata-dc" {
   associate_public_ip_address = lookup(var.awsprops, "publicip")
   key_name = lookup(var.awsprops, "keyname")
  
-  // We are using remote-exec because we can't block on user data in AWS
+  // We are using remote-exec because we can't block on user data in AWS.
+  // This requires ssh access and an ssh key
+  // Consider using an aws cloud provider to create an eks cluster.
   // This is for modern Ubuntu versions see Nirmata docs for various Linux distros
   provisioner "remote-exec" {
     inline = [ "sudo apt-get update", 
@@ -100,10 +104,9 @@ resource "aws_instance" "nirmata-dc" {
 }
 
 resource "nirmata_cluster_direct_connect" "dc-cluster-1" {
-  name = "sam-cluster-1"
+  name = "aws-cluster-1"
+  // This policy must exist in Nirmata
   policy = "default-v1.16.0"
   host_group = nirmata_host_group_direct_connect.dc-host-group.name
   depends_on = [ aws_instance.nirmata-dc ]
 }
-
-
