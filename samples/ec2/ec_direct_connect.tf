@@ -110,3 +110,23 @@ resource "nirmata_cluster_direct_connect" "dc-cluster-1" {
   host_group = nirmata_host_group_direct_connect.dc-host-group.name
   depends_on = [ aws_instance.nirmata-dc ]
 }
+
+output "id" {
+  description = "List of IDs of instances"
+  value       = aws_instance.this.*.id
+}
+
+output "public_ip" {
+  description = "List of public IP addresses assigned to the instances, if applicable"
+  value       = aws_instance.this.*.public_ip
+}
+
+output "instance_count" {
+  description = "Number of instances to launch specified as argument to this module"
+  value       = aws_instance.instance_count
+}
+
+output "agent_script" {
+  description = "Nirmata agent install command"
+  value       = nirmata_host_group_direct_connect.dc-host-group.curl_script
+}
