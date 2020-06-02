@@ -40,8 +40,10 @@ func resourceProviderManagedCluster() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					_ = v.(int)
-					//TODO : ADD Logic
+					if v.(int) > 999 {
+						errors = append(errors, fmt.Errorf(
+							"%q The node count must be between 1 and 1000", k))
+					}
 					return
 				},
 			},
