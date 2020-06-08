@@ -34,6 +34,7 @@ func Provider() *schema.Provider {
 			"nirmata_aks_clusterType":           resourceAksClusterType(),
 			"nirmata_oke_clusterType":           resourceOkeClusterType(),
 			"nirmata_gke_clusterType":           resourceGkeClusterType(),
+			"nirmata_eks_clusterType":           resourceEksClusterType(),
 		},
 		ConfigureFunc: configureProvider,
 	}
