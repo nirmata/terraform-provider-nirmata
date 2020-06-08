@@ -103,7 +103,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"clusterMode": "providerManaged",
 			"modelIndex":  "ClusterSpec",
 			"version":     version,
-			"cloud":       "azure",
+			"cloud":       "googlecloudplatform",
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
@@ -120,7 +120,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"nodePoolTypes": nodepooluuid,
 				"gkeConfig": map[string]interface{}{
 					"region":     region,
-					"modelIndex": "gkeClusterConfig",
+					"modelIndex": "GkeClusterConfig",
 				},
 			},
 		},
@@ -136,7 +136,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"gkeConfig": map[string]interface{}{
 				"machineType": machinetype,
 				"diskSize":    diskSize,
-				"modelIndex":  "gkeNodePoolConfig",
+				"modelIndex":  "GkeNodePoolConfig",
 			},
 		},
 	}

@@ -91,7 +91,7 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"clusterMode": "providerManaged",
 			"modelIndex":  "ClusterSpec",
 			"version":     version,
-			"cloud":       "azure",
+			"cloud":       "oraclecloudservices",
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
