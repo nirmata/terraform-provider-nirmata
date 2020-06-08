@@ -73,7 +73,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	hg := map[string]interface{}{
+	pmc := map[string]interface{}{
 		"name":         name,
 		"mode":         "providerManaged",
 		"typeSelector": typeSelector,
@@ -85,13 +85,13 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		},
 	}
 
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "kubernetesCluster", hg, nil)
+	data, err := apiClient.PostFromJSON(client.ServiceClusters, "kubernetesCluster", pmc, nil)
 	if err != nil {
 		return err
 	}
 
-	hgID := data["id"].(string)
-	d.SetId(hgID)
+	pmcID := data["id"].(string)
+	d.SetId(pmcID)
 	return nil
 }
 

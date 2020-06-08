@@ -16,12 +16,13 @@ func Provider() *schema.Provider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_TOKEN", nil),
 				Description: "Nirmata API Access Token",
+				Sensitive:   true,
 			},
 
 			"url": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_URL", "https://nirmata.io"),
+				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_URL", "http://devtest4.nirmata.io/"),
 				Description: "Nirmata URL (HTTPS) address",
 			},
 		},
@@ -30,7 +31,9 @@ func Provider() *schema.Provider {
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 			"nirmata_cluster_direct_connect":    resourceClusterDirectConnect(),
 			"nirmata_ProviderManaged_cluster":   resourceProviderManagedCluster(),
-		},
+			"nirmata_aks_clusterType":           resourceAksClusterType(),
+			"nirmata_oke_clusterType":           resourceOkeClusterType(),
+			"nirmata_gke_clusterType":           resourceGkeClusterType(),
 
 		ConfigureFunc: configureProvider,
 	}
