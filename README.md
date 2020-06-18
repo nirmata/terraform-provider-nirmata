@@ -29,19 +29,19 @@ terraform init samples/gke
 4. Run `plan` to build the execution plan:
 
 ````bash
-terraform init samples/gke
+terraform plan samples/gke
 ````
 
 5. Run `apply` to execute the plan:
 
 ````bash
-terraform init samples/gke
+terraform apply samples/gke
 ````
 
 6. Run `show` to see the created resources:
 
 ````bash
-terraform show samples/gke
+terraform show
 ````
 
 7. Run `destroy` to delete the created resources:
@@ -49,3 +49,6 @@ terraform show samples/gke
 ````bash
 terraform destroy samples/gke
 ````
+
+
+If you want to create a direct connect group with a different cloud provider look at the ssh example and repace the null_resource with your cloud provider's resource.  Retain the 

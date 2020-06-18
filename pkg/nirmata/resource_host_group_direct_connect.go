@@ -5,6 +5,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 
+	"fmt"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
 )
@@ -35,8 +38,10 @@ func resourceHostGroupDirectConnect() *schema.Resource {
 				Computed: true,
 			},
 			"status": &schema.Schema{
-				Type:     schema.TypeList,
-				Elem:     schema.TypeString,
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 				Computed: true,
 			},
 		},
@@ -87,11 +92,19 @@ func resourceHostGroupDirectConnectCreate(d *schema.ResourceData, m interface{})
 }
 
 func updateHostGroupData(d *schema.ResourceData, data map[string]interface{}) {
-	clusterState := data["state"].(string)
-	d.Set("state", clusterState)
+	updateStateAndStatus(d, data)
+}
 
-	clusterStatus := data["status"].([]interface{})
-	d.Set("status", clusterStatus)
+func updateStateAndStatus(d *schema.ResourceData, data map[string]interface{}) {
+	if data["state"] != nil {
+		clusterState := data["state"].(string)
+		d.Set("state", clusterState)
+	}
+
+	if data["status"] != nil {
+		clusterStatus := data["status"].([]interface{})
+		d.Set("status", clusterStatus)
+	}
 }
 
 func resourceHostGroupDirectConnectRead(d *schema.ResourceData, m interface{}) error {
@@ -99,6 +112,11 @@ func resourceHostGroupDirectConnectRead(d *schema.ResourceData, m interface{}) e
 	id := clientID(d, client.ServiceConfig, "HostGroup")
 	data, err := apiClient.Get(id, nil)
 	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
+
 		return err
 	}
 
