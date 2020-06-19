@@ -7,11 +7,12 @@ resource "nirmata_eks_clusterType" "cluster-type-eks" {
   version  = "1.14"
   credentials = "eks"
   region= "us-east-2"
-  vpcid= "vpc-dbff00b2"
-  subneid= ["subnet-e6445d9e", "subnet-4cc5fa06"]
-  clusterrolearn= "arn:aws:iam::094919933512:role/AnzenTester"
-  securitygroups= ["sg-02a84990a940e2295"]
-  keyname= "eks-demo-keypair"
+  vpcid= ""
+  subneid= []
+  clusterrolearn= ""
+  securitygroups= []
+  keyname= ""
   instancetypes= ["t2.small"]
   disksize= 120
 }
+
