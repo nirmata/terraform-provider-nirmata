@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
+	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
 )
@@ -78,8 +79,8 @@ func resourceGkeClusterType() *schema.Resource {
 func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
-	clouduuid, _ := newUUID()
-	nodepooluuid, _ := newUUID()
+	clouduuid := guuid.New()
+	nodepooluuid := guuid.New()
 
 	name := d.Get("name").(string)
 	version := d.Get("version").(string)

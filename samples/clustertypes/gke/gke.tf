@@ -4,9 +4,9 @@ provider "nirmata" {
 }
 resource "nirmata_gke_clusterType" "cluster-type-gke" {
   name       = "gke-cluster-type"
-  version  = "asia-east1-a"
-  credentials = "gke-nirmata"
-  region= "1.16.9-gke.2"
-  machinetype = "e2-highcpu-16"
+  version  = "" //The version of Kubernetes that should be used for this cluster.
+  credentials = "" //cloud credentials that hosts this cluster
+  region= "" //The  region into which the cluster should be deployed
+  machinetype = ""
   disksize = 10
 }

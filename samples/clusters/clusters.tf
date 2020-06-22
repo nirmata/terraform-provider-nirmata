@@ -4,7 +4,7 @@ provider "nirmata" {
 }
 
 resource "nirmata_ProviderManaged_cluster" "cluster-1" {
-  name       = "pvm-cluster-1"
-  type_selector  = "autoscaling"
+  name       = "pvm-cluster"
+  type_selector  = "take"
   node_count = 1
 }
