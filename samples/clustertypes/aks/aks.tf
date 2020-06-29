@@ -1,5 +1,4 @@
 provider "nirmata" {
-  NIRMATA_TOKEN  = "QU+Ujy3YBF3d8BZiJuE5hGB446i3HBsjdf2/Wj1HzS69bAFJAKVm2PXu05WIxkqDeJ8j8UN5tqfTcZs30kSClg=="
 }
 resource "nirmata_aks_clusterType" "aks-cluster-type" {
   name       = "demo-tf-akstype1"
