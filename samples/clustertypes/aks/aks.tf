@@ -1,7 +1,7 @@
 provider "nirmata" {
 }
 resource "nirmata_aks_clusterType" "aks-cluster-type" {
-  name       = "demo-tf-akstype1"
+  name       = "tf-akstype"
   version  = "" //The version of Kubernetes that should be used for this cluster.
   credentials = "" //  cloud credentials that hosts this cluster
   region= "" //The Azure region into which the cluster should be deployed
@@ -16,7 +16,7 @@ resource "nirmata_aks_clusterType" "aks-cluster-type" {
 }
 
 resource "nirmata_ProviderManaged_cluster" "cluster-1" {
-  name       = "demo-tf-akscluster1"
+  name       = "tf-akscluster"
   type_selector  =  nirmata_aks_clusterType.aks-cluster-type.name
   node_count = 1
 }
