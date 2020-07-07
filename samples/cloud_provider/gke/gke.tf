@@ -9,7 +9,7 @@ resource "nirmata_gke_clusterType" "cluster-type-gke" {
   credentials = "" //cloud credentials that hosts this cluster
   region= "" //The  region into which the cluster should be deployed
   machinetype = ""
-  disksize = 10
+  disksize = 50
 }
 
 resource "nirmata_ProviderManaged_cluster" "cluster-1" {
