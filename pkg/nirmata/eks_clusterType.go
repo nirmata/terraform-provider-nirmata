@@ -53,7 +53,7 @@ func resourceEksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"subneid": {
+			"subnetid": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -113,7 +113,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	securitygroups := d.Get("securitygroups")
 	clusterrolearn := d.Get("clusterrolearn").(string)
 	vpcid := d.Get("vpcid").(string)
-	subneid := d.Get("subneid")
+	subnetid := d.Get("subnetid")
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	fmt.Printf("Error - %v", cloudCredID)
@@ -148,7 +148,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"eksConfig": map[string]interface{}{
 					"region":                region,
 					"vpcId":                 vpcid,
-					"subnetId":              subneid,
+					"subnetId":              subnetid,
 					"privateEndpointAccess": false,
 					"clusterRoleArn":        clusterrolearn,
 				},

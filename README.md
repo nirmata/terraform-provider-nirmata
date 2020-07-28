@@ -10,43 +10,58 @@ go build
 
 The samples are available in the [samples](samples) folder.
 
-To run the samples, initialize the Terraform provider and then run the `plan` and `apply` commands. Here is an example of how to run the GKE cluster provisioning:
+To run the samples, initialize the Terraform provider and then run the `plan` and `apply` commands. 
 
-1. Build the provider
+Here is an example of how to run the GKE cluster provisioning:
 
-````bash
+1. Clone this repository
+
+```bash
+git clone 
+```
+
+2. Build the Nirmata Terraform Provider
+
+Golang needs to be installed to build the provider from source. See: https://golang.org/doc/install for Golang installation instructions and then run:
+
+```bash
 go build
-````
+```
 
-2. Set your `NIRMATA_TOKEN` environment variable to contain your API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)
+3. Set your `NIRMATA_TOKEN` environment variable to contain your Nirmata API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)
 
-3. Edit the terraform config file samples/cloud_provider/gke/gke.tf and include your credentials, and desired region, machinetype, and disksize.  (You can replace with the desired eks, or aks example.)
+4. Edit the sample Terraform config file `samples/cloud_provider/gke/gke.tf` and include your credentials, and desired region, machinetype, and disksize.
 
-4. Initialize the Terraform provider with the correct directory
+In Nirmata, a `ClusterType` is reusable configuration you can use to create several clusters. 
+
+The example file first creates a ClusterType and then creates a single node `Cluster` using that type. Optionally, you can create the ClusterType via the Nirmata web console, or using 
+[nctl](https://downloads.nirmata.io/nctl/downloads/), and then use the Terraform provider to create clusters of that type.
+
+5. Initialize the Terraform provider with the correct directory
 
 ```bash
 terraform init samples/cloud_provider/gke
-````
+```
 
-5. Run `plan` to build the execution plan:
+6. Run `plan` to build the execution plan:
 
-````bash
+```bash
 terraform plan samples/cloud_provider/gke
-````
+```
 
-6. Run `apply` to execute the plan:
+7. Run `apply` to execute the plan:
 
-````bash
+```bash
 terraform apply samples/cloud_provider/gke
-````
+```
 
-7. Run `show` to see the created resources:
+8. Run `show` to see the created resources:
 
-````bash
+```bash
 terraform show
-````
+```
 
-8. Run `destroy` to delete the created resources:
+9. Run `destroy` to delete the created resources:
 
 ````bash
 terraform destroy samples/cloud_provider/gke
