@@ -32,7 +32,7 @@ resource "nirmata_aks_clusterType" "aks-cluster-type" {
   // the Azure subnet ID to use for the NodePool. The ID is a long path like this:
   // "/subscriptions/{uuid}/resourceGroups/{name}/providers/Microsoft.Network/virtualNetworks/{name}/subnets/default"
   // Required
-  subnetid = "/subscriptions/baf89069-e8f3-46f8-b74e-c146931ce7a4/resourceGroups/nirmata-demo/providers/Microsoft.Network/virtualNetworks/nirmata-demo-network/subnets/default"
+  // subnetid = ""
 
   // the Azure VM size to use (e.g. Standard_D2_v3)
   // Required
