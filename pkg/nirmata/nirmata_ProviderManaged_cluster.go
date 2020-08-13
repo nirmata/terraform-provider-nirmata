@@ -1,6 +1,7 @@
 package nirmata
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 
@@ -101,7 +102,42 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
+	apiClient := meta.(client.Client)
+	nodeCount := d.Get("node_count").(int)
+	name := d.Get("name").(string)
 
+	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	if err != nil {
+		fmt.Printf("Error ", err)
+		return err
+	}
+	data, err := apiClient.Get(clusterTypeID, &client.GetOptions{})
+	if err != nil {
+		fmt.Printf("Error ", err)
+		return err
+	}
+	if err != nil {
+		return err
+	}
+	nodePools := data["nodePools"].([]interface{})
+	for _, nodePool := range nodePools {
+		np := nodePool.(map[string]interface{})
+		jsonObj := map[string]int{
+			"nodeCount": nodeCount,
+		}
+		jsonString, _ := json.Marshal(jsonObj)
+
+		_, err := apiClient.Put(&client.RESTRequest{
+			Service:     client.ServiceClusters,
+			ContentType: "application/json",
+			Path:        fmt.Sprintf("/NodePool/%s", np["id"].(string)),
+			Data:        jsonString,
+		})
+		if err != nil {
+			return err
+		}
+		break
+	}
 	return nil
 }
 
