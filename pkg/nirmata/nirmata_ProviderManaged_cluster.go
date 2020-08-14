@@ -2,6 +2,7 @@ package nirmata
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 
@@ -120,13 +121,15 @@ func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	nodePools := data["nodePools"].([]interface{})
+	if len(nodePools) > 0 {
+		return errors.New("not able to find nodepool")
+	}
 	for _, nodePool := range nodePools {
 		np := nodePool.(map[string]interface{})
 		jsonObj := map[string]int{
 			"nodeCount": nodeCount,
 		}
 		jsonString, _ := json.Marshal(jsonObj)
-
 		_, err := apiClient.Put(&client.RESTRequest{
 			Service:     client.ServiceClusters,
 			ContentType: "application/json",
