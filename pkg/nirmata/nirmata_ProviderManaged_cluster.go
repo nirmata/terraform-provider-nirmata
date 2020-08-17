@@ -2,7 +2,6 @@ package nirmata
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"regexp"
 
@@ -107,40 +106,50 @@ func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	nodeCount := d.Get("node_count").(int)
 	name := d.Get("name").(string)
 
-	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	clusterID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
 	if err != nil {
-		fmt.Printf("Error ", err)
+		fmt.Printf("failed to find cluster %s: %v", name, err)
 		return err
 	}
-	data, err := apiClient.Get(clusterTypeID, &client.GetOptions{})
+
+	data, err := apiClient.Get(clusterID, &client.GetOptions{})
 	if err != nil {
-		fmt.Printf("Error ", err)
+		fmt.Printf("failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
 		return err
 	}
-	if err != nil {
-		return err
-	}
+
 	nodePools := data["nodePools"].([]interface{})
-	if len(nodePools) > 0 {
-		return errors.New("not able to find nodepool")
+	if len(nodePools) == 0 {
+		return fmt.Errorf("failed to find nodepool for cluster %s (%s)", name, clusterID)
 	}
-	for _, nodePool := range nodePools {
-		np := nodePool.(map[string]interface{})
-		jsonObj := map[string]int{
-			"nodeCount": nodeCount,
-		}
-		jsonString, _ := json.Marshal(jsonObj)
-		_, err := apiClient.Put(&client.RESTRequest{
-			Service:     client.ServiceClusters,
-			ContentType: "application/json",
-			Path:        fmt.Sprintf("/NodePool/%s", np["id"].(string)),
-			Data:        jsonString,
-		})
-		if err != nil {
-			return err
-		}
-		break
+
+	if len(nodePools) > 1 {
+		fmt.Printf("found %d nodepools for cluster %s (%s)", len(nodePools), name, clusterID)
 	}
+
+	nodePool := nodePools[0]
+	np := nodePool.(map[string]interface{})
+	jsonObj := map[string]int{
+		"nodeCount": nodeCount,
+	}
+
+	jsonString, jsonErr := json.Marshal(jsonObj)
+	if jsonErr != nil {
+		return fmt.Errorf("failed to marshall %v to JSON: %v", jsonObj, err)
+	}
+
+	restRequest := &client.RESTRequest{
+		Service:     client.ServiceClusters,
+		ContentType: "application/json",
+		Path:        fmt.Sprintf("/NodePool/%s", np["id"].(string)),
+		Data:        jsonString,
+	}
+
+	if _, err := apiClient.Put(restRequest); err != nil {
+		return fmt.Errorf("failed to marshall %v to JSON: %v", jsonObj, err)
+	}
+
+	fmt.Printf("Updated node count to %d for nodepool %s in cluster %s", nodeCount, np["name"], name)
 	return nil
 }
 
