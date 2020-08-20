@@ -27,30 +27,38 @@ resource "nirmata_eks_clusterType" "eks-cluster-type" {
   
   // the AWS VPC subnet ID in which the cluster should be provisioned
   // Required
-  // vpcid= ""
+  // vpc_id= ""
   
   // the AWS VPC subnet ID in which the cluster should be provisioned (e.g. ["subnet-e8b1a2k1j", "subnet-ey907f5v"])
   // Required
-  // subnetid= []
+  // subnet_id= []
     
-  // the AWS security group to manage communications (e.g. ["sg-028208181hh110"])
+  // the AWS security group for firewalling (e.g. ["sg-028208181hh110"])
   // Required
-  // securitygroups= [] 
+  // security_groups= []
   
   // the AWS cluster role ARN (e.g. "arn:aws:iam::000000007:role/sample")
   // Required
-  // clusterrolearn= ""
+  // cluster_role_arn= ""
 
   // the AWS SSH key name (e.g. ssh-keys)
   // Required
-  // keyname= ""
+  // key_name= ""
   
   // the AWS instance type for worker nodes (e.g. "t3.medium")
-  instancetypes= ["t3.medium"]
+  instance_types= ["t3.medium"]
   
   // the worker node disk size
   // Required
-  disksize = 60
+  disk_size = 60
+
+  // the AWS security group for worker node firewalling (e.g. ["sg-028208181hh110"])
+  // Required
+  // node_security_groups = []
+
+  // the AWS IAM role for worker nodes (e.g. "arn:aws:iam::000000007:role/sample")
+  // Required
+  // node_iam_role = ""
 }
 
 // A Cluster is created using a ClusterType

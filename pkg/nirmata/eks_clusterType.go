@@ -49,40 +49,51 @@ func resourceEksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vpcid": {
+			"vpc_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"subnetid": {
+			"subnet_id": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 				Required: true,
 			},
-			"clusterrolearn": {
+			"cluster_role_arn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"securitygroups": {
+			"security_groups": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 				Required: true,
 			},
-			"keyname": {
+			"key_name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"instancetypes": {
+			"instance_types": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 				Required: true,
 			},
-			"disksize": {
+			"node_security_groups": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
+			},
+			"node_iam_role": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"disk_size": {
 				Type:     schema.TypeInt,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -107,13 +118,15 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	diskSize := d.Get("disksize").(int)
-	instancetype := d.Get("instancetypes")
-	keyname := d.Get("keyname").(string)
-	securitygroups := d.Get("securitygroups")
-	clusterrolearn := d.Get("clusterrolearn").(string)
-	vpcid := d.Get("vpcid").(string)
-	subnetid := d.Get("subnetid")
+	diskSize := d.Get("disk_size").(int)
+	instanceTypes := d.Get("instance_types")
+	keyName := d.Get("key_name").(string)
+	securityGroups := d.Get("security_groups")
+	clusterRoleArn := d.Get("cluster_role_arn").(string)
+	vpcId := d.Get("vpc_id").(string)
+	subnetId := d.Get("subnet_id")
+	nodeSecurityGroups := d.Get("node_security_groups")
+	nodeIamRole := d.Get("node_iam_role").(string)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	fmt.Printf("Error - %v", cloudCredID)
@@ -122,7 +135,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	clustertype := map[string]interface{}{
+	clusterType := map[string]interface{}{
 		"name":        name,
 		"description": "",
 		"modelIndex":  "ClusterType",
@@ -147,16 +160,17 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"nodePoolTypes": nodepooluuid,
 				"eksConfig": map[string]interface{}{
 					"region":                region,
-					"vpcId":                 vpcid,
-					"subnetId":              subnetid,
+					"vpcId":                 vpcId,
+					"subnetId":              subnetId,
 					"privateEndpointAccess": false,
-					"clusterRoleArn":        clusterrolearn,
+					"clusterRoleArn":        clusterRoleArn,
+					"securityGroups":        securityGroups,
 				},
 			},
 		},
 	}
 
-	nodepoolobj := map[string]interface{}{
+	nodePoolObj := map[string]interface{}{
 		"id":              nodepooluuid,
 		"modelIndex":      "NodePoolType",
 		"name":            name + "-default-node-pool-type",
@@ -164,21 +178,22 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"spec": map[string]interface{}{
 			"modelIndex": "NodePoolSpec",
 			"eksConfig": map[string]interface{}{
-				"securityGroups": securitygroups,
-				"keyName":        keyname,
+				"securityGroups": nodeSecurityGroups,
+				"nodeIamRole":    nodeIamRole,
+				"keyName":        keyName,
 				"diskSize":       diskSize,
-				"instanceTypes":  instancetype,
+				"instanceTypes":  instanceTypes,
 				"imageId":        "",
 			},
 		},
 	}
 
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "clustertypes", clustertype, nil)
+	data, err := apiClient.PostFromJSON(client.ServiceClusters, "clustertypes", clusterType, nil)
 	if err != nil {
 		return err
 	}
 
-	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodepoolobj, nil)
+	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodePoolObj, nil)
 	if nerr != nil {
 		return err
 	}
