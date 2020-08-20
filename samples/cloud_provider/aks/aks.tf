@@ -27,28 +27,28 @@ resource "nirmata_aks_clusterType" "aks-cluster-type" {
 
   // the Azure resource group
   // Required
-  // resourcegroup = ""
+  // resource_group = ""
 
   // the Azure subnet ID to use for the NodePool. The ID is a long path like this:
   // "/subscriptions/{uuid}/resourceGroups/{name}/providers/Microsoft.Network/virtualNetworks/{name}/subnets/default"
   // Required
-  // subnetid = ""
+  // subnet_id = ""
 
   // the Azure VM size to use (e.g. Standard_D2_v3)
   // Required
-  vmsize = "Standard_D2_v3" 
+  vm_size = "Standard_D2_v3"
 
   // the VM set type (VirtualMachineScaleSets or AvailabilitySets)
   // Required
-  vmsettype = "VirtualMachineScaleSets" 
+  vm_set_type = "VirtualMachineScaleSets"
   
   // the worker node disk size in GB
   // Required
-  disksize = 60
+  disk_size = 60
 
   // enable HTTPS Application Routing
   // Optional
-  httpsapplicationrouting= false
+  https_application_routing= false
 
   // enable container monitoring
   // Optional
@@ -56,7 +56,7 @@ resource "nirmata_aks_clusterType" "aks-cluster-type" {
 
   // the workspace ID to store monitoring data
   // Optional
-  workspaceid = ""
+  workspace_id = ""
 }
 
 // A Cluster is created using a ClusterType

@@ -49,7 +49,7 @@ func resourceOkeClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vmshape": {
+			"vm_shape": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -75,7 +75,7 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	vmshape := d.Get("vmshape").(string)
+	vmshape := d.Get("vm_shape").(string)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	fmt.Printf("Error - %v", cloudCredID)

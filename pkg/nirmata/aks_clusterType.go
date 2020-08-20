@@ -44,7 +44,7 @@ func resourceAksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"httpsapplicationrouting": {
+			"https_application_routing": {
 				Type:     schema.TypeBool,
 				Required: true,
 			},
@@ -56,7 +56,7 @@ func resourceAksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"resourcegroup": {
+			"resource_group": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -69,23 +69,11 @@ func resourceAksClusterType() *schema.Resource {
 				},
 			},
 
-			"subnetid": {
+			"subnet_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vmsize": {
-				Type:     schema.TypeString,
-				Required: true,
-				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					value := v.(string)
-					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
-						errors = append(errors, fmt.Errorf(
-							"%q must match [\\w+=,.@-]", k))
-					}
-					return
-				},
-			},
-			"vmsettype": {
+			"vms_ize": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -97,11 +85,23 @@ func resourceAksClusterType() *schema.Resource {
 					return
 				},
 			},
-			"workspaceid": {
+			"vm_set_type": {
+				Type:     schema.TypeString,
+				Required: true,
+				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
+					value := v.(string)
+					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+						errors = append(errors, fmt.Errorf(
+							"%q must match [\\w+=,.@-]", k))
+					}
+					return
+				},
+			},
+			"workspace_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"disksize": {
+			"disk_size": {
 				Type:     schema.TypeInt,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -126,8 +126,8 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	resourceGroup := d.Get("resourcegroup").(string)
-	subnetID := d.Get("subnetid").(string)
+	resourceGroup := d.Get("resource_group").(string)
+	subnetID := d.Get("subnet_id").(string)
 	vmSize := d.Get("vmsize").(string)
 	vmSetType := d.Get("vmsettype").(string)
 	workspaceID := d.Get("workspaceid").(string)

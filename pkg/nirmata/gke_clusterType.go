@@ -49,7 +49,7 @@ func resourceGkeClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"machinetype": {
+			"machine_type": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -61,7 +61,7 @@ func resourceGkeClusterType() *schema.Resource {
 					return
 				},
 			},
-			"disksize": {
+			"disk_size": {
 				Type:     schema.TypeInt,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -86,8 +86,8 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	machinetype := d.Get("machinetype").(string)
-	diskSize := d.Get("disksize").(int)
+	machinetype := d.Get("machine_type").(string)
+	diskSize := d.Get("disk_size").(int)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	fmt.Printf("Error - %v", cloudCredID)

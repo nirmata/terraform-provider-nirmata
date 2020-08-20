@@ -27,11 +27,11 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
 
   // the GCP machine type (e.g. "e2-standard-2")
   // Required
-  machinetype = "e2-standard-2"
+  machine_type = "e2-standard-2"
   
   // the worker node disk size in GB
   // Required
-  disksize = 60
+  disk_size = 60
 }
 
 // A Cluster is created using a ClusterType
