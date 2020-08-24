@@ -3,6 +3,7 @@ package nirmata
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -136,6 +137,17 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 
 	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodepoolobj, nil)
 	if nerr != nil {
+		return err
+	}
+
+	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
+	if err != nil {
+		fmt.Printf("Error ", err)
+		return err
+	}
+
+	err = apiClient.WaitForState(clusterTypeID,"state","ready",time.Duration(50000000000000),"Failed to get cluster status")
+	if err != nil {
 		return err
 	}
 
