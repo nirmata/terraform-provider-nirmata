@@ -245,7 +245,6 @@ func resourceClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	if err := apiClient.Delete(id, params); err != nil {
 		if strings.Contains(err.Error(), "404") {
 			d.SetId("")
-			d.Set("curl_script", "")
 			return nil
 		}
 		fmt.Println(err.Error())
