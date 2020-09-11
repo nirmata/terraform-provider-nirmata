@@ -19,7 +19,9 @@ func resourceGkeClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -158,7 +160,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	err = apiClient.WaitForState(clusterTypeID,"state","ready",time.Duration(50000000000000),"Failed to get cluster status")
+	err = apiClient.WaitForState(clusterTypeID,"state","ready",d.Timeout(schema.TimeoutCreate),"Failed to get cluster status")
 	if err != nil {
 		return err
 	}

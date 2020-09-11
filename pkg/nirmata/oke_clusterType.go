@@ -2,12 +2,11 @@ package nirmata
 
 import (
 	"fmt"
-	"regexp"
-	"time"
-
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
+	"regexp"
+	"time"
 )
 
 func resourceOkeClusterType() *schema.Resource {
@@ -19,7 +18,9 @@ func resourceOkeClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -146,7 +147,7 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	err = apiClient.WaitForState(clusterTypeID,"state","ready",time.Duration(50000000000000),"Failed to get cluster status")
+	err = apiClient.WaitForState(clusterTypeID,"state","ready",d.Timeout(schema.TimeoutCreate),"Failed to get cluster status")
 	if err != nil {
 		return err
 	}
