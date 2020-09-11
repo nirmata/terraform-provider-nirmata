@@ -37,7 +37,6 @@ func resourceEksClusterType() *schema.Resource {
 					return
 				},
 			},
-			// Version Of the cluster
 			"version": {
 				Type:     schema.TypeString,
 				Required: true,
