@@ -1,5 +1,6 @@
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 PKG_NAME=nirmata
+WEBSITE_REPO=github.com/hashicorp/terraform-website
 TEST_COUNT?=1
 ACCTEST_TIMEOUT?=120m
 ACCTEST_PARALLELISM?=20
@@ -53,10 +54,18 @@ lint: golangci-lint
 golangci-lint:
 	@golangci-lint run ./$(PKG_NAME)/...
 
+website:
+ifeq (,$(wildcard $(GOPATH)/src/$(WEBSITE_REPO)))
+	echo "$(WEBSITE_REPO) not found in your GOPATH (necessary for layouts and assets), get-ting..."
+	git clone https://$(WEBSITE_REPO) $(GOPATH)/src/$(WEBSITE_REPO)
+endif
+	@$(MAKE) -C $(GOPATH)/src/$(WEBSITE_REPO) website-provider PROVIDER_PATH=$(shell pwd) PROVIDER_NAME=$(PKG_NAME)
+
+
 tools:
 	GO111MODULE=on go install github.com/bflad/tfproviderdocs
 	GO111MODULE=on go install github.com/client9/misspell/cmd/misspell
 	GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint
 	GO111MODULE=on go install github.com/katbyte/terrafmt
 
-.PHONY:  build gen golangci-lint fmt lint tools depscheck docscheck
+.PHONY:  build gen golangci-lint fmt lint tools depscheck docscheck website website-test
