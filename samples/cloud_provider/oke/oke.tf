@@ -7,11 +7,11 @@ resource "nirmata_oke_clusterType" "cluster-type-oke" {
 
   // The name of this cluster
   // Required
-  name       = "oke-cluster-type"
+  name = "oke-cluster-type"
 
   // The version of Kubernetes that should be used for this cluster.
   // Required
-  version  = ""
+  version = ""
 
   // Cloud credentials to use for this cluster
   // Required
@@ -19,9 +19,9 @@ resource "nirmata_oke_clusterType" "cluster-type-oke" {
 
   // The region into which the cluster should be deployed
   // Required
-  region= " "
+  region = " "
 
   // The type of VM for worker nodes
   // Required
-  vm_shape= ""
+  vm_shape = ""
 }

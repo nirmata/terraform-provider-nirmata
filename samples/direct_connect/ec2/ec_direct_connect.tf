@@ -1,19 +1,19 @@
 
 variable "awsprops" {
-    type = map
-    default = {
+  type = map
+  default = {
     region = "us-west-1"
-    vpc = "vpc-00012345678909876"
+    vpc    = "vpc-00012345678909876"
     // This is the AMI for ubuntu in us-west-1 ami.  Note that images are region specific
     ami = "ami-03ba3948f6c37a4b0"
     // t3a.medium is fine for testing for production consider m5a.xlarge or m5.xlarge
-    itype = "t3a.medium"
-    subnet = "subnet-12345678909876543"
+    itype    = "t3a.medium"
+    subnet   = "subnet-12345678909876543"
     publicip = true
     // Must exist
     keyname = "terraform-test-west-1"
     // Must not exist
-    secgroupname = "terraform-test"
+    secgroupname   = "terraform-test"
     instance_count = 3
   }
 }
@@ -34,24 +34,24 @@ resource "nirmata_host_group_direct_connect" "dc-host-group" {
 }
 
 resource "aws_security_group" "nirmata-dc-sg" {
-  name = lookup(var.awsprops, "secgroupname")
+  name        = lookup(var.awsprops, "secgroupname")
   description = lookup(var.awsprops, "secgroupname")
-  vpc_id = lookup(var.awsprops, "vpc")
+  vpc_id      = lookup(var.awsprops, "vpc")
 
   // To Allow SSH Transport
   // Disable in production?
   ingress {
-    from_port = 22
-    protocol = "tcp"
-    to_port = 22
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   lifecycle {
@@ -61,23 +61,23 @@ resource "aws_security_group" "nirmata-dc-sg" {
 
 
 resource "aws_instance" "nirmata-dc" {
-  count = lookup(var.awsprops, "instance_count")
-  ami = lookup(var.awsprops, "ami")
-  instance_type = lookup(var.awsprops, "itype")
-  subnet_id = lookup(var.awsprops, "subnet") #FFXsubnet2
+  count                       = lookup(var.awsprops, "instance_count")
+  ami                         = lookup(var.awsprops, "ami")
+  instance_type               = lookup(var.awsprops, "itype")
+  subnet_id                   = lookup(var.awsprops, "subnet") #FFXsubnet2
   associate_public_ip_address = lookup(var.awsprops, "publicip")
-  key_name = lookup(var.awsprops, "keyname")
- 
+  key_name                    = lookup(var.awsprops, "keyname")
+
   // We are using remote-exec because we can't block on user data in AWS.
   // This requires ssh access and an ssh key
   // Consider using an aws cloud provider to create an eks cluster.
   // This is for modern Ubuntu versions see Nirmata docs for various Linux distros
   provisioner "remote-exec" {
-    inline = [ "sudo apt-get update", 
+    inline = ["sudo apt-get update",
       "sudo apt-get install -y docker.io",
-      "${nirmata_host_group_direct_connect.dc-host-group.curl_script}"]
+    "${nirmata_host_group_direct_connect.dc-host-group.curl_script}"]
   }
-  
+
   connection {
     type        = "ssh"
     user        = "ubuntu"
@@ -90,25 +90,25 @@ resource "aws_instance" "nirmata-dc" {
   ]
   root_block_device {
     delete_on_termination = true
-    iops = 150
-    volume_size = 100
-    volume_type = "gp2"
+    iops                  = 150
+    volume_size           = 100
+    volume_type           = "gp2"
   }
   tags = {
-    Name ="nirmata-dc"
+    Name        = "nirmata-dc"
     Environment = "DEV"
-    OS = "UBUNTU"
+    OS          = "UBUNTU"
   }
 
-  depends_on = [ aws_security_group.nirmata-dc-sg ]
+  depends_on = [aws_security_group.nirmata-dc-sg]
 }
 
 resource "nirmata_cluster_direct_connect" "dc-cluster-1" {
   name = "aws-cluster-1"
   // This policy must exist in Nirmata
-  policy = "default-v1.16.0"
+  policy     = "default-v1.16.0"
   host_group = nirmata_host_group_direct_connect.dc-host-group.name
-  depends_on = [ aws_instance.nirmata-dc ]
+  depends_on = [aws_instance.nirmata-dc]
 }
 
 output "id" {

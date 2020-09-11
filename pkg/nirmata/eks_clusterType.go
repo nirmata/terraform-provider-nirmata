@@ -9,6 +9,7 @@ import (
 	client "github.com/nirmata/go-client/pkg/client"
 )
 
+// resourceEksClusterType Of the cluster
 func resourceEksClusterType() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceEksClusterTypeCreate,
@@ -18,7 +19,7 @@ func resourceEksClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		// Version Of the cluster
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -36,6 +37,7 @@ func resourceEksClusterType() *schema.Resource {
 					return
 				},
 			},
+			// Version Of the cluster
 			"version": {
 				Type:     schema.TypeString,
 				Required: true,

@@ -8,15 +8,15 @@ provider "nirmata" {
 
 // A ClusterType contains reusable configuration to create clusters.
 resource "nirmata_aks_clusterType" "aks-cluster-type" {
-  
+
   // a unique name for the cluster type (e.g. az-cluster)
   // Required
   name = "aks-tf-1"
 
   // the Kubernetes version (e.g. 1.17.7)
   // Required
-  version = "1.17.7" 
-  
+  version = "1.17.7"
+
   // the Azure cloud credentials name configured in Nirmata (e.g. azure-credentials)
   // Required
   // credentials = ""
@@ -41,18 +41,18 @@ resource "nirmata_aks_clusterType" "aks-cluster-type" {
   // the VM set type (VirtualMachineScaleSets or AvailabilitySets)
   // Required
   vm_set_type = "VirtualMachineScaleSets"
-  
+
   // the worker node disk size in GB
   // Required
   disk_size = 60
 
   // enable HTTPS Application Routing
   // Optional
-  https_application_routing= false
+  https_application_routing = false
 
   // enable container monitoring
   // Optional
-  monitoring= false
+  monitoring = false
 
   // the workspace ID to store monitoring data
   // Optional
@@ -64,11 +64,11 @@ resource "nirmata_ProviderManaged_cluster" "aks-cluster" {
 
   // a unique name for the Cluster
   // Required
-  name       = "tf-akscluster"
+  name = "tf-akscluster"
 
   // the cluster type
   // Required
-  type_selector  =  nirmata_aks_clusterType.aks-cluster-type.name
+  type_selector = nirmata_aks_clusterType.aks-cluster-type.name
 
   // number of worker nodes
   // Required
