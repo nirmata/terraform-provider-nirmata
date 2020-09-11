@@ -3,3 +3,4 @@ ClusterType EKS
 ClusterType GKE
 ClusterType OKE
 ClusterType DirectConnect
+ProviderManaged Cluster
