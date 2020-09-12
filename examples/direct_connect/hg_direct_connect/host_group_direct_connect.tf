@@ -5,7 +5,7 @@ provider "nirmata" {
 }
 
 resource "nirmata_host_group_direct_connect" "dc-host-group" {
-  name = "dc-hg-1"
+  name = var.name
 }
 
 // You will likely want to install the Nirmata agent via
@@ -13,12 +13,8 @@ resource "nirmata_host_group_direct_connect" "dc-host-group" {
 // before creating the cluster.
 
 resource "nirmata_cluster_direct_connect" "dc-cluster-1" {
-  name       = "dc-cluster-1"
-  policy     = "default-v1.16.0"
+  name       = var.direct_connect_cluster_name
+  policy     = var.policy
   host_group = nirmata_host_group_direct_connect.dc-host-group.name
 }
 
-output "agent_script" {
-  description = "Nirmata agent install command"
-  value       = nirmata_host_group_direct_connect.dc-host-group.curl_script
-}

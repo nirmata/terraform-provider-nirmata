@@ -11,27 +11,27 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
 
   // a unique name for the cluster type (e.g. eks-cluster)
   // Required
-  name = "gke-cluster-type"
+  name = var.name
 
   // the GKE version (e.g. 1.16.12-gke.3)
   // Required
-  version = "1.16.12-gke.3"
+  version = var.version
 
   // the GCP cloud credentials name configured in Nirmata (e.g. gcp-credentials)
   // Required
-  // credentials = ""
+  // credentials = var.credentials
 
   // the GCP region into which the cluster should be deployed (e.g. "us-central1-b")
   // Required
-  region = "us-central1-b"
+  region = var.region
 
   // the GCP machine type (e.g. "e2-standard-2")
   // Required
-  machine_type = "e2-standard-2"
+  machine_type = var.machine_type
 
   // the worker node disk size in GB
   // Required
-  disk_size = 60
+  disk_size = var.disk_size
 }
 
 // A Cluster is created using a ClusterType
@@ -39,7 +39,7 @@ resource "nirmata_ProviderManaged_cluster" "gke-cluster" {
 
   // a unique name for the Cluster
   // Required
-  name = "gke-cluster-1"
+  name = var.cluster_name
 
   // the cluster type
   // Required
@@ -47,15 +47,5 @@ resource "nirmata_ProviderManaged_cluster" "gke-cluster" {
 
   // number of worker nodes
   // Required
-  node_count = 1
-}
-
-output "cluster_type_name" {
-  description = "ClusterType name"
-  value       = nirmata_gke_clusterType.gke-cluster-type.name
-}
-
-output "cluster_name" {
-  description = "Cluster name"
-  value       = nirmata_ProviderManaged_cluster.gke-cluster.name
+  node_count = var.node_count
 }
