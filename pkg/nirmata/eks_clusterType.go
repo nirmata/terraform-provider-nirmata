@@ -101,6 +101,13 @@ func resourceEksClusterType() *schema.Resource {
 					return
 				},
 			},
+			"log_types": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
+			},
 		},
 	}
 }
@@ -124,6 +131,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	subnetID := d.Get("subnet_id")
 	nodeSecurityGroups := d.Get("node_security_groups")
 	nodeIamRole := d.Get("node_iam_role").(string)
+	logTypes := d.Get("log_types")
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	fmt.Printf("Error - %v", cloudCredID)
@@ -162,6 +170,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"privateEndpointAccess": false,
 					"clusterRoleArn":        clusterRoleArn,
 					"securityGroups":        securityGroups,
+					"logTypes":        		 logTypes,
 				},
 			},
 		},
