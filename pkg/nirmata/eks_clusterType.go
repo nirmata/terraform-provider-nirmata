@@ -3,7 +3,7 @@ package nirmata
 import (
 	"fmt"
 	"regexp"
-
+	
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
@@ -75,11 +75,8 @@ func resourceEksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"instance_types": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
+			"instance_type": {
+				Type:     schema.TypeString,
 				Required: true,
 			},
 			"node_security_groups": {
@@ -119,12 +116,12 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
 	diskSize := d.Get("disk_size").(int)
-	instanceTypes := d.Get("instance_types")
+	instanceType := d.Get("instance_type")
 	keyName := d.Get("key_name").(string)
 	securityGroups := d.Get("security_groups")
 	clusterRoleArn := d.Get("cluster_role_arn").(string)
-	vpcId := d.Get("vpc_id").(string)
-	subnetId := d.Get("subnet_id")
+	vpcID := d.Get("vpc_id").(string)
+	subnetID := d.Get("subnet_id")
 	nodeSecurityGroups := d.Get("node_security_groups")
 	nodeIamRole := d.Get("node_iam_role").(string)
 
@@ -160,8 +157,8 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"nodePoolTypes": nodepooluuid,
 				"eksConfig": map[string]interface{}{
 					"region":                region,
-					"vpcId":                 vpcId,
-					"subnetId":              subnetId,
+					"vpcId":                 vpcID,
+					"subnetId":              subnetID,
 					"privateEndpointAccess": false,
 					"clusterRoleArn":        clusterRoleArn,
 					"securityGroups":        securityGroups,
@@ -182,24 +179,22 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"nodeIamRole":    nodeIamRole,
 				"keyName":        keyName,
 				"diskSize":       diskSize,
-				"instanceTypes":  instanceTypes,
+				"instanceType":  instanceType,
 				"imageId":        "",
 			},
 		},
 	}
-
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "clustertypes", clusterType, nil)
+	txn := make(map[string]interface{})
+	var objArr = make([]interface{}, 0)
+	objArr = append(objArr, clusterType, nodePoolObj)
+	txn["create"] = objArr
+	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
+		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
 		return err
 	}
-
-	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodePoolObj, nil)
-	if nerr != nil {
-		return err
-	}
-
-	pmcID := data["id"].(string)
-	d.SetId(pmcID)
+	changeID:= data["changeId"].(string)
+	d.SetId(changeID)
 	return nil
 }
 

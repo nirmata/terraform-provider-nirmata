@@ -15,11 +15,11 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
 
   // the GKE version (e.g. 1.16.12-gke.3)
   // Required
-  version = "1.16.12-gke.3" 
+  version = "1.16.13-gke.1" 
 
   // the GCP cloud credentials name configured in Nirmata (e.g. gcp-credentials)
   // Required
-  // credentials = ""
+  credentials = "nirmata-demo"
   
   // the GCP region into which the cluster should be deployed (e.g. "us-central1-b")
   // Required
@@ -32,6 +32,40 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
   // the worker node disk size in GB
   // Required
   disk_size = 60
+
+  //A regional cluster has multiple replicas of the control plane, running in multiple zones within a given region. A zonal cluster has a single replica of the control plane running in a single zone.
+  // Required
+  //e.g. (Regional,Zonal)
+  location_type=  "Regional"
+  
+  // nodes should be deployed. Selecting more than one zone increases availability.
+  // Required
+  node_locations = ["asia-east1-a"]
+
+   // Required
+   // Protect your Kubernetes Secrets with envelope encryption.
+  enable_secrets_encryption = false
+
+  // Workload Identity is the recommended way to access Google Cloud services from applications running within GKE due to its improved security properties and manageability.
+ // Required 
+  enable_workload_identity = false
+
+  //Enter the Workload Pool for your project. Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters.
+  // Required if enable_secrets_encryption is true
+  workload_pool = ""
+
+  //Enter the Resource ID of the key you want to use (e.g. projects/project-name/locations/global/keyRings/my-keyring/cryptoKeys/my-key)
+  // Required if enable_workload_identity is true
+  secrets_encryption_key = ""
+
+  // Required
+  //network = ""
+
+ // Required
+  //subnetwork = ""
+
+  
+ 
 }
 
 // A Cluster is created using a ClusterType
@@ -39,7 +73,7 @@ resource "nirmata_ProviderManaged_cluster" "gke-cluster" {
 
   // a unique name for the Cluster
   // Required
-  name       = "gke-cluster-1"
+  name = "gke-cluster"
   
   // the cluster type
   // Required

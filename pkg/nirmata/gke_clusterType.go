@@ -72,6 +72,41 @@ func resourceGkeClusterType() *schema.Resource {
 					return
 				},
 			},
+			"location_type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"node_locations": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
+			},
+			"enable_secrets_encryption": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"enable_workload_identity": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"secrets_encryption_key": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"workload_pool": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"network": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"subnetwork": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 		},
 	}
 }
@@ -88,6 +123,14 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	region := d.Get("region").(string)
 	machinetype := d.Get("machine_type").(string)
 	diskSize := d.Get("disk_size").(int)
+	locationType := d.Get("location_type").(string)
+	nodeLocations := d.Get("node_locations")
+	enableSecretsEncryption := d.Get("enable_secrets_encryption").(bool)
+	secretsEncryptionKey := d.Get("secrets_encryption_key").(string)
+	enableWorkloadIdentity := d.Get("enable_workload_identity").(bool)
+	workloadPool := d.Get("workload_pool").(string)
+	network := d.Get("network").(string)
+	subnetwork := d.Get("subnetwork").(string)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	fmt.Printf("Error - %v", cloudCredID)
@@ -95,7 +138,10 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		fmt.Printf("Error - %v", err)
 		return err
 	}
-
+	var areaType = "zone"
+	if locationType == "Regional" {
+		areaType = "region"
+	}
 	clustertype := map[string]interface{}{
 		"name":        name,
 		"description": "",
@@ -120,8 +166,16 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"modelIndex":    "CloudConfigSpec",
 				"nodePoolTypes": nodepooluuid,
 				"gkeConfig": map[string]interface{}{
-					"region":     region,
-					"modelIndex": "GkeClusterConfig",
+					areaType:                  region,
+					"locationType":            locationType,
+					"defaultNodeLocations":    nodeLocations,
+					"enableSecretsEncryption": enableSecretsEncryption,
+					"secretsEncryptionKey":    secretsEncryptionKey,
+					"enableWorkloadIdentity":  enableWorkloadIdentity,
+					"workloadPool":            workloadPool,
+					"modelIndex":              "GkeClusterConfig",
+					"network":                 network,
+					"subnetwork":              subnetwork,
 				},
 			},
 		},
@@ -141,19 +195,17 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			},
 		},
 	}
-
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "clustertypes", clustertype, nil)
+	txn := make(map[string]interface{})
+	var objArr = make([]interface{}, 0)
+	objArr = append(objArr, clustertype, nodepoolobj)
+	txn["create"] = objArr
+	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
+		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
 		return err
 	}
-
-	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodepoolobj, nil)
-	if nerr != nil {
-		return err
-	}
-
-	pmcID := data["id"].(string)
-	d.SetId(pmcID)
+	changeID := data["changeId"].(string)
+	d.SetId(changeID)
 	return nil
 }
 

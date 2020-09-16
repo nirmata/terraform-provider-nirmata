@@ -46,7 +46,8 @@ resource "nirmata_eks_clusterType" "eks-cluster-type" {
   // key_name= ""
   
   // the AWS instance type for worker nodes (e.g. "t3.medium")
-  instance_types= ["t3.medium"]
+  // Required
+  instance_type= "t3.medium"
   
   // the worker node disk size
   // Required

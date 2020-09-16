@@ -129,18 +129,18 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		},
 	}
 
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "clustertypes", clustertype, nil)
+	txn := make(map[string]interface{})
+	var objArr = make([]interface{}, 0)
+	objArr = append(objArr, clustertype, nodepoolobj)
+	txn["create"] = objArr
+
+	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
+		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
 		return err
 	}
-
-	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodepoolobj, nil)
-	if nerr != nil {
-		return err
-	}
-
-	pmcID := data["id"].(string)
-	d.SetId(pmcID)
+	changeID := data["changeId"].(string)
+	d.SetId(changeID)
 	return nil
 }
 
