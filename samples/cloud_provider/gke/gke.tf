@@ -19,7 +19,7 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
 
   // the GCP cloud credentials name configured in Nirmata (e.g. gcp-credentials)
   // Required
-  credentials = "nirmata-demo"
+  //credentials = ""
   
   // the GCP region into which the cluster should be deployed (e.g. "us-central1-b")
   // Required
@@ -27,7 +27,7 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
 
   // the GCP machine type (e.g. "e2-standard-2")
   // Required
-  machine_type = "e2-standard-2"
+  //machine_type = ""
   
   // the worker node disk size in GB
   // Required
@@ -38,9 +38,9 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
   //e.g. (Regional,Zonal)
   location_type=  "Regional"
   
-  // nodes should be deployed. Selecting more than one zone increases availability.
+  // nodes should be deployed. Selecting more than one zone increases availability.  (e.g. ["asia-east1-a"])
   // Required
-  node_locations = ["asia-east1-a"]
+  //node_locations = []
 
    // Required
    // Protect your Kubernetes Secrets with envelope encryption.
@@ -52,16 +52,16 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
 
   //Enter the Workload Pool for your project. Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters.
   // Required if enable_secrets_encryption is true
-  workload_pool = ""
+  //workload_pool = ""
 
   //Enter the Resource ID of the key you want to use (e.g. projects/project-name/locations/global/keyRings/my-keyring/cryptoKeys/my-key)
   // Required if enable_workload_identity is true
-  secrets_encryption_key = ""
+  //secrets_encryption_key = ""
 
-  // Required
+  // Required (e.g. "default")
   //network = ""
 
- // Required
+ // Required (e.g. "default")
   //subnetwork = ""
 
   
