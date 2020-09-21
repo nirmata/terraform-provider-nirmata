@@ -34,21 +34,24 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
   disk_size = 60
 
   //A regional cluster has multiple replicas of the control plane, running in multiple zones within a given region. A zonal cluster has a single replica of the control plane running in a single zone.
-  // Required
+  // Optional
+  // default set to Regional
   //e.g. (Regional,Zonal)
-  location_type=  "Regional"
+  //location_type=  "Regional" 
   
   // nodes should be deployed. Selecting more than one zone increases availability.  (e.g. ["asia-east1-a"])
-  // Required
+  // Required 
   //node_locations = []
 
-   // Required
-   // Protect your Kubernetes Secrets with envelope encryption.
-  enable_secrets_encryption = false
+  // Optional
+  // Protect your Kubernetes Secrets with envelope encryption.
+  // default set to false
+  //enable_secrets_encryption = false
 
   // Workload Identity is the recommended way to access Google Cloud services from applications running within GKE due to its improved security properties and manageability.
- // Required 
-  enable_workload_identity = false
+  // Optional 
+  // default set to false
+  //enable_workload_identity = false
 
   //Enter the Workload Pool for your project. Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters.
   // Required if enable_secrets_encryption is true

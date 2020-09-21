@@ -74,7 +74,8 @@ func resourceGkeClusterType() *schema.Resource {
 			},
 			"location_type": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default : "Regional",
 			},
 			"node_locations": {
 				Type: schema.TypeList,
@@ -85,15 +86,17 @@ func resourceGkeClusterType() *schema.Resource {
 			},
 			"enable_secrets_encryption": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
+				Default : false,
 			},
 			"enable_workload_identity": {
 				Type:     schema.TypeBool,
-				Required: true,
+				Optional: true,
+				Default : false,
 			},
 			"secrets_encryption_key": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Optional: true,	
 			},
 			"workload_pool": {
 				Type:     schema.TypeString,
