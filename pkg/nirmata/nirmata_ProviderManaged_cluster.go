@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
@@ -108,6 +109,10 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	data, err := apiClient.Get(clusterID, &client.GetOptions{})
 	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
 		fmt.Printf("failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
 		return err
 	}
