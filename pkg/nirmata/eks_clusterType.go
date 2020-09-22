@@ -201,17 +201,10 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
-	if err != nil {
-		fmt.Printf("Error ", err)
-		return err
+	waitErr  := waitForState(apiClient,d.Timeout(schema.TimeoutCreate),name)
+	if waitErr != nil {
+		return waitErr
 	}
-
-	err = apiClient.WaitForState(clusterTypeID,"state","ready",500,"Failed to get cluster status")
-	if err != nil {
-		return err
-	}
-
 
 	pmcID := data["id"].(string)
 	d.SetId(pmcID)

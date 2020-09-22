@@ -154,17 +154,11 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	if nerr != nil {
 		return err
 	}
-	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
-	if err != nil {
-		fmt.Printf("Error ", err)
-		return err
-	}
 
-	err = apiClient.WaitForState(clusterTypeID,"state","ready",d.Timeout(schema.TimeoutCreate),"Failed to get cluster status")
-	if err != nil {
-		return err
+	waitErr  := waitForState(apiClient,d.Timeout(schema.TimeoutCreate),name)
+	if waitErr != nil {
+		return waitErr
 	}
-
 	pmcID := data["id"].(string)
 	d.SetId(pmcID)
 	return nil

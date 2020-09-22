@@ -141,15 +141,9 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
-	if err != nil {
-		fmt.Printf("Error ", err)
-		return err
-	}
-
-	err = apiClient.WaitForState(clusterTypeID,"state","ready",d.Timeout(schema.TimeoutCreate),"Failed to get cluster status")
-	if err != nil {
-		return err
+	waitErr  := waitForState(apiClient,d.Timeout(schema.TimeoutCreate),name)
+	if waitErr != nil {
+		return waitErr
 	}
 
 	pmcID := data["id"].(string)
