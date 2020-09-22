@@ -43,6 +43,7 @@ func newUUID() (string, error) {
 	return fmt.Sprintf("%x-%x-%x-%x-%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:]), nil
 }
 
+// waitForState Wait until cluster is not created or failed
 func waitForState(apiClient client.Client,maxTime time.Duration,name string) error {
 	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
 	if err != nil {
