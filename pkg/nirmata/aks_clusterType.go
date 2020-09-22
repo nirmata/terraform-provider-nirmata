@@ -8,6 +8,7 @@ import (
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
+	"strings"
 )
 
 func resourceAksClusterType() *schema.Resource {
@@ -222,7 +223,6 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 
 	pmcID := data["id"].(string)
 	d.SetId(pmcID)
-	d.Set("curl_script", pmcID)
 	return nil
 }
 
@@ -252,6 +252,10 @@ func resourceClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := apiClient.Delete(id, params); err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
 		fmt.Println(err.Error())
 		return err
 	}

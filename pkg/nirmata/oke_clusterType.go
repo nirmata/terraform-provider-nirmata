@@ -2,6 +2,8 @@ package nirmata
 
 import (
 	"fmt"
+	"strings"
+
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
@@ -177,6 +179,10 @@ func resourceOkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if err := apiClient.Delete(id, params); err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
 		fmt.Println(err.Error())
 		return err
 	}
