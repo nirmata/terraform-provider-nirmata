@@ -3,6 +3,8 @@ package nirmata
 import (
 	"fmt"
 	"regexp"
+	"time"
+
 	"strings"
 
 	guuid "github.com/google/uuid"
@@ -19,7 +21,9 @@ func resourceEksClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -197,6 +201,11 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodePoolObj, nil)
 	if nerr != nil {
 		return err
+	}
+
+	waitErr  := waitForState(apiClient,d.Timeout(schema.TimeoutCreate),name)
+	if waitErr != nil {
+		return waitErr
 	}
 
 	pmcID := data["id"].(string)

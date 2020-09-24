@@ -3,6 +3,8 @@ package nirmata
 import (
 	"fmt"
 	"regexp"
+	"time"
+
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
@@ -18,7 +20,9 @@ func resourceAksClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -210,6 +214,11 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	_, nerr := apiClient.PostFromJSON(client.ServiceClusters, "nodepooltypes", nodepoolobj, nil)
 	if nerr != nil {
 		return err
+	}
+
+	waitErr  := waitForState(apiClient,d.Timeout(schema.TimeoutCreate),name)
+	if waitErr != nil {
+		return waitErr
 	}
 
 	pmcID := data["id"].(string)
