@@ -107,8 +107,14 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 		fmt.Println(err.Error())
 		return err
 	}
+  
 	data, err := apiClient.Get(clusterID, &client.GetOptions{})
 	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
+    
 		fmt.Printf("failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
 		return err
 	}
