@@ -2,11 +2,13 @@ package nirmata
 
 import (
 	"fmt"
-	"regexp"
+	"strings"
 
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
+	"regexp"
+	"time"
 )
 
 func resourceOkeClusterType() *schema.Resource {
@@ -18,7 +20,9 @@ func resourceOkeClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -139,8 +143,10 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
 		return err
 	}
+  
 	changeID := data["changeId"].(string)
 	d.SetId(changeID)
+
 	return nil
 }
 
@@ -170,6 +176,10 @@ func resourceOkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if err := apiClient.Delete(id, params); err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
 		fmt.Println(err.Error())
 		return err
 	}

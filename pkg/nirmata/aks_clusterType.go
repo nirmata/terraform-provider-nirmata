@@ -3,10 +3,12 @@ package nirmata
 import (
 	"fmt"
 	"regexp"
+	"time"
 
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
+	"strings"
 )
 
 func resourceAksClusterType() *schema.Resource {
@@ -18,7 +20,9 @@ func resourceAksClusterType() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -211,8 +215,10 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
 		return err
 	}
+  
 	changeID := data["changeId"].(string)
 	d.SetId(changeID)
+
 	return nil
 }
 
@@ -242,6 +248,10 @@ func resourceClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := apiClient.Delete(id, params); err != nil {
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+			return nil
+		}
 		fmt.Println(err.Error())
 		return err
 	}
