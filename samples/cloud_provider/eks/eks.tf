@@ -46,7 +46,8 @@ resource "nirmata_eks_clusterType" "eks-cluster-type" {
   // key_name= ""
   
   // the AWS instance type for worker nodes (e.g. "t3.medium")
-  instance_types= ["t3.medium"]
+  // Required
+  instance_type= "t3.medium"
   
   // the worker node disk size
   // Required
@@ -59,6 +60,17 @@ resource "nirmata_eks_clusterType" "eks-cluster-type" {
   // the AWS IAM role for worker nodes (e.g. "arn:aws:iam::000000007:role/sample")
   // Required
   // node_iam_role = ""
+
+  
+  // 1. API server ["api"]: Your cluster's API server is the control plane component that exposes the Kubernetes API. 
+  // 2. Audit ["audit"]:Kubernetes audit logs provide a record of the individual users, administrators, or system components that have affected your cluster. 
+  // 3. Authenticator ["authenticator"]: Authenticator logs are unique to Amazon EKS. These logs represent the control plane component that Amazon EKS uses for Kubernetes Role Based Access Control. (RBAC) authentication uses IAM credentials. 
+  // 4. Controller manager ["controllerManager"]: The controller manager manages the core control loops that are shipped with Kubernetes. 
+  // 5. Scheduler ["scheduler"]: The scheduler component manages when and where to run pods in your cluster. 
+  //(e.g.) ["api","audit","authenticator","controllerManager","scheduler"] add as per requirement.
+  // Required 
+  log_types = []
+
 }
 
 // A Cluster is created using a ClusterType

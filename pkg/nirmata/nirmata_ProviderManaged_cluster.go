@@ -92,8 +92,8 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	pmcID := data["id"].(string)
-	d.SetId(pmcID)
+	clusterID := data["id"].(string)
+	d.SetId(clusterID)
 	return nil
 }
 
