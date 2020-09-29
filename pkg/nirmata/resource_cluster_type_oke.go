@@ -2,21 +2,22 @@ package nirmata
 
 import (
 	"fmt"
-	"regexp"
-	"time"
+	"log"
 	"strings"
 
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
+	"regexp"
+	"time"
 )
 
-func resourceGkeClusterType() *schema.Resource {
+func resourceOkeClusterType() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceGkeClusterTypeCreate,
-		Read:   resourceGkeClusterTypeRead,
-		Update: resourceGkeClusterTypeUpdate,
-		Delete: resourceGkeClusterTypeDelete,
+		Create: resourceOkeClusterTypeCreate,
+		Read:   resourceOkeClusterTypeRead,
+		Update: resourceOkeClusterTypeUpdate,
+		Delete: resourceOkeClusterTypeDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -53,7 +54,7 @@ func resourceGkeClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"machine_type": {
+			"vm_shape": {
 				Type:     schema.TypeString,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
@@ -65,60 +66,11 @@ func resourceGkeClusterType() *schema.Resource {
 					return
 				},
 			},
-			"disk_size": {
-				Type:     schema.TypeInt,
-				Required: true,
-				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					if v.(int) < 9 {
-						errors = append(errors, fmt.Errorf(
-							"%q The disk size must be grater than 9", k))
-					}
-					return
-				},
-			},
-			"location_type": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default : "Regional",
-			},
-			"node_locations": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Required: true,
-			},
-			"enable_secrets_encryption": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default : false,
-			},
-			"enable_workload_identity": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default : false,
-			},
-			"secrets_encryption_key": {
-				Type:     schema.TypeString,
-				Optional: true,	
-			},
-			"workload_pool": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"network": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"subnetwork": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 		},
 	}
 }
 
-func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
 	clouduuid := guuid.New()
@@ -128,27 +80,14 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	machinetype := d.Get("machine_type").(string)
-	diskSize := d.Get("disk_size").(int)
-	locationType := d.Get("location_type").(string)
-	nodeLocations := d.Get("node_locations")
-	enableSecretsEncryption := d.Get("enable_secrets_encryption").(bool)
-	secretsEncryptionKey := d.Get("secrets_encryption_key").(string)
-	enableWorkloadIdentity := d.Get("enable_workload_identity").(bool)
-	workloadPool := d.Get("workload_pool").(string)
-	network := d.Get("network").(string)
-	subnetwork := d.Get("subnetwork").(string)
+	vmshape := d.Get("vm_shape").(string)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
-	fmt.Printf("Error - %v", cloudCredID)
 	if err != nil {
-		fmt.Printf("Error - %v", err)
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
-	var areaType = "zone"
-	if locationType == "Regional" {
-		areaType = "region"
-	}
+
 	clustertype := map[string]interface{}{
 		"name":        name,
 		"description": "",
@@ -157,7 +96,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"clusterMode": "providerManaged",
 			"modelIndex":  "ClusterSpec",
 			"version":     version,
-			"cloud":       "googlecloudplatform",
+			"cloud":       "oraclecloudservices",
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
@@ -172,17 +111,9 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"id":            clouduuid,
 				"modelIndex":    "CloudConfigSpec",
 				"nodePoolTypes": nodepooluuid,
-				"gkeConfig": map[string]interface{}{
-					areaType:                  region,
-					"locationType":            locationType,
-					"defaultNodeLocations":    nodeLocations,
-					"enableSecretsEncryption": enableSecretsEncryption,
-					"secretsEncryptionKey":    secretsEncryptionKey,
-					"enableWorkloadIdentity":  enableWorkloadIdentity,
-					"workloadPool":            workloadPool,
-					"modelIndex":              "GkeClusterConfig",
-					"network":                 network,
-					"subnetwork":              subnetwork,
+				"okeConfig": map[string]interface{}{
+					"region":     region,
+					"modelIndex": "OkeClusterConfig",
 				},
 			},
 		},
@@ -195,47 +126,48 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"cloudConfigSpec": clouduuid,
 		"spec": map[string]interface{}{
 			"modelIndex": "NodePoolSpec",
-			"gkeConfig": map[string]interface{}{
-				"machineType": machinetype,
-				"diskSize":    diskSize,
-				"modelIndex":  "GkeNodePoolConfig",
+			"okeConfig": map[string]interface{}{
+				"vmshape":    vmshape,
+				"modelIndex": "OkeNodePoolConfig",
 			},
 		},
 	}
+
 	txn := make(map[string]interface{})
 	var objArr = make([]interface{}, 0)
 	objArr = append(objArr, clustertype, nodepoolobj)
 	txn["create"] = objArr
+
 	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
-		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
+		log.Printf("[ERROR] - failed to create cluster type  with data : %v", err)
 		return err
 	}
-  
+
 	changeID := data["changeId"].(string)
 	d.SetId(changeID)
 
 	return nil
 }
 
-func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
+func resourceOkeClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
 
-func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceOkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
 
-func resourceGkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceOkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
 	name := d.Get("name").(string)
 
 	id, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Printf("[ERROR] - %v", err.Error())
 		return err
 	}
 
@@ -248,11 +180,11 @@ func resourceGkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) erro
 			d.SetId("")
 			return nil
 		}
-		fmt.Println(err.Error())
+
+		log.Printf("[ERROR] - %v", err.Error())
 		return err
 	}
 
-	fmt.Printf("Deleted cluster type %s", name)
-
+	log.Printf("Deleted cluster type %s", name)
 	return nil
 }

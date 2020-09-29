@@ -28,13 +28,13 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
+			"nirmata_cluster":                   resourceManagedCluster(),
 			"nirmata_cluster_direct_connect":    resourceClusterDirectConnect(),
-			"nirmata_ProviderManaged_cluster":   resourceProviderManagedCluster(),
-			"nirmata_aks_clusterType":           resourceAksClusterType(),
-			"nirmata_oke_clusterType":           resourceOkeClusterType(),
-			"nirmata_gke_clusterType":           resourceGkeClusterType(),
-			"nirmata_eks_clusterType":           resourceEksClusterType(),
+			"nirmata_cluster_type_aks":          resourceAksClusterType(),
+			"nirmata_cluster_type_oke":          resourceOkeClusterType(),
+			"nirmata_cluster_type_gke":          resourceGkeClusterType(),
+			"nirmata_cluster_type_eks":          resourceEksClusterType(),
+			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 		},
 		ConfigureFunc: configureProvider,
 	}

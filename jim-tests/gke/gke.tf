@@ -7,7 +7,7 @@ provider "nirmata" {
 }
 
 // A ClusterType contains reusable configuration to create clusters.
-resource "nirmata_gke_clusterType" "gke-cluster-type" {
+resource "gke-type-1" "gke-cluster-type" {
 
   // a unique name for the cluster type (e.g. eks-cluster)
   // Required
@@ -37,42 +37,40 @@ resource "nirmata_gke_clusterType" "gke-cluster-type" {
   // Optional
   // default set to Regional
   //e.g. (Regional,Zonal)
-  //location_type=  "Regional" 
+  location_type=  "Zonal"
   
   // nodes should be deployed. Selecting more than one zone increases availability.  (e.g. ["asia-east1-a"])
   // Required 
-  //node_locations = []
+  node_locations = []
 
   // Optional
   // Protect your Kubernetes Secrets with envelope encryption.
   // default set to false
-  //enable_secrets_encryption = false
+  enable_secrets_encryption = false
 
   // Workload Identity is the recommended way to access Google Cloud services from applications running within GKE due to its improved security properties and manageability.
   // Optional 
   // default set to false
-  //enable_workload_identity = false
+  enable_workload_identity = false
 
-  //Enter the Workload Pool for your project. Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters.
+  //Enter the Workload Pool for your project.
+  // Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters.
   // Required if enable_secrets_encryption is true
-  //workload_pool = ""
+  workload_pool = ""
 
   //Enter the Resource ID of the key you want to use (e.g. projects/project-name/locations/global/keyRings/my-keyring/cryptoKeys/my-key)
   // Required if enable_workload_identity is true
-  //secrets_encryption_key = ""
+  secrets_encryption_key = ""
 
   // Required (e.g. "default")
-  //network = ""
+  network = "default"
 
- // Required (e.g. "default")
-  //subnetwork = ""
-
-  
- 
+  // Required (e.g. "default")
+  subnetwork = "default"
 }
 
 // A Cluster is created using a ClusterType
-resource "nirmata_ProviderManaged_cluster" "gke-cluster" {
+resource "gke-cluster-1" "gke-cluster" {
 
   // a unique name for the Cluster
   // Required
@@ -80,7 +78,7 @@ resource "nirmata_ProviderManaged_cluster" "gke-cluster" {
   
   // the cluster type
   // Required
-  type_selector  =  nirmata_gke_clusterType.gke-cluster-type.name
+  cluster_type  =  gke-type-1.gke-cluster-type.name
   
   // number of worker nodes
   // Required
@@ -89,10 +87,10 @@ resource "nirmata_ProviderManaged_cluster" "gke-cluster" {
 
 output "cluster_type_name" {
   description = "ClusterType name"
-  value       = nirmata_gke_clusterType.gke-cluster-type.name
+  value       = gke-type-1.gke-cluster-type.name
 }
 
 output "cluster_name" {
   description = "Cluster name"
-  value       = nirmata_ProviderManaged_cluster.gke-cluster.name
+  value       = gke-cluster-1.gke-cluster.name
 }

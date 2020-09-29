@@ -17,3 +17,5 @@
 /terraform.tfstate
 /terraform.tfstate.backup
 
+# IDE configurations
+/.idea

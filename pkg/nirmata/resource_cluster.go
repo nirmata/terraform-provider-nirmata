@@ -3,6 +3,7 @@ package nirmata
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -10,7 +11,7 @@ import (
 	client "github.com/nirmata/go-client/pkg/client"
 )
 
-func resourceProviderManagedCluster() *schema.Resource {
+func resourceManagedCluster() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceClusterCreate,
 		Read:   resourceClusterRead,
@@ -37,7 +38,6 @@ func resourceProviderManagedCluster() *schema.Resource {
 					return
 				},
 			},
-
 			"node_count": {
 				Type:     schema.TypeInt,
 				Required: true,
@@ -49,7 +49,7 @@ func resourceProviderManagedCluster() *schema.Resource {
 					return
 				},
 			},
-			"type_selector": {
+			"cluster_type": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -59,19 +59,19 @@ func resourceProviderManagedCluster() *schema.Resource {
 
 func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
-
 	name := d.Get("name").(string)
 	nodeCount := d.Get("node_count").(int)
-	typeSelector := d.Get("type_selector").(string)
+	typeSelector := d.Get("cluster_type").(string)
 
 	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "ClusterType", typeSelector)
 	if err != nil {
-		fmt.Printf("Error - %v", err)
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
+
 	cspec, err := apiClient.GetRelation(clusterTypeID, "clusterSpecs")
 	if err != nil {
-		fmt.Printf("Error - %v", err)
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
 
@@ -92,30 +92,49 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	clusterID := data["id"].(string)
-	d.SetId(clusterID)
+	clusterUUID := data["id"].(string)
+	d.SetId(clusterUUID)
+
+	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
+
+	state, waitErr := waitForClusterState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
+	if waitErr != nil {
+		log.Printf("[ERROR] - failed to check cluster status. Error - %v", waitErr)
+		return nil
+	}
+
+	if strings.EqualFold("failed", state) {
+		status, err := getClusterStatus(apiClient, clusterID)
+		if err != nil {
+			log.Printf("[ERROR] - failed to retrieve cluster failure details: %v", err)
+			return fmt.Errorf("cluster creation failed")
+		}
+
+		return fmt.Errorf("cluster creation failed: %s", status)
+	}
+
+	log.Printf("created cluster %s with ID %s", name, clusterID)
 	return nil
 }
 
 func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
-
 	name := d.Get("name").(string)
 
-	clusterID, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
-	if err != nil {
-		fmt.Println(err.Error())
-		return err
-	}
-  
-	data, err := apiClient.Get(clusterID, &client.GetOptions{})
+	clusterID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
 	if err != nil {
 		if strings.Contains(err.Error(), "404") {
+			log.Printf("[INFO] cluster does not exist %s (%s): %v", name, err)
 			d.SetId("")
 			return nil
 		}
-    
-		fmt.Printf("failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
+
+		return err
+	}
+
+	data, err := apiClient.Get(clusterID, &client.GetOptions{})
+	if err != nil {
+		log.Printf("[ERROR] failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
 		return err
 	}
 
@@ -125,12 +144,13 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(nodePools) > 1 {
-		fmt.Printf("found %d nodepools for cluster %s (%s)", len(nodePools), name, clusterID)
+		log.Printf("[INFO] found %d nodepools for cluster %s (%s)", len(nodePools), name, clusterID)
 	}
 
 	nodePool := nodePools[0]
 	np := nodePool.(map[string]interface{})
-	d.Set("nodeCount",np["nodeCount"])
+	d.Set("nodeCount", np["nodeCount"])
+
 	return nil
 }
 
@@ -140,18 +160,18 @@ func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	name := d.Get("name").(string)
 
 	if d.HasChanges("node_count") {
-		_,NewNodeCount := d.GetChange("node_count")
+		_, NewNodeCount := d.GetChange("node_count")
 		nodeCount = NewNodeCount.(int)
 	}
 	clusterID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
 	if err != nil {
-		fmt.Printf("failed to find cluster %s: %v", name, err)
+		log.Printf("[ERROR] failed to find cluster %s: %v", name, err)
 		return err
 	}
 
 	data, err := apiClient.Get(clusterID, &client.GetOptions{})
 	if err != nil {
-		fmt.Printf("failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
+		log.Printf("[ERROR] failed to retrieve cluster details %s (%s): %v", name, clusterID, err)
 		return err
 	}
 
@@ -161,7 +181,7 @@ func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(nodePools) > 1 {
-		fmt.Printf("found %d nodepools for cluster %s (%s)", len(nodePools), name, clusterID)
+		log.Printf("[INFO] found %d nodepools for cluster %s (%s)", len(nodePools), name, clusterID)
 	}
 
 	nodePool := nodePools[0]
@@ -186,7 +206,7 @@ func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("failed to marshall %v to JSON: %v", jsonObj, err)
 	}
 
-	fmt.Printf("Updated node count to %d for nodepool %s in cluster %s", nodeCount, np["name"], name)
+	log.Printf("[INFO] Updated node count to %d for nodepool %s in cluster %s", nodeCount, np["name"], name)
 	return nil
 }
 
@@ -197,7 +217,13 @@ func resourceClusterDelete(d *schema.ResourceData, meta interface{}) error {
 
 	id, err := apiClient.QueryByName(client.ServiceClusters, "kubernetesCluster", name)
 	if err != nil {
-		fmt.Println(err.Error())
+		if strings.Contains(err.Error(), "404") {
+			log.Printf("[INFO] cluster does not exist %s (%s): %v", name, err)
+			d.SetId("")
+			return nil
+		}
+
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
 
@@ -206,15 +232,9 @@ func resourceClusterDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if err := apiClient.Delete(id, params); err != nil {
-		if strings.Contains(err.Error(), "404") {
-			d.SetId("")
-			return nil
-		}
-		fmt.Println(err.Error())
 		return err
 	}
 
-	fmt.Printf("Deleted cluster %s", name)
-
+	log.Printf("[INFO] Deleted cluster %s", name)
 	return nil
 }

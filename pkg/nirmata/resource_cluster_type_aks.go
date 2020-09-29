@@ -2,21 +2,22 @@ package nirmata
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 	"time"
-	"strings"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
 	guuid "github.com/google/uuid"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
+	"strings"
 )
 
-func resourceEksClusterType() *schema.Resource {
+func resourceAksClusterType() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceEksClusterTypeCreate,
-		Read:   resourceEksClusterTypeRead,
-		Update: resourceEksClusterTypeUpdate,
-		Delete: resourceEksClusterTypeDelete,
+		Create: resourceClusterTypeCreate,
+		Read:   resourceClusterTypeRead,
+		Update: resourceClusterTypeUpdate,
+		Delete: resourceClusterTypeDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -48,49 +49,60 @@ func resourceEksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
+			"https_application_routing": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"monitoring": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
 			"region": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vpc_id": {
+			"resource_group": {
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
+					value := v.(string)
+					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+						errors = append(errors, fmt.Errorf(
+							"%q must match [\\w+=,.@-]", k))
+					}
+					return
+				},
 			},
+
 			"subnet_id": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Required: true,
-			},
-			"cluster_role_arn": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"security_groups": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Required: true,
-			},
-			"key_name": {
+			"vms_ize": {
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
+					value := v.(string)
+					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+						errors = append(errors, fmt.Errorf(
+							"%q must match [\\w+=,.@-]", k))
+					}
+					return
+				},
 			},
-			"instance_type": {
+			"vm_set_type": {
 				Type:     schema.TypeString,
 				Required: true,
-			},
-			"node_security_groups": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
+					value := v.(string)
+					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+						errors = append(errors, fmt.Errorf(
+							"%q must match [\\w+=,.@-]", k))
+					}
+					return
 				},
-				Required: true,
 			},
-			"node_iam_role": {
+			"workspace_id": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -98,25 +110,18 @@ func resourceEksClusterType() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					if v.(int) < 9 {
+					if v.(int) < 29 {
 						errors = append(errors, fmt.Errorf(
-							"%q The disk size must be grater than 9", k))
+							"%q The disk size must be grater than 29", k))
 					}
 					return
 				},
-			},
-			"log_types": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Required: true,
 			},
 		},
 	}
 }
 
-func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
 	clouduuid := guuid.New()
@@ -126,21 +131,18 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	diskSize := d.Get("disk_size").(int)
-	instanceType := d.Get("instance_type")
-	keyName := d.Get("key_name").(string)
-	securityGroups := d.Get("security_groups")
-	clusterRoleArn := d.Get("cluster_role_arn").(string)
-	vpcID := d.Get("vpc_id").(string)
-	subnetID := d.Get("subnet_id")
-	nodeSecurityGroups := d.Get("node_security_groups")
-	nodeIamRole := d.Get("node_iam_role").(string)
-	logTypes := d.Get("log_types")
+	resourceGroup := d.Get("resource_group").(string)
+	subnetID := d.Get("subnet_id").(string)
+	vmSize := d.Get("vmsize").(string)
+	vmSetType := d.Get("vmsettype").(string)
+	workspaceID := d.Get("workspaceid").(string)
+	httpsApplicationRouting := d.Get("httpsapplicationrouting").(bool)
+	monitoring := d.Get("monitoring").(bool)
+	diskSize := d.Get("disksize").(int)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
-	fmt.Printf("Error - %v", cloudCredID)
 	if err != nil {
-		fmt.Printf("Error - %v", err)
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
 
@@ -152,7 +154,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"clusterMode": "providerManaged",
 			"modelIndex":  "ClusterSpec",
 			"version":     version,
-			"cloud":       "aws",
+			"cloud":       "azure",
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
@@ -167,70 +169,77 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"id":            clouduuid,
 				"modelIndex":    "CloudConfigSpec",
 				"nodePoolTypes": nodepooluuid,
-				"eksConfig": map[string]interface{}{
-					"region":                region,
-					"vpcId":                 vpcID,
-					"subnetId":              subnetID,
-					"privateEndpointAccess": false,
-					"clusterRoleArn":        clusterRoleArn,
-					"securityGroups":        securityGroups,
-					"logTypes":        		 logTypes,
+				"aksConfig": map[string]interface{}{
+					"region":                  region,
+					"resourceGroup":           resourceGroup,
+					"httpsApplicationRouting": httpsApplicationRouting,
+					"monitoring":              monitoring,
+					"workspaceId":             workspaceID,
+					"modelIndex":              "AksClusterConfig",
+					"networkProfile":          "basic",
+					"serviceCidr":             "10.0.0.0/16",
+					"dnsServiceIp":            "10.0.0.10",
+					"dockerBridgeCidr":        "172.17.0.1/16",
+					"networkPolicy":           "",
+					"networkPlugin":           "kubenet",
+					"podCidr":                 "10.244.0.0/16",
 				},
 			},
 		},
 	}
 
-	nodePoolObj := map[string]interface{}{
+	nodepoolobj := map[string]interface{}{
 		"id":              nodepooluuid,
 		"modelIndex":      "NodePoolType",
 		"name":            name + "-default-node-pool-type",
 		"cloudConfigSpec": clouduuid,
 		"spec": map[string]interface{}{
 			"modelIndex": "NodePoolSpec",
-			"eksConfig": map[string]interface{}{
-				"securityGroups": nodeSecurityGroups,
-				"nodeIamRole":    nodeIamRole,
-				"keyName":        keyName,
-				"diskSize":       diskSize,
-				"instanceType":  instanceType,
-				"imageId":        "",
+			"aksConfig": map[string]interface{}{
+				"subnetId":   subnetID,
+				"vmSize":     vmSize,
+				"vmSetType":  vmSetType,
+				"diskSize":   diskSize,
+				"osType":     "Linux",
+				"modelIndex": "AksNodePoolConfig",
 			},
 		},
 	}
+
 	txn := make(map[string]interface{})
 	var objArr = make([]interface{}, 0)
-	objArr = append(objArr, clusterType, nodePoolObj)
+	objArr = append(objArr, clusterType, nodepoolobj)
 	txn["create"] = objArr
 	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
-		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
+		log.Printf("[ERROR] - failed to create cluster type  with data : %v", err)
 		return err
 	}
-  
-	changeID:= data["changeId"].(string)
+
+	changeID := data["changeId"].(string)
 	d.SetId(changeID)
-  
-	return nil
-}
-
-func resourceEksClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
 
-func resourceEksClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
 
-func resourceEksClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
+
+	return nil
+}
+
+func resourceClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
 	name := d.Get("name").(string)
 
 	id, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Printf("ERROR - %v", err)
 		return err
 	}
 
@@ -243,11 +252,11 @@ func resourceEksClusterTypeDelete(d *schema.ResourceData, meta interface{}) erro
 			d.SetId("")
 			return nil
 		}
-		fmt.Println(err.Error())
+
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
 
-	fmt.Printf("Deleted cluster type %s", name)
-
+	log.Printf("[INFO] Deleted cluster type %s", name)
 	return nil
 }

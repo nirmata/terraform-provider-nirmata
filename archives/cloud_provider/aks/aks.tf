@@ -68,7 +68,7 @@ resource "nirmata_ProviderManaged_cluster" "aks-cluster" {
 
   // the cluster type
   // Required
-  type_selector  =  nirmata_aks_clusterType.aks-cluster-type.name
+  cluster_type  =  nirmata_aks_clusterType.aks-cluster-type.name
 
   // number of worker nodes
   // Required

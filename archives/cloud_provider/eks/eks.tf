@@ -82,7 +82,7 @@ resource "nirmata_ProviderManaged_cluster" "eks-cluster" {
 
   // the cluster type
   // Required
-  type_selector  =  nirmata_eks_clusterType.eks-cluster-type.name
+  cluster_type  =  nirmata_eks_clusterType.eks-cluster-type.name
   
   // number of worker nodes
   // Required

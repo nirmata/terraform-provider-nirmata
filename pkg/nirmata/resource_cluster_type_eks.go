@@ -2,21 +2,22 @@ package nirmata
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"log"
+	"regexp"
 	"strings"
+	"time"
 
 	guuid "github.com/google/uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
-	"regexp"
-	"time"
 )
 
-func resourceOkeClusterType() *schema.Resource {
+func resourceEksClusterType() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceOkeClusterTypeCreate,
-		Read:   resourceOkeClusterTypeRead,
-		Update: resourceOkeClusterTypeUpdate,
-		Delete: resourceOkeClusterTypeDelete,
+		Create: resourceEksClusterTypeCreate,
+		Read:   resourceEksClusterTypeRead,
+		Update: resourceEksClusterTypeUpdate,
+		Delete: resourceEksClusterTypeDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -53,23 +54,70 @@ func resourceOkeClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"vm_shape": {
+			"vpc_id": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"subnet_id": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
+			},
+			"cluster_role_arn": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"security_groups": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
+			},
+			"key_name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"instance_type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"node_security_groups": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
+			},
+			"node_iam_role": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"disk_size": {
+				Type:     schema.TypeInt,
+				Required: true,
 				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					value := v.(string)
-					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+					if v.(int) < 9 {
 						errors = append(errors, fmt.Errorf(
-							"%q must match [\\w+=,.@-]", k))
+							"%q The disk size must be grater than 9", k))
 					}
 					return
 				},
+			},
+			"log_types": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Required: true,
 			},
 		},
 	}
 }
 
-func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
 	clouduuid := guuid.New()
@@ -79,16 +127,24 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
-	vmshape := d.Get("vm_shape").(string)
+	diskSize := d.Get("disk_size").(int)
+	instanceType := d.Get("instance_type")
+	keyName := d.Get("key_name").(string)
+	securityGroups := d.Get("security_groups")
+	clusterRoleArn := d.Get("cluster_role_arn").(string)
+	vpcID := d.Get("vpc_id").(string)
+	subnetID := d.Get("subnet_id")
+	nodeSecurityGroups := d.Get("node_security_groups")
+	nodeIamRole := d.Get("node_iam_role").(string)
+	logTypes := d.Get("log_types")
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
-	fmt.Printf("Error - %v", cloudCredID)
 	if err != nil {
-		fmt.Printf("Error - %v", err)
+		log.Printf("Error - %v", err)
 		return err
 	}
 
-	clustertype := map[string]interface{}{
+	clusterType := map[string]interface{}{
 		"name":        name,
 		"description": "",
 		"modelIndex":  "ClusterType",
@@ -96,7 +152,7 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"clusterMode": "providerManaged",
 			"modelIndex":  "ClusterSpec",
 			"version":     version,
-			"cloud":       "oraclecloudservices",
+			"cloud":       "aws",
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
@@ -111,63 +167,70 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"id":            clouduuid,
 				"modelIndex":    "CloudConfigSpec",
 				"nodePoolTypes": nodepooluuid,
-				"okeConfig": map[string]interface{}{
-					"region":     region,
-					"modelIndex": "OkeClusterConfig",
+				"eksConfig": map[string]interface{}{
+					"region":                region,
+					"vpcId":                 vpcID,
+					"subnetId":              subnetID,
+					"privateEndpointAccess": false,
+					"clusterRoleArn":        clusterRoleArn,
+					"securityGroups":        securityGroups,
+					"logTypes":              logTypes,
 				},
 			},
 		},
 	}
 
-	nodepoolobj := map[string]interface{}{
+	nodePoolObj := map[string]interface{}{
 		"id":              nodepooluuid,
 		"modelIndex":      "NodePoolType",
 		"name":            name + "-default-node-pool-type",
 		"cloudConfigSpec": clouduuid,
 		"spec": map[string]interface{}{
 			"modelIndex": "NodePoolSpec",
-			"okeConfig": map[string]interface{}{
-				"vmshape":    vmshape,
-				"modelIndex": "OkeNodePoolConfig",
+			"eksConfig": map[string]interface{}{
+				"securityGroups": nodeSecurityGroups,
+				"nodeIamRole":    nodeIamRole,
+				"keyName":        keyName,
+				"diskSize":       diskSize,
+				"instanceType":   instanceType,
+				"imageId":        "",
 			},
 		},
 	}
-
 	txn := make(map[string]interface{})
 	var objArr = make([]interface{}, 0)
-	objArr = append(objArr, clustertype, nodepoolobj)
+	objArr = append(objArr, clusterType, nodePoolObj)
 	txn["create"] = objArr
-
 	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
-		fmt.Printf("\nError - failed to create cluster type  with data : %v", err)
+		log.Printf("[ERROR] - failed to create cluster type  with data : %v", err)
 		return err
 	}
-  
+
 	changeID := data["changeId"].(string)
 	d.SetId(changeID)
 
 	return nil
 }
 
-func resourceOkeClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
+func resourceEksClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
 
-func resourceOkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceEksClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
 
-func resourceOkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceEksClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
 	name := d.Get("name").(string)
 
 	id, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
 
@@ -180,11 +243,11 @@ func resourceOkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) erro
 			d.SetId("")
 			return nil
 		}
-		fmt.Println(err.Error())
+
+		log.Printf("[ERROR] - %v", err)
 		return err
 	}
 
-	fmt.Printf("Deleted cluster type %s", name)
-
+	log.Printf("Deleted cluster type %s", name)
 	return nil
 }

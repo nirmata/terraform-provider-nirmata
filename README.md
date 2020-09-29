@@ -32,27 +32,29 @@ go build
 
 4. Edit the sample Terraform config file `samples/cloud_provider/gke/gke.tf` and include your credentials, and desired region, machinetype, and disksize.
 
-In Nirmata, a `ClusterType` is reusable configuration you can use to create several clusters. 
+In Nirmata, a `ClusterType` is a reusable configuration that you can use to create several clusters. 
 
 The example file first creates a ClusterType and then creates a single node `Cluster` using that type. Optionally, you can create the ClusterType via the Nirmata web console, or using 
 [nctl](https://downloads.nirmata.io/nctl/downloads/), and then use the Terraform provider to create clusters of that type.
 
 5. Initialize the Terraform provider with the correct directory
 
+**NOTE: this assumes Terraform 0.12.x or lower. With Terraform 0.13.x local providers need to be initialized differently.** 
+
 ```bash
-terraform init samples/cloud_provider/gke
+terraform init examples/gke
 ```
 
 6. Run `plan` to build the execution plan:
 
 ```bash
-terraform plan samples/cloud_provider/gke
+terraform plan examples/gke
 ```
 
 7. Run `apply` to execute the plan:
 
 ```bash
-terraform apply samples/cloud_provider/gke
+terraform apply examples/gke
 ```
 
 8. Run `show` to see the created resources:
@@ -66,3 +68,7 @@ terraform show
 ````bash
 terraform destroy samples/cloud_provider/gke
 ````
+
+## Troubleshooting
+
+Set the TF_LOG environment variable to `debug` or `trace`.
