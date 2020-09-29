@@ -72,3 +72,13 @@ terraform destroy samples/cloud_provider/gke
 ## Troubleshooting
 
 Set the TF_LOG environment variable to `debug` or `trace`.
+
+
+## Documentation
+
+The provider documentation is available in the [docs](./docs) folder.
+
+
+## Examples
+
+Examples are available in the [examples](./examples) folder.
