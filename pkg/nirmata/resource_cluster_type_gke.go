@@ -5,10 +5,8 @@ import (
 	"log"
 	"strings"
 	"time"
-
-	guuid "github.com/google/uuid"
+	"strconv"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-
 	client "github.com/nirmata/go-client/pkg/client"
 )
 
@@ -72,15 +70,109 @@ var gkeSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
-	"machine_type": {
-		Type:         schema.TypeString,
-		Required:     true,
-		ValidateFunc: validateGKEMachineType,
+	"start_time": {
+		Type:     schema.TypeString,
+		Optional: true,
 	},
-	"disk_size": {
-		Type:         schema.TypeInt,
+	"duration": {
+		Type:     schema.TypeInt,
+		Optional: true,
+		Default:  10,
+	},
+	"cluster_ipv4_cidr": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"services_ipv4_cidr": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"cloud_run": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"allow_override_credentials": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"enable_network_policy": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"http_load_balancing": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"enable_vertical_pod_autoscaling": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"horizontal_pod_autoscaling": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"enable_maintenance_policy": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
+	"exclusion_timewindow": {
+		Type:     schema.TypeMap,
+		Optional:  true,
+		Elem: &schema.Schema{
+		  Type: schema.TypeString,
+		},
+	  },
+	  "system_metadata": {
+		Type:     schema.TypeMap,
+		Optional:  true,
+		Elem: &schema.Schema{
+		  Type: schema.TypeString,
+		},
+	  },
+	  "nodepooltype": {
+		Type:         schema.TypeSet,
 		Required:     true,
-		ValidateFunc: validateGKEDiskSize,
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+			  "machinetype": {
+				Type:      schema.TypeString,
+        		Required:  true,
+			  },
+			  "disksize": {
+				Type:      schema.TypeInt,
+        		Required:  true,
+			  },
+			  "service_account": {
+				Type:      schema.TypeString,
+        		Optional:  true,
+			  },
+			  "enable_preemptible_nodes": {
+				Type:      schema.TypeBool,
+        		Optional:  true,
+			  },
+			  "node_annotations": {
+				Type:     schema.TypeMap,
+				Optional:  true,
+				Elem: &schema.Schema{
+				  Type: schema.TypeString,
+				},
+			  },
+			  "node_labels": {
+				Type:     schema.TypeMap,
+				Optional:  true,
+				Elem: &schema.Schema{
+				  Type: schema.TypeString,
+				},
+			  },
+		  },
+		},
 	},
 }
 
@@ -102,17 +194,11 @@ func resourceGkeClusterType() *schema.Resource {
 
 func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
-
-	cloudID := guuid.New()
-	nodePoolID := guuid.New()
-
 	name := d.Get("name").(string)
 	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
 	zone := d.Get("zone").(string)
-	machineType := d.Get("machine_type").(string)
-	diskSize := d.Get("disk_size").(int)
 	locationType := d.Get("location_type").(string)
 	nodeLocations := d.Get("node_locations")
 	enableSecretsEncryption := d.Get("enable_secrets_encryption").(bool)
@@ -121,13 +207,26 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	workloadPool := d.Get("workload_pool").(string)
 	network := d.Get("network").(string)
 	subnetwork := d.Get("subnetwork").(string)
-
+	nodepooltype := d.Get("nodepooltype").(*schema.Set).List()
+	cloudRun := d.Get("cloud_run").(bool)
+	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
+	enableNetworkPolicy := d.Get("enable_network_policy").(bool)
+	httpLoadBalancing := d.Get("http_load_balancing").(bool)
+	enableVerticalPodAutoscaling := d.Get("enable_vertical_pod_autoscaling").(bool)
+	horizontalPodAutoscaling := d.Get("horizontal_pod_autoscaling").(bool)
+	enableMaintenancePolicy := d.Get("enable_maintenance_policy").(bool)
+	clusterIpv4Cidr := d.Get("cluster_ipv4_cidr").(string)
+	servicesIpv4Cidr := d.Get("services_ipv4_cidr").(string)
+	duration := d.Get("duration").(int)
+	startTime := d.Get("start_time").(string)
+	systemMetadata := d.Get("system_metadata")
+	exclusionTimeWindow := d.Get("exclusion_timewindow")
+	
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
 		return err
 	}
-
 	if locationType == "Regional" && region == "" {
 		return fmt.Errorf("region is required when location_type is Regional")
 	}
@@ -136,7 +235,47 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("zone is required when location_type is Zonal")
 	}
 
-	clusterType := map[string]interface{}{
+	if enableSecretsEncryption && len(secretsEncryptionKey) == 0 {
+		return fmt.Errorf("\nError - Encryption key is required if secrets encryption is enabled")
+	}
+	if enableWorkloadIdentity && len(workloadPool) == 0 {
+		return fmt.Errorf("\nWorkload Pool is required if workload identity is enabled")
+	}
+
+	var addon []string
+	if horizontalPodAutoscaling {
+		addon = append(addon, "horizontalPodAutoscaling")
+	}
+	if httpLoadBalancing {
+		addon = append(addon, "httpLoadBalancing")
+	}
+	if cloudRun {
+		addon = append(addon, "cloudRunConfig")
+	}
+	var nodeobjArr = make([]interface{}, 0)
+	for key, node := range nodepooltype {
+		element, ok := node.(map[string]interface{})
+		if ok {
+			nodePoolObj := map[string]interface{}{
+				"modelIndex":      "NodePoolType",
+				"name":            name + "-node-pool-"+ strconv.Itoa(key),
+				"spec": map[string]interface{}{
+					"modelIndex": "NodePoolSpec",
+					"nodeLabels":  element["node_labels"],
+					"nodeAnnotations":  element["node_annotations"],
+					"gkeConfig": map[string]interface{}{
+						"machineType": element["machinetype"],
+						"diskSize":    element["disksize"],
+						"serviceAccount":    element["service_account"],
+						"enablePreemptibleNodes":    element["enable_preemptible_nodes"],
+						"modelIndex":  "GkeNodePoolConfig",
+					},
+				},
+			}
+			nodeobjArr = append(nodeobjArr, nodePoolObj)
+		}
+	}
+	clusterTypeData := map[string]interface{}{
 		"name":        name,
 		"description": "",
 		"modelIndex":  "ClusterType",
@@ -145,6 +284,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"modelIndex":  "ClusterSpec",
 			"version":     version,
 			"cloud":       "googlecloudplatform",
+			"systemMetadata": systemMetadata,
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
@@ -156,9 +296,8 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			},
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":   cloudCredID.UUID(),
-				"id":            cloudID,
+				"allowOverrideCredentials":    allowOverrideCredentials,
 				"modelIndex":    "CloudConfigSpec",
-				"nodePoolTypes": nodePoolID,
 				"gkeConfig": map[string]interface{}{
 					"region":                  region,
 					"zone":                    zone,
@@ -171,42 +310,35 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"modelIndex":              "GkeClusterConfig",
 					"network":                 network,
 					"subnetwork":              subnetwork,
+					"clusterIpv4Cidr": clusterIpv4Cidr,
+                  	"servicesIpv4Cidr": servicesIpv4Cidr,
+                  	"enableNetworkPolicy": enableNetworkPolicy,
+                  	"enableMaintenancePolicy": enableMaintenancePolicy,
+					"duration": duration,
+					"startTime": startTime,
+					"enableVerticalPodAutoscaling": enableVerticalPodAutoscaling,
+					"exclusionTimeWindow": exclusionTimeWindow,
+					"addons": addon,
 				},
+				"nodePoolTypes": nodeobjArr,
 			},
 		},
 	}
-
-	nodePoolObj := map[string]interface{}{
-		"id":              nodePoolID,
-		"modelIndex":      "NodePoolType",
-		"name":            name + "-default-node-pool-type",
-		"cloudConfigSpec": cloudID,
-		"spec": map[string]interface{}{
-			"modelIndex": "NodePoolSpec",
-			"gkeConfig": map[string]interface{}{
-				"machineType": machineType,
-				"diskSize":    diskSize,
-				"modelIndex":  "GkeNodePoolConfig",
-			},
-		},
-	}
-
+	
 	txn := make(map[string]interface{})
 	var objArr = make([]interface{}, 0)
-	objArr = append(objArr, clusterType, nodePoolObj)
+	objArr = append(objArr, clusterTypeData)
 	txn["create"] = objArr
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
+	data, err :=  apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
 		log.Printf("[ERROR] - failed to create cluster type  with data : %v", err)
 		return err
 	}
-
 	obj, resultErr := extractCreateFromTxnResult(data, "ClusterType")
 	if resultErr != nil {
 		log.Printf("[ERROR] - %v", err)
 		return resultErr
 	}
-
 	d.SetId(obj.ID().UUID())
 	return nil
 }

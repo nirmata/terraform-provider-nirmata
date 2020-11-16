@@ -62,13 +62,74 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   // Required (e.g. "default")
   subnetwork = "default"
 
-  // the GCP machine type (e.g. "e2-standard-2")
-  // Required
-  machine_type = "e2-standard-2"
+  // Optional
+  cloud_run = true
 
-  // the worker node disk size in GB
-  // Required
-  disk_size = 60
+  // Optional
+  allow_override_credentials = true
+
+  
+  // One Nodepooltype Required
+  // Machine Type (Required): the GCP machine type (e.g. "e2-standard-2")
+  // Disk Size (Required):  the worker node disk size in GB
+  // Service Account (Optional): The service account to be used to call Google Cloud APIs.
+  // Node_labels (Optional)
+  // Node Annotations (Optional)
+  nodepooltype  {    
+    machinetype = "c2-standard-16"
+    disksize= 110
+    enable_preemptible_nodes  =  false
+    service_account = ""
+    node_annotations = {
+       node = "annotate"
+    }
+  }  
+
+  nodepooltype  {       
+    machinetype = "c2-standard-14"
+    disksize = 120
+    enable_preemptible_nodes  =  false
+    service_account = ""
+    node_labels= {
+        node= "label"
+    }
+  } 
+
+  // Cluster IPv4 CIDR (Optional) : Pod CIDR Range
+  cluster_ipv4_cidr = ""
+
+  // Services IPv4 CIDR (Optional) : Kubernetes Service Address Range
+  services_ipv4_cidr = ""
+
+  // Enable Network Policy(Optional)
+  enable_network_policy = false
+
+  // Enable HTTP Load Balancing (Optional)
+  http_load_balancing = false
+
+  //Enable Horizontal Pod Autoscaling (Optional)
+  enable_vertical_pod_autoscaling =  false
+
+  //Enable Vertical Pod Autoscaling (Optional)
+  horizontal_pod_autoscaling = true
+
+  // Enable Maintenance Policy (Optional)
+  enable_maintenance_policy = false
+
+  // Maintenance Duration (Daily) Start Time
+  start_time = ""
+
+  // Maintenance sDuration in Hours 
+  duration = 10
+
+  // Maintenance Exclusions (Optional)
+  exclusion_timewindow = {}
+
+  //System metadata will be available on the cluster in a config map.
+  // Optional
+  system_metadata = {
+    cluster = "gke"
+  }
 }
 
 // A nirmata_cluster is created using a cluster_type
@@ -82,9 +143,19 @@ resource "nirmata_cluster" "gke-cluster-1" {
   // Required
   cluster_type  =  nirmata_cluster_type_gke.gke-cluster-type-1.name
 
-  // number of worker nodes
+  // Set the desired number of nodes that the group should launch with initially.
   // Required
   node_count = 1
+
+  // Optional
+  // update the credential.
+  override_credentials = ""
+
+  //System metadata will be available on the cluster in a config map.
+  // Optional
+  system_metadata = {
+    cluster = "gke"
+  }
 }
 
 output "cluster_type_name" {
