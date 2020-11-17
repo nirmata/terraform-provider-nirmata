@@ -19,7 +19,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
 
   // the GCP cloud credentials name configured in Nirmata (e.g. gcp-credentials)
   // Required
-  credentials = "gke-nirmata"
+  credentials = "gke-test"
 
   //A regional cluster has multiple replicas of the control plane, running in multiple zones within a given region. A zonal cluster has a single replica of the control plane running in a single zone.
   // Required (Regional or Zonal)
@@ -85,16 +85,6 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     }
   }  
 
-  nodepooltype  {       
-    machinetype = "c2-standard-14"
-    disksize = 120
-    enable_preemptible_nodes  =  false
-    service_account = ""
-    node_labels= {
-        node= "label"
-    }
-  } 
-
   // Cluster IPv4 CIDR (Optional) : Pod CIDR Range
   cluster_ipv4_cidr = ""
 
@@ -131,11 +121,15 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     cluster = "gke"
   }
 
+  // Override network and subnetwork values while  setup cluster.
+  // Optional
  cluster_field_override = {
     network = "String"
     subnetwork = "String"
   }
 
+  // Override nodepool disksize and machinetype values while setup cluster.
+  // Optional
   nodepool_field_override = {
     disksize = "Integer"
     machinetype = "String"
@@ -166,6 +160,13 @@ resource "nirmata_cluster" "gke-cluster-1" {
   // Optional
   system_metadata = {
     cluster = "gke"
+  }
+
+  // Override fields value which selected while creating cluster type
+  // Optional
+  cluster_field_override = {
+    network = ""
+    subnetwork = ""
   }
 }
 
