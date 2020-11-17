@@ -344,22 +344,34 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 }
 
 var gkeClusterTypePaths = map[string]string{
-	"version":                   "spec[0].version",
-	"region":                    "spec[0].cloudConfigSpec[0].gkeConfig[0].region",
-	"network":                   "spec[0].cloudConfigSpec[0].gkeConfig[0].network",
-	"subnetwork":                "spec[0].cloudConfigSpec[0].gkeConfig[0].subnetwork",
-	"zone":                      "spec[0].cloudConfigSpec[0].gkeConfig[0].zone",
-	"location_type":             "spec[0].cloudConfigSpec[0].gkeConfig[0].locationType",
-	"node_locations":            "spec[0].cloudConfigSpec[0].gkeConfig[0].defaultNodeLocations",
-	"enable_workload_identity":  "spec[0].cloudConfigSpec[0].gkeConfig[0].enableWorkloadIdentity",
-	"enable_secrets_encryption": "spec[0].cloudConfigSpec[0].gkeConfig[0].enableSecretsEncryption",
-	"secrets_encryption_key":    "spec[0].cloudConfigSpec[0].gkeConfig[0].secretsEncryptionKey",
-	"workload_pool":             "spec[0].cloudConfigSpec[0].gkeConfig[0].workloadPool",
+	"version":                   	"spec[0].version",
+	"region":                    	"spec[0].cloudConfigSpec[0].gkeConfig[0].region",
+	"network":                   	"spec[0].cloudConfigSpec[0].gkeConfig[0].network",
+	"subnetwork":                	"spec[0].cloudConfigSpec[0].gkeConfig[0].subnetwork",
+	"zone":                      	"spec[0].cloudConfigSpec[0].gkeConfig[0].zone",
+	"location_type":             	"spec[0].cloudConfigSpec[0].gkeConfig[0].locationType",
+	"node_locations":            	"spec[0].cloudConfigSpec[0].gkeConfig[0].defaultNodeLocations",
+	"enable_workload_identity":  	"spec[0].cloudConfigSpec[0].gkeConfig[0].enableWorkloadIdentity",
+	"enable_secrets_encryption": 	"spec[0].cloudConfigSpec[0].gkeConfig[0].enableSecretsEncryption",
+	"secrets_encryption_key":    	"spec[0].cloudConfigSpec[0].gkeConfig[0].secretsEncryptionKey",
+	"workload_pool":             	"spec[0].cloudConfigSpec[0].gkeConfig[0].workloadPool",
+	"start_time":             	  	"spec[0].cloudConfigSpec[0].gkeConfig[0].startTime",
+	"exclusion_timewindow":         "spec[0].cloudConfigSpec[0].gkeConfig[0].exclusionTimeWindow",
+	"enable_maintenance_policy":     "spec[0].cloudConfigSpec[0].gkeConfig[0].enableMaintenancePolicy",
+	"cluster_ipv4_cidr":             "spec[0].cloudConfigSpec[0].gkeConfig[0].clusterIpv4Cidr",
+	"services_ipv4_cidr":            "spec[0].cloudConfigSpec[0].gkeConfig[0].servicesIpv4Cidr",
+	"enable_vertical_pod_autoscaling":"spec[0].cloudConfigSpec[0].gkeConfig[0].enableVerticalPodAutoscaling",
+	"duration":             		 "spec[0].cloudConfigSpec[0].gkeConfig[0].duration",
+	"enable_network_policy":         "spec[0].cloudConfigSpec[0].gkeConfig[0].enableNetworkPolicy",
 }
 
 var nodePoolTypePaths = map[string]string{
-	"machine_type": "spec[0].gkeConfig[0].machineType",
-	"disk_size":    "spec[0].gkeConfig[0].diskSize",
+	"machine_type": 			"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].machineType",
+	"disk_size":    			"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].diskSize",
+	"enable_preemptible_nodes": "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].enablePreemptibleNodes",
+	"service_account":    		"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].serviceAccount",
+	"node_labels":    			"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeLabels",
+	"node_annotations":    		"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeAnnotations",
 }
 
 func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) (err error) {
@@ -405,22 +417,34 @@ func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) (err e
 }
 
 var gkeAttributeMap = map[string]string{
-	"version":                   "version",
-	"region":                    "region",
-	"network":                   "network",
-	"subnetwork":                "subnetwork",
-	"zone":                      "zone",
-	"location_type":             "locationType",
-	"node_locations":            "defaultNodeLocations",
-	"enable_workload_identity":  "enableWorkloadIdentity",
-	"enable_secrets_encryption": "enableSecretsEncryption",
-	"secrets_encryption_key":    "secretsEncryptionKey",
-	"workload_pool":             "workloadPool",
-}
+	"version":                   	"version",
+	"region":                    	"region",
+	"network":                   	"network",
+	"subnetwork":                	"subnetwork",
+	"zone":                      	"zone",
+	"location_type":             	"locationType",
+	"node_locations":            	"defaultNodeLocations",
+	"enable_workload_identity":  	"enableWorkloadIdentity",
+	"enable_secrets_encryption": 	"enableSecretsEncryption",
+	"secrets_encryption_key":    	"secretsEncryptionKey",
+	"workload_pool":             	"workloadPool",
+	"start_time":             	  	"startTime",
+	"exclusion_timewindow":         "exclusionTimeWindow",
+	"enable_maintenance_policy":     "enableMaintenancePolicy",
+	"cluster_ipv4_cidr":             "clusterIpv4Cidr",
+	"services_ipv4_cidr":            "servicesIpv4Cidr",
+	"enable_vertical_pod_autoscaling":"enableVerticalPodAutoscaling",
+	"duration":             		 "duration",
+	"enable_network_policy":         "enableNetworkPolicy",
+} 
 
 var nodePoolAttributeMap = map[string]string{
 	"machine_type": "machineType",
 	"disk_size":    "diskSize",
+	"enable_preemptible_nodes": "enablePreemptibleNodes",
+	"service_account":    		"serviceAccount",
+	"node_labels":    			"nodeLabels",
+	"node_annotations":    		"nodeAnnotations",
 }
 
 func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err error) {
@@ -440,7 +464,8 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	gkeConfigChanges := buildChanges(d, gkeAttributeMap, "region",
 		"network", "subnetwork", "zone", "location_type", "node_locations",
 		"enable_workload_identity", "enable_secrets_encryption", "secrets_encryption_key",
-		"workload_pool")
+		"workload_pool", "start_time", "exclusion_timewindow", "enable_maintenance_policy" ,"cluster_ipv4_cidr",
+		"services_ipv4_cidr", "enable_vertical_pod_autoscaling", "duration", "enable_network_policy")
 
 	if len(gkeConfigChanges) > 0 {
 		err := updateDescendant(apiClient, clusterTypeID, "GkeClusterConfig", gkeConfigChanges)
@@ -450,7 +475,7 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	}
 
 	// update NodePool
-	nodePoolChanges := buildChanges(d, nodePoolAttributeMap, "machine_type", "disk_size")
+	nodePoolChanges := buildChanges(d, nodePoolAttributeMap, "machine_type", "disk_size", "enable_preemptible_nodes","service_account","node_labels","node_annotations")
 	if len(nodePoolChanges) > 0 {
 		nodePoolData, err := getNodePoolType(apiClient, clusterTypeID)
 		if err != nil {
