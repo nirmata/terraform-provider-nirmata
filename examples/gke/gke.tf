@@ -19,7 +19,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
 
   // the GCP cloud credentials name configured in Nirmata (e.g. gcp-credentials)
   // Required
-  credentials = "gke-test"
+  credentials = "gke-nirmata"
 
   //A regional cluster has multiple replicas of the control plane, running in multiple zones within a given region. A zonal cluster has a single replica of the control plane running in a single zone.
   // Required (Regional or Zonal)
@@ -120,7 +120,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   start_time = ""
 
   // Maintenance sDuration in Hours 
-  duration = 10
+  duration = "10"
 
   // Maintenance Exclusions (Optional)
   exclusion_timewindow = {}
@@ -130,6 +130,17 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   system_metadata = {
     cluster = "gke"
   }
+
+ cluster_field_override = {
+    network = "String"
+    subnetwork = "String"
+  }
+
+  nodepool_field_override = {
+    disksize = "Integer"
+    machinetype = "String"
+  }
+  
 }
 
 // A nirmata_cluster is created using a cluster_type

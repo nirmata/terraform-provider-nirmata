@@ -75,9 +75,9 @@ var gkeSchema = map[string]*schema.Schema{
 		Optional: true,
 	},
 	"duration": {
-		Type:     schema.TypeInt,
+		Type:     schema.TypeString,
 		Optional: true,
-		Default:  10,
+		Default:  "10",
 	},
 	"cluster_ipv4_cidr": {
 		Type:     schema.TypeString,
@@ -136,6 +136,20 @@ var gkeSchema = map[string]*schema.Schema{
 		  Type: schema.TypeString,
 		},
 	  },
+	  "cluster_field_override": {
+		Type:     schema.TypeMap,
+		Optional:  true,
+		Elem: &schema.Schema{
+		  Type: schema.TypeString,
+		},
+	  },
+	  "nodepool_field_override": {
+		Type:     schema.TypeMap,
+		Optional:  true,
+		Elem: &schema.Schema{
+		  Type: schema.TypeString,
+		},
+	  },
 	  "nodepooltype": {
 		Type:         schema.TypeSet,
 		Required:     true,
@@ -170,7 +184,7 @@ var gkeSchema = map[string]*schema.Schema{
 				Elem: &schema.Schema{
 				  Type: schema.TypeString,
 				},
-			  },
+			  },  
 		  },
 		},
 	},
@@ -217,10 +231,12 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	enableMaintenancePolicy := d.Get("enable_maintenance_policy").(bool)
 	clusterIpv4Cidr := d.Get("cluster_ipv4_cidr").(string)
 	servicesIpv4Cidr := d.Get("services_ipv4_cidr").(string)
-	duration := d.Get("duration").(int)
+	duration := d.Get("duration").(string)
 	startTime := d.Get("start_time").(string)
 	systemMetadata := d.Get("system_metadata")
 	exclusionTimeWindow := d.Get("exclusion_timewindow")
+	clusterFieldOverride := d.Get("cluster_field_override")
+	nodepoolFieldOverride := d.Get("nodepool_field_override")
 	
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	if err != nil {
@@ -251,6 +267,10 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 	if cloudRun {
 		addon = append(addon, "cloudRunConfig")
+	}
+	fieldsToOverride :=  map[string]interface{} {
+		"cluster" : clusterFieldOverride,
+		"nodePool": nodepoolFieldOverride,
 	}
 	var nodeobjArr = make([]interface{}, 0)
 	for key, node := range nodepooltype {
@@ -297,6 +317,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":   cloudCredID.UUID(),
 				"allowOverrideCredentials":    allowOverrideCredentials,
+				"fieldsToOverride":    fieldsToOverride,
 				"modelIndex":    "CloudConfigSpec",
 				"gkeConfig": map[string]interface{}{
 					"region":                  region,
@@ -366,12 +387,12 @@ var gkeClusterTypePaths = map[string]string{
 }
 
 var nodePoolTypePaths = map[string]string{
-	"machine_type": 			"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].machineType",
-	"disk_size":    			"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].diskSize",
-	"enable_preemptible_nodes": "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].enablePreemptibleNodes",
-	"service_account":    		"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].serviceAccount",
-	"node_labels":    			"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeLabels",
-	"node_annotations":    		"spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeAnnotations",
+	"machinetype": 			"spec[0].gkeConfig[0].machineType",
+	"disksize":    			"spec[0].gkeConfig[0].diskSize",
+	"enable_preemptible_nodes": "spec[0].gkeConfig[0].enablePreemptibleNodes",
+	"service_account":    		"spec[0].gkeConfig[0].serviceAccount",
+	"node_labels":    			"spec[0].nodeLabels",
+	"node_annotations":    		"spec[0].nodeAnnotations",
 }
 
 func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) (err error) {
@@ -439,8 +460,8 @@ var gkeAttributeMap = map[string]string{
 } 
 
 var nodePoolAttributeMap = map[string]string{
-	"machine_type": "machineType",
-	"disk_size":    "diskSize",
+	"machinetype": "machineType",
+	"disksize":    "diskSize",
 	"enable_preemptible_nodes": "enablePreemptibleNodes",
 	"service_account":    		"serviceAccount",
 	"node_labels":    			"nodeLabels",
@@ -475,7 +496,7 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	}
 
 	// update NodePool
-	nodePoolChanges := buildChanges(d, nodePoolAttributeMap, "machine_type", "disk_size", "enable_preemptible_nodes","service_account","node_labels","node_annotations")
+	nodePoolChanges := buildChanges(d, nodePoolAttributeMap, "machinetype", "disksize", "enable_preemptible_nodes","service_account","node_labels","node_annotations")
 	if len(nodePoolChanges) > 0 {
 		nodePoolData, err := getNodePoolType(apiClient, clusterTypeID)
 		if err != nil {

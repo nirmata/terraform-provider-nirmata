@@ -106,29 +106,17 @@ func extractCreateFromTxnResult(data map[string]interface{}, modelIndex string) 
 
 func getNodePoolType(apiClient client.Client, clusterTypeID client.ID) (map[string]interface{}, error) {
 	var err error
-	specs, err := apiClient.GetDescendants(clusterTypeID, "CloudConfigSpec", &client.GetOptions{})
+	nodePool, err := apiClient.GetDescendants(clusterTypeID, "NodePoolType", &client.GetOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch CloudConfigSpec for %+v: %v", clusterTypeID.Map(), err)
+		return nil, fmt.Errorf("failed to fetch NodePoolType for %+v: %v", clusterTypeID.Map(), err)
+	}
+	if len(nodePool) < 1 {
+		return nil, fmt.Errorf("no NodePoolType found for %+v: %v", clusterTypeID.Map(), err)
 	}
 
-	if len(specs) < 1 {
-		return nil, fmt.Errorf("no CloudConfigSpec found for %+v: %v", clusterTypeID.Map(), err)
-	}
-
-	ccs, err := client.NewObject(specs[0])
+	nodePoolTypeID, err := client.NewObject(nodePool[0])
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode CloudConfigSpec %+v: %v", specs[0], err)
+		return nil, fmt.Errorf("failed to decode NodePoolType  %+v: %v", nodePool[0], err)
 	}
-
-	ids, err := ccs.GetRelations("nodePoolTypes")
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch relations nodePoolTypes for %+v: %v", ccs.ID().Map(), err)
-	}
-
-	if len(ids) < 1 {
-		return nil, fmt.Errorf("no nodePoolTypes found for %+v: %v", ccs.ID().Map(), err)
-	}
-
-	nodePoolTypeID := ids[0]
-	return apiClient.Get(nodePoolTypeID, &client.GetOptions{nil, nil, client.OutputModeExportDetails})
+	return apiClient.Get(nodePoolTypeID.ID(), &client.GetOptions{nil, nil, client.OutputModeExportDetails})
 }

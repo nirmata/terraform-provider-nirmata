@@ -26,7 +26,7 @@ func convertValue(v interface{}, s *schema.Schema) interface{} {
 	if v == nil {
 		return nil
 	}
-
+	
 	switch s.Type {
 	case schema.TypeBool:
 		return v.(bool)
@@ -35,7 +35,7 @@ func convertValue(v interface{}, s *schema.Schema) interface{} {
 		return v.(float64)
 
 	case schema.TypeInt:
-		return int(v.(float64))
+		return v.(int)
 
 	case schema.TypeString:
 		return v.(string)
