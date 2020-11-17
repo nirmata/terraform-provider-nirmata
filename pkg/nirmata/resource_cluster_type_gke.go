@@ -420,20 +420,6 @@ func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) (err e
 		}
 	}
 
-	// get node pool
-	nodePoolData, err := getNodePoolType(apiClient, clusterTypeID)
-	if err != nil {
-		return err
-	}
-
-	for field, path := range nodePoolTypePaths {
-		s := gkeSchema[field]
-		err = updateData(field, d, s, path, nodePoolData)
-		if err != nil {
-			return fmt.Errorf("failed to update field %s from %s: %v", field, path, err)
-		}
-	}
-
 	return nil
 }
 
