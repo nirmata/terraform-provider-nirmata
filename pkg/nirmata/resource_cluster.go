@@ -6,7 +6,7 @@ import (
 	"log"
 	"regexp"
 	"strings"
-
+	"strconv"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
 )
@@ -53,6 +53,24 @@ func resourceManagedCluster() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"override_credentials": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"system_metadata": {
+				Type:     schema.TypeMap,
+				Optional:  true,
+				Elem: &schema.Schema{
+				  Type: schema.TypeString,
+				},
+			  },
+			"cluster_field_override": {
+				Type:     schema.TypeMap,
+				Optional:  true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -62,37 +80,41 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	name := d.Get("name").(string)
 	nodeCount := d.Get("node_count").(int)
 	typeSelector := d.Get("cluster_type").(string)
+	credentials := d.Get("override_credentials").(string)
+	systemMetadata := d.Get("system_metadata")
+	clusterFieldOverride := d.Get("cluster_field_override")
 
-	clusterTypeID, err := apiClient.QueryByName(client.ServiceClusters, "ClusterType", typeSelector)
+	spec,_,nodepool, err := getClusterTypeSpec(apiClient, typeSelector)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
 		return err
 	}
-
-	cspec, err := apiClient.GetRelation(clusterTypeID, "clusterSpecs")
-	if err != nil {
-		log.Printf("[ERROR] - %v", err)
-		return err
+	mode := spec["clusterMode"]
+	fieldsToOverride :=  map[string]interface{} {
+		"cluster" : clusterFieldOverride,
 	}
-
-	pmc := map[string]interface{}{
+	data := map[string]interface{}{
 		"name":         name,
-		"mode":         "providerManaged",
+		"mode":         mode,
 		"typeSelector": typeSelector,
-		"config": map[string]interface{}{
-			"modelIndex":    "ClusterConfig",
-			"version":       cspec["version"],
-			"nodeCount":     nodeCount,
-			"cloudProvider": cspec["cloud"],
-		},
+		"credentialsSelector": credentials,
 	}
+	data["config"] = map[string]interface{}{
+			"modelIndex":    "ClusterConfig",
+			"version":       spec["version"],
+			"nodeCount":     nodeCount,
+			"cloudProvider": spec["cloud"],
+			"systemMetadata": systemMetadata,
+			"overrideValues": fieldsToOverride,
+		}
+	data["nodePools"] = nodepool;
 
-	data, err := apiClient.PostFromJSON(client.ServiceClusters, "kubernetesCluster", pmc, nil)
+	clusterData, err := apiClient.PostFromJSON(client.ServiceClusters, "kubernetesCluster", data, nil)
 	if err != nil {
 		return err
 	}
 
-	clusterUUID := data["id"].(string)
+	clusterUUID := clusterData["id"].(string)
 	d.SetId(clusterUUID)
 
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
@@ -115,6 +137,33 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("created cluster %s with ID %s", name, clusterID)
 	return nil
+}
+func getClusterTypeSpec(api client.Client, typeSelector string ) (map[string]interface{}, []map[string]interface {}, []interface{},error) {
+	typeID, err := api.QueryByName(client.ServiceClusters, "ClusterType", typeSelector)
+	if err != nil {
+		log.Printf("[ERROR] - %v", err)
+		return nil,nil,nil, err;
+	}
+	var nodePoolObjArr = make([]interface{}, 0);
+	nodepoolTypes, _ := api.GetDescendants(typeID, "NodePoolType", nil);
+	cloudConfigSpec, _ := api.GetDescendants(typeID, "CloudConfigSpec", nil);
+	for key, nodepoolType := range nodepoolTypes {
+		nodePoolObj := map[string]interface{}{
+			"modelIndex":      "NodePool",
+			"name":            "node-pool-"+ strconv.Itoa(key),
+			"minCount": 		1,
+          	"maxCount": 		1,
+			"nodeCount": 		1,
+			"typeSelector":     nodepoolType["name"],
+		}
+		nodePoolObjArr = append(nodePoolObjArr, nodePoolObj);
+	}
+	spec, err := api.GetRelation(typeID, "clusterSpecs")
+	if err != nil {
+		fmt.Println(err)
+		return nil,nil, nil,err;
+	}
+	return spec,cloudConfigSpec,nodePoolObjArr, nil;
 }
 
 func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
