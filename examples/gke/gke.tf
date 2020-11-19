@@ -9,7 +9,7 @@ provider "nirmata" {
 // A ClusterType contains reusable configuration to create clusters.
 resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
 
-  name = "gke-cluster-type-jim"
+  name = "gke-cluster-type-test"
   version = "1.17.13-gke.2001"
   credentials = "gke-test"
   location_type =  "Zonal"
