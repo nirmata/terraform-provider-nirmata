@@ -46,21 +46,13 @@ func newUUID() (string, error) {
 
 // waitForClusterState waits until cluster is created or has failed
 func waitForClusterState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
-	for {
-		newState, timeout, err := apiClient.WaitForStateChange(clusterID, "state", maxTime)
-		if err != nil {
-			return "", err
-		}
-
-		if timeout {
-			return "", fmt.Errorf("timeout")
-		}
-
-		state := newState.(string)
-		if state == "failed" || state == "ready" {
-			return state, nil
-		}
+	states := []interface{}{"ready", "failed"}
+	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
+	if err != nil {
+		return "", err
 	}
+
+	return state.(string), nil
 }
 
 func getClusterStatus(api client.Client, clusterID client.ID) (string, error) {

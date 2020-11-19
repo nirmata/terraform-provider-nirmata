@@ -18,6 +18,15 @@ func validateName(v interface{}, k string) (ws []string, errors []error) {
 	return
 }
 
+func validateNodeCount(v interface{}, k string) (ws []string, errors []error) {
+	count := v.(int)
+	if count < 0 || count > 1000 {
+		errors = append(errors, fmt.Errorf("The node count (%d) must be between 0 and 1000", count))
+	}
+
+	return
+}
+
 func validateGKEMachineType(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
 	if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
@@ -28,7 +37,7 @@ func validateGKEMachineType(v interface{}, k string) (ws []string, errors []erro
 
 func validateGKEDiskSize(v interface{}, k string) (ws []string, errors []error) {
 	if v.(int) < 9 {
-		errors = append(errors, fmt.Errorf("%q The disk size must be grater than 9", k))
+		errors = append(errors, fmt.Errorf("%q disk_size (%s) must be grater than 9", k))
 	}
 	return
 }
@@ -36,7 +45,7 @@ func validateGKEDiskSize(v interface{}, k string) (ws []string, errors []error) 
 func validateGKELocationType(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
 	if value != "Zonal" && value != "Regional" {
-		errors = append(errors, fmt.Errorf("location_type (%v) must Zonal or Regional", v))
+		errors = append(errors, fmt.Errorf("location_type (%s) must Zonal or Regional", v))
 	}
 
 	return

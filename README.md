@@ -30,7 +30,7 @@ go build
 
 3. Set your `NIRMATA_TOKEN` environment variable to contain your Nirmata API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)
 
-4. Edit the sample Terraform config file `samples/cloud_provider/gke/gke.tf` and include your credentials, and desired region, machinetype, and disksize.
+4. Edit the sample Terraform config file `samples/cloud_provider/gke/gke.tf` and include your credentials, and desired region, machine_type, and disk_size.
 
 In Nirmata, a `ClusterType` is a reusable configuration that you can use to create several clusters. 
 

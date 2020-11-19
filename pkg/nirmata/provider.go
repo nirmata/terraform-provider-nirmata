@@ -30,6 +30,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"nirmata_cluster":                   resourceManagedCluster(),
 			"nirmata_cluster_direct_connect":    resourceClusterDirectConnect(),
+			"nirmata_cluster_imported":          resourceClusterImported(),
 			"nirmata_cluster_type_aks":          resourceAksClusterType(),
 			"nirmata_cluster_type_oke":          resourceOkeClusterType(),
 			"nirmata_cluster_type_gke":          resourceGkeClusterType(),
