@@ -16,7 +16,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   zone = "us-central1-a"
   network = "default"
   subnetwork = "default"
-  enable_cloud_run = true
+  enable_cloud_run = false
   enable_http_load_balancing = false
   allow_override_credentials = true
 
