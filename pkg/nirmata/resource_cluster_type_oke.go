@@ -5,11 +5,12 @@ import (
 	"log"
 	"strings"
 
+	"regexp"
+	"time"
+
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
-	"regexp"
-	"time"
 )
 
 func resourceOkeClusterType() *schema.Resource {
@@ -88,6 +89,16 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
+	var otherAddons []map[string]interface{}
+
+	otherAddons = append(otherAddons, map[string]interface{}{
+		"modelIndex":    "AddOnSpec",
+		"name":          "kyverno",
+		"addOnSelector": "kyverno",
+		"catalog":       "default-addon-catalog",
+	},
+	)
+
 	clustertype := map[string]interface{}{
 		"name":        name,
 		"description": "",
@@ -100,11 +111,7 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
-				"addons": map[string]interface{}{
-					"name":          "kyverno",
-					"addOnSelector": "kyverno",
-					"catalog":       "default-addon-catalog",
-				},
+				"other":      otherAddons,
 			},
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":   cloudCredID.UUID(),

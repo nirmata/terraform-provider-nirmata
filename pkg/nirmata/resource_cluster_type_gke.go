@@ -312,6 +312,16 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
+	var otherAddons []map[string]interface{}
+
+	otherAddons = append(otherAddons, map[string]interface{}{
+		"modelIndex":    "AddOnSpec",
+		"name":          "kyverno",
+		"addOnSelector": "kyverno",
+		"catalog":       "default-addon-catalog",
+	},
+	)
+
 	clusterTypeData := map[string]interface{}{
 		"name":        name,
 		"description": "",
@@ -325,11 +335,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
-				"addons": map[string]interface{}{
-					"name":          "kyverno",
-					"addOnSelector": "kyverno",
-					"catalog":       "default-addon-catalog",
-				},
+				"other":      otherAddons,
 			},
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":              cloudCredID.UUID(),

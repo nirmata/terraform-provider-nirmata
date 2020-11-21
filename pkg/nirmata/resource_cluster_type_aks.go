@@ -6,10 +6,11 @@ import (
 	"regexp"
 	"time"
 
+	"strings"
+
 	guuid "github.com/google/uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
-	"strings"
 )
 
 func resourceAksClusterType() *schema.Resource {
@@ -146,6 +147,16 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	var otherAddons []map[string]interface{}
+
+	otherAddons = append(otherAddons, map[string]interface{}{
+		"modelIndex":    "AddOnSpec",
+		"name":          "kyverno",
+		"addOnSelector": "kyverno",
+		"catalog":       "default-addon-catalog",
+	},
+	)
+
 	clusterType := map[string]interface{}{
 		"name":        name,
 		"description": "",
@@ -158,11 +169,7 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
-				"addons": map[string]interface{}{
-					"name":          "kyverno",
-					"addOnSelector": "kyverno",
-					"catalog":       "default-addon-catalog",
-				},
+				"other":      otherAddons,
 			},
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":   cloudCredID.UUID(),

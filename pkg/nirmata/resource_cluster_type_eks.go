@@ -2,11 +2,12 @@ package nirmata
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"log"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
 	guuid "github.com/google/uuid"
 	client "github.com/nirmata/go-client/pkg/client"
@@ -144,6 +145,16 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
+	var otherAddons []map[string]interface{}
+
+	otherAddons = append(otherAddons, map[string]interface{}{
+		"modelIndex":    "AddOnSpec",
+		"name":          "kyverno",
+		"addOnSelector": "kyverno",
+		"catalog":       "default-addon-catalog",
+	},
+	)
+
 	clusterType := map[string]interface{}{
 		"name":        name,
 		"description": "",
@@ -156,11 +167,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
-				"addons": map[string]interface{}{
-					"name":          "kyverno",
-					"addOnSelector": "kyverno",
-					"catalog":       "default-addon-catalog",
-				},
+				"other":      otherAddons,
 			},
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":   cloudCredID.UUID(),
