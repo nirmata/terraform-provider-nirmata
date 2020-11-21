@@ -220,7 +220,11 @@ var addonSchema = map[string]*schema.Schema{
 	},
 	"channel": {
 		Type:     schema.TypeString,
-		Required: true,
+		Optional: true,
+	},
+	"namespace": {
+		Type:     schema.TypeString,
+		Optional: true,
 	},
 	"sequence_number": {
 		Type:     schema.TypeInt,
@@ -363,6 +367,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"addOnSelector":  element["addon_selector"],
 				"catalog":        element["catalog"],
 				"channel":        element["channel"],
+				"namespace":      element["namespace"],
 				"sequenceNumber": element["sequence_number"],
 			},
 			)
