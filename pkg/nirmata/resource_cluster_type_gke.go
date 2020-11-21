@@ -163,6 +163,13 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 			Schema: gkeNodePoolSchema,
 		},
 	},
+	"addons": {
+		Type:     schema.TypeList,
+		Optional: true,
+		Elem: &schema.Resource{
+			Schema: addonSchema,
+		},
+	},
 }
 
 var gkeNodePoolSchema = map[string]*schema.Schema{
@@ -195,6 +202,29 @@ var gkeNodePoolSchema = map[string]*schema.Schema{
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
+	},
+}
+
+var addonSchema = map[string]*schema.Schema{
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"addon_selector": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"catalog": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"channel": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"sequence_number": {
+		Type:     schema.TypeInt,
+		Required: true,
 	},
 }
 
@@ -245,6 +275,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
+	addons := d.Get("addons").([]interface{})
 
 	apiClient := meta.(client.Client)
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
@@ -269,17 +300,17 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("\nWorkload Pool is required if workload identity is enabled")
 	}
 
-	var addons []string
+	var gkeAddons []string
 	if horizontalPodAutoscaling {
-		addons = append(addons, "horizontalPodAutoscaling")
+		gkeAddons = append(gkeAddons, "horizontalPodAutoscaling")
 	}
 
 	if httpLoadBalancing {
-		addons = append(addons, "httpLoadBalancing")
+		gkeAddons = append(gkeAddons, "httpLoadBalancing")
 	}
 
 	if cloudRun {
-		addons = append(addons, "cloudRunConfig")
+		gkeAddons = append(gkeAddons, "cloudRunConfig")
 	}
 
 	fieldsToOverride := map[string]interface{}{
@@ -312,15 +343,31 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
-	var otherAddons []map[string]interface{}
+	var addonsSpec []map[string]interface{}
 
-	otherAddons = append(otherAddons, map[string]interface{}{
-		"modelIndex":    "AddOnSpec",
-		"name":          "kyverno",
-		"addOnSelector": "kyverno",
-		"catalog":       "default-addon-catalog",
+	addonsSpec = append(addonsSpec, map[string]interface{}{
+		"modelIndex":     "AddOnSpec",
+		"name":           "kyverno",
+		"addOnSelector":  "kyverno",
+		"catalog":        "default-addon-catalog",
+		"sequenceNumber": 1,
 	},
 	)
+
+	for _, addon := range addons {
+		element, ok := addon.(map[string]interface{})
+		if ok {
+			addonsSpec = append(addonsSpec, map[string]interface{}{
+				"modelIndex":     "AddOnSpec",
+				"name":           element["name"],
+				"addOnSelector":  element["addon_selector"],
+				"catalog":        element["catalog"],
+				"channel":        element["channel"],
+				"sequenceNumber": element["sequence_number"],
+			},
+			)
+		}
+	}
 
 	clusterTypeData := map[string]interface{}{
 		"name":        name,
@@ -335,7 +382,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"addons": map[string]interface{}{
 				"dns":        false,
 				"modelIndex": "AddOns",
-				"other":      otherAddons,
+				"other":      addonsSpec,
 			},
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":              cloudCredID.UUID(),
@@ -363,7 +410,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"recurrence":                   recurrence,
 					"enableVerticalPodAutoscaling": enableVerticalPodAutoscaling,
 					"exclusionTimeWindow":          exclusionTimeWindow,
-					"addons":                       addons,
+					"addons":                       gkeAddons,
 				},
 				"nodePoolTypes": nodeobjArr,
 			},
