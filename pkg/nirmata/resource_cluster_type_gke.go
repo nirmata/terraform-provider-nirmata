@@ -170,6 +170,14 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 			Schema: addonSchema,
 		},
 	},
+	"vault_auth": {
+		Type:     schema.TypeList,
+		Optional: true,
+		MaxItems: 1,
+		Elem: &schema.Resource{
+			Schema: vaultAuthSchema,
+		},
+	},
 }
 
 var gkeNodePoolSchema = map[string]*schema.Schema{
@@ -232,6 +240,105 @@ var addonSchema = map[string]*schema.Schema{
 	},
 }
 
+var vaultAuthSchema = map[string]*schema.Schema{
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"path": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"addon_name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"credentials_id": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"credentials_name": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"roles": {
+		Type:     schema.TypeList,
+		Optional: true,
+		Elem: &schema.Resource{
+			Schema: vaultRoleSchema,
+		},
+	},
+}
+
+var vaultRoleSchema = map[string]*schema.Schema{
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"service_account_name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"namespace": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"policies": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+}
+
+func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}) map[string]interface{} {
+	vaultAuthSpec := map[string]interface{}{
+		"modelIndex": "VaultKubernetesAuthSpec",
+		"name":       vaultAuthSchema["name"],
+		"path":       vaultAuthSchema["path"],
+		"addOnName":  vaultAuthSchema["addon_name"],
+		"credentials": []map[string]interface{}{
+			{
+				"name":       "vault-poc",
+				"modelIndex": "VaultCredentials",
+			},
+		},
+	}
+
+	var rolesSpec []map[string]interface{}
+	if _, ok := vaultAuthSchema["roles"]; ok {
+		roles := vaultAuthSchema["roles"].([]interface{})
+		for _, role := range roles {
+			element, ok := role.(map[string]interface{})
+			if ok {
+				rolesSpec = append(rolesSpec, map[string]interface{}{
+					"modelIndex":         "VaultRole",
+					"name":               element["name"],
+					"serviceAccountName": element["service_account_name"],
+					"namespace":          element["namespace"],
+					"policies":           element["policies"],
+				},
+				)
+			}
+		}
+		vaultAuthSpec["roles"] = rolesSpec
+	}
+
+	credentialSpec := map[string]interface{}{
+		"modelIndex": "VaultCredentials",
+	}
+
+	if ci, ok := vaultAuthSchema["credentials_id"]; ok {
+		credentialSpec["id"] = ci
+	}
+
+	if cn, ok := vaultAuthSchema["credentials_name"]; ok {
+		credentialSpec["name"] = cn
+	}
+
+	vaultAuthSpec["credentials"] = credentialSpec
+
+	return vaultAuthSpec
+}
+
 func resourceGkeClusterType() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceGkeClusterTypeCreate,
@@ -279,7 +386,6 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
-	addons := d.Get("addons").([]interface{})
 
 	apiClient := meta.(client.Client)
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
@@ -358,19 +464,22 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	},
 	)
 
-	for _, addon := range addons {
-		element, ok := addon.(map[string]interface{})
-		if ok {
-			addonsSpec = append(addonsSpec, map[string]interface{}{
-				"modelIndex":     "AddOnSpec",
-				"name":           element["name"],
-				"addOnSelector":  element["addon_selector"],
-				"catalog":        element["catalog"],
-				"channel":        element["channel"],
-				"namespace":      element["namespace"],
-				"sequenceNumber": element["sequence_number"],
-			},
-			)
+	if _, ok := d.GetOk("addons"); ok {
+		addons := d.Get("addons").([]interface{})
+		for _, addon := range addons {
+			element, ok := addon.(map[string]interface{})
+			if ok {
+				addonsSpec = append(addonsSpec, map[string]interface{}{
+					"modelIndex":     "AddOnSpec",
+					"name":           element["name"],
+					"addOnSelector":  element["addon_selector"],
+					"catalog":        element["catalog"],
+					"channel":        element["channel"],
+					"namespace":      element["namespace"],
+					"sequenceNumber": element["sequence_number"],
+				},
+				)
+			}
 		}
 	}
 
@@ -420,6 +529,12 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"nodePoolTypes": nodeobjArr,
 			},
 		},
+	}
+
+	if _, ok := d.GetOk("vault_auth"); ok {
+		vl := d.Get("vault_auth").([]interface{})
+		vault := vl[0].(map[string]interface{})
+		clusterTypeData["spec"].(map[string]interface{})["vault"] = vaultAuthSchemaToVaultAuthSpec(vault)
 	}
 
 	txn := make(map[string]interface{})

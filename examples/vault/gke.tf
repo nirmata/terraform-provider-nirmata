@@ -43,6 +43,28 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
       node = "annotate"
     }
   }
+
+  addons {
+    name            = "vault-agent-injector"
+    addon_selector  = "vault-agent-injector"
+    catalog         = "default-catalog"
+    channel         = "Stable"
+    sequence_number = 15
+  }
+
+  vault_auth {
+    name             = "gke-vault-auth"
+    path             = "nirmata/$(cluster.name)"
+    addon_name       = "vault-agent-injector"
+    credentials_name = "vault_access"
+
+    roles {
+      name                 = "sample-role"
+      service_account_name = "application-sample-sa"
+      namespace            = "application-sample-ns"
+      policies             = "application-sample-policy"
+    }
+  }
 }
 
 // A nirmata_cluster is created using a cluster_type
