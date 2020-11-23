@@ -295,12 +295,6 @@ func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}) map[
 		"name":       vaultAuthSchema["name"],
 		"path":       vaultAuthSchema["path"],
 		"addOnName":  vaultAuthSchema["addon_name"],
-		"credentials": []map[string]interface{}{
-			{
-				"name":       "vault-poc",
-				"modelIndex": "VaultCredentials",
-			},
-		},
 	}
 
 	var rolesSpec []map[string]interface{}
