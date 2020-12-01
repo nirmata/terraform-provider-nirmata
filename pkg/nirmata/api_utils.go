@@ -3,6 +3,7 @@ package nirmata
 import (
 	"crypto/rand"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"log"
 	"strings"
@@ -111,4 +112,20 @@ func getNodePoolType(apiClient client.Client, clusterTypeID client.ID) (map[stri
 		return nil, fmt.Errorf("failed to decode NodePoolType  %+v: %v", nodePool[0], err)
 	}
 	return apiClient.Get(nodePoolTypeID.ID(), &client.GetOptions{nil, nil, client.OutputModeExportDetails})
+}
+
+func fetchID(apiClient client.Client, service client.Service, modelIndex, nameOrID string) (client.ID, error) {
+	if isUUID(nameOrID) {
+		return client.NewID(service, modelIndex, nameOrID), nil
+	}
+
+	return apiClient.QueryByName(service, modelIndex, nameOrID)
+}
+
+func isUUID(id string) bool {
+	if _, err := uuid.Parse(id); err == nil {
+		return true
+	}
+
+	return false
 }

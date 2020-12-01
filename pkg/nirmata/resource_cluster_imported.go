@@ -69,7 +69,6 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	}
 
 	log.Printf("[DEBUG] - importing cluster %s with %+v", name, data)
-
 	_, err = apiClient.PostFromJSON(client.ServiceClusters, "ImportClustersAction", data, nil)
 	if err != nil {
 		log.Printf("[ERROR] - failed to import cluster %s with data %v: %v", name, data, err)

@@ -72,16 +72,19 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		log.Printf("[ERROR] - %v", err)
 		return err
 	}
+
 	mode := spec["clusterMode"]
 	fieldsToOverride := map[string]interface{}{
 		"cluster": clusterFieldOverride,
 	}
+
 	data := map[string]interface{}{
 		"name":                name,
 		"mode":                mode,
 		"typeSelector":        typeSelector,
 		"credentialsSelector": credentials,
 	}
+
 	data["config"] = map[string]interface{}{
 		"modelIndex":     "ClusterConfig",
 		"version":        spec["version"],
@@ -90,6 +93,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		"systemMetadata": systemMetadata,
 		"overrideValues": fieldsToOverride,
 	}
+
 	data["nodePools"] = nodepool
 
 	clusterData, err := apiClient.PostFromJSON(client.ServiceClusters, "kubernetesCluster", data, nil)
