@@ -213,132 +213,6 @@ var gkeNodePoolSchema = map[string]*schema.Schema{
 	},
 }
 
-var addonSchema = map[string]*schema.Schema{
-	"name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"addon_selector": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"catalog": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"channel": {
-		Type:     schema.TypeString,
-		Optional: true,
-	},
-	"namespace": {
-		Type:     schema.TypeString,
-		Optional: true,
-	},
-	"sequence_number": {
-		Type:     schema.TypeInt,
-		Required: true,
-	},
-}
-
-var vaultAuthSchema = map[string]*schema.Schema{
-	"name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"path": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"addon_name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"credentials_id": {
-		Type:     schema.TypeString,
-		Optional: true,
-	},
-	"credentials_name": {
-		Type:     schema.TypeString,
-		Optional: true,
-	},
-	"roles": {
-		Type:     schema.TypeList,
-		Optional: true,
-		Elem: &schema.Resource{
-			Schema: vaultRoleSchema,
-		},
-	},
-}
-
-var vaultRoleSchema = map[string]*schema.Schema{
-	"name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"service_account_name": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"namespace": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"policies": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-}
-
-func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}) map[string]interface{} {
-	vaultAuthSpec := map[string]interface{}{
-		"modelIndex": "VaultKubernetesAuthSpec",
-		"name":       vaultAuthSchema["name"],
-		"path":       vaultAuthSchema["path"],
-		"addOnName":  vaultAuthSchema["addon_name"],
-		"credentials": []map[string]interface{}{
-			{
-				"name":       "vault-poc",
-				"modelIndex": "VaultCredentials",
-			},
-		},
-	}
-
-	var rolesSpec []map[string]interface{}
-	if _, ok := vaultAuthSchema["roles"]; ok {
-		roles := vaultAuthSchema["roles"].([]interface{})
-		for _, role := range roles {
-			element, ok := role.(map[string]interface{})
-			if ok {
-				rolesSpec = append(rolesSpec, map[string]interface{}{
-					"modelIndex":         "VaultRole",
-					"name":               element["name"],
-					"serviceAccountName": element["service_account_name"],
-					"namespace":          element["namespace"],
-					"policies":           element["policies"],
-				},
-				)
-			}
-		}
-		vaultAuthSpec["roles"] = rolesSpec
-	}
-
-	credentialSpec := map[string]interface{}{
-		"modelIndex": "VaultCredentials",
-	}
-
-	if ci, ok := vaultAuthSchema["credentials_id"]; ok {
-		credentialSpec["id"] = ci
-	}
-
-	if cn, ok := vaultAuthSchema["credentials_name"]; ok {
-		credentialSpec["name"] = cn
-	}
-
-	vaultAuthSpec["credentials"] = credentialSpec
-
-	return vaultAuthSpec
-}
-
 func resourceGkeClusterType() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceGkeClusterTypeCreate,
@@ -369,7 +243,6 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	workloadPool := d.Get("workload_pool").(string)
 	network := d.Get("network").(string)
 	subnetwork := d.Get("subnetwork").(string)
-	nodepools := d.Get("nodepools").([]interface{})
 	clusterIpv4Cidr := d.Get("cluster_ipv4_cidr").(string)
 	servicesIpv4Cidr := d.Get("services_ipv4_cidr").(string)
 	cloudRun := d.Get("enable_cloud_run").(bool)
@@ -395,19 +268,19 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if locationType == "Regional" && region == "" {
-		return fmt.Errorf("region is required when location_type is Regional")
+		return fmt.Errorf("\nError - region is required when location_type is Regional")
 	}
 
 	if locationType == "Zonal" && zone == "" {
-		return fmt.Errorf("zone is required when location_type is Zonal")
+		return fmt.Errorf("\nError - zone is required when location_type is Zonal")
 	}
 
 	if enableSecretsEncryption && len(secretsEncryptionKey) == 0 {
-		return fmt.Errorf("\nError - Encryption key is required if secrets encryption is enabled")
+		return fmt.Errorf("\nError - wncryption key is required if secrets encryption is enabled")
 	}
 
 	if enableWorkloadIdentity && len(workloadPool) == 0 {
-		return fmt.Errorf("\nWorkload Pool is required if workload identity is enabled")
+		return fmt.Errorf("\nworkload pool is required if workload identity is enabled")
 	}
 
 	var gkeAddons []string
@@ -429,6 +302,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	var nodeobjArr = make([]interface{}, 0)
+	nodepools := d.Get("nodepools").([]interface{})
 	for i, node := range nodepools {
 		element, ok := node.(map[string]interface{})
 		if ok {
@@ -453,35 +327,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
-	var addonsSpec []map[string]interface{}
-
-	addonsSpec = append(addonsSpec, map[string]interface{}{
-		"modelIndex":     "AddOnSpec",
-		"name":           "kyverno",
-		"addOnSelector":  "kyverno",
-		"catalog":        "default-addon-catalog",
-		"sequenceNumber": 1,
-	},
-	)
-
-	if _, ok := d.GetOk("addons"); ok {
-		addons := d.Get("addons").([]interface{})
-		for _, addon := range addons {
-			element, ok := addon.(map[string]interface{})
-			if ok {
-				addonsSpec = append(addonsSpec, map[string]interface{}{
-					"modelIndex":     "AddOnSpec",
-					"name":           element["name"],
-					"addOnSelector":  element["addon_selector"],
-					"catalog":        element["catalog"],
-					"channel":        element["channel"],
-					"namespace":      element["namespace"],
-					"sequenceNumber": element["sequence_number"],
-				},
-				)
-			}
-		}
-	}
+	addons := addOnsSchemaToAddOns(d)
 
 	clusterTypeData := map[string]interface{}{
 		"name":        name,
@@ -493,16 +339,12 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"version":        version,
 			"cloud":          "googlecloudplatform",
 			"systemMetadata": systemMetadata,
-			"addons": map[string]interface{}{
-				"dns":        false,
-				"modelIndex": "AddOns",
-				"other":      addonsSpec,
-			},
+			"addons":         addons,
 			"cloudConfigSpec": map[string]interface{}{
+				"modelIndex":               "CloudConfigSpec",
 				"credentials":              cloudCredID.UUID(),
 				"allowOverrideCredentials": allowOverrideCredentials,
 				"fieldsToOverride":         fieldsToOverride,
-				"modelIndex":               "CloudConfigSpec",
 				"gkeConfig": map[string]interface{}{
 					"modelIndex":                   "GkeClusterConfig",
 					"region":                       region,
@@ -755,29 +597,5 @@ func updateDescendant(apiClient client.Client, id client.ID, descendant string, 
 }
 
 func resourceGkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
-	apiClient := meta.(client.Client)
-	name := d.Get("name").(string)
-	id, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
-	if err != nil {
-		log.Printf("[ERROR] - %v", err)
-		return err
-	}
-
-	params := map[string]string{
-		"action": "delete",
-	}
-
-	if err := apiClient.Delete(id, params); err != nil {
-		if strings.Contains(err.Error(), "404") {
-			log.Printf("[INFO] - %v not found: %v", id.Map(), err)
-			d.SetId("")
-			return nil
-		}
-
-		log.Printf("[ERROR] - %v", err)
-		return err
-	}
-
-	log.Printf("[INFO] Deleted cluster type %s", name)
-	return nil
+	return deleteObj(d, meta, client.ServiceClusters, "ClusterType")
 }

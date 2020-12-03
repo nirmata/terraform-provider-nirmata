@@ -50,3 +50,12 @@ func validateGKELocationType(v interface{}, k string) (ws []string, errors []err
 
 	return
 }
+
+func validateEKSDiskSize(v interface{}, k string) (ws []string, errors []error) {
+	if v.(int) < 9 {
+		errors = append(errors, fmt.Errorf(
+			"%q The disk size must be grater than 9", k))
+	}
+
+	return
+}

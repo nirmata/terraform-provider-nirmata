@@ -1,15 +1,12 @@
 package nirmata
 
 import (
-	"fmt"
 	"log"
-	"regexp"
-	"strings"
+	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
-	guuid "github.com/google/uuid"
 	client "github.com/nirmata/go-client/pkg/client"
 )
 
@@ -27,20 +24,9 @@ func resourceEksClusterType() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					value := v.(string)
-					if len(value) > 64 {
-						errors = append(errors, fmt.Errorf(
-							"%q cannot be longer than 64 characters", k))
-					}
-					if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
-						errors = append(errors, fmt.Errorf(
-							"%q must match [\\w+=,.@-]", k))
-					}
-					return
-				},
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validateName,
 			},
 			"version": {
 				Type:     schema.TypeString,
@@ -50,7 +36,6 @@ func resourceEksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
 			"region": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -77,136 +62,238 @@ func resourceEksClusterType() *schema.Resource {
 				},
 				Required: true,
 			},
-			"key_name": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"instance_type": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"node_security_groups": {
-				Type: schema.TypeList,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Required: true,
-			},
-			"node_iam_role": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"disk_size": {
-				Type:     schema.TypeInt,
-				Required: true,
-				ValidateFunc: func(v interface{}, k string) (ws []string, errors []error) {
-					if v.(int) < 9 {
-						errors = append(errors, fmt.Errorf(
-							"%q The disk size must be grater than 9", k))
-					}
-					return
-				},
-			},
 			"log_types": {
 				Type: schema.TypeList,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+				Optional: true,
+			},
+			"enable_private_endpoint": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"enable_secrets_encryption": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"kms_key_arn": {
+				Type:     schema.TypeString,
+				Optional: true, // required if enable_secrets_encryption = true
+			},
+			"enable_identity_provider": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"system_metadata": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"allow_override_credentials": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+			"cluster_field_override": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"addons": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: addonSchema,
+				},
+			},
+			"vault_auth": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: vaultAuthSchema,
+				},
+			},
+			"nodepools": {
+				Type:     schema.TypeList,
 				Required: true,
+				Elem: &schema.Resource{
+					Schema: eksNodePoolSchema,
+				},
+			},
+			"nodepool_field_override": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 		},
 	}
 }
 
+var eksNodePoolSchema = map[string]*schema.Schema{
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"instance_type": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"disk_size": {
+		Type:         schema.TypeInt,
+		Required:     true,
+		ValidateFunc: validateEKSDiskSize,
+	},
+	"security_groups": {
+		Type: schema.TypeList,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+		Required: true,
+	},
+	"iam_role": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"ssh_key_name": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"ami_type": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"image_id": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"node_annotations": {
+		Type:     schema.TypeMap,
+		Optional: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
+	"node_labels": {
+		Type:     schema.TypeMap,
+		Optional: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
+}
+
 func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 
-	clouduuid := guuid.New()
-	nodepooluuid := guuid.New()
-
-	name := d.Get("name").(string)
-	version := d.Get("version").(string)
 	credentials := d.Get("credentials").(string)
-	region := d.Get("region").(string)
-	diskSize := d.Get("disk_size").(int)
-	instanceType := d.Get("instance_type")
-	keyName := d.Get("key_name").(string)
-	securityGroups := d.Get("security_groups")
-	clusterRoleArn := d.Get("cluster_role_arn").(string)
-	vpcID := d.Get("vpc_id").(string)
-	subnetID := d.Get("subnet_id")
-	nodeSecurityGroups := d.Get("node_security_groups")
-	nodeIamRole := d.Get("node_iam_role").(string)
-	logTypes := d.Get("log_types")
-
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	if err != nil {
 		log.Printf("Error - %v", err)
 		return err
 	}
 
-	var otherAddons []map[string]interface{}
+	name := d.Get("name").(string)
+	version := d.Get("version").(string)
+	region := d.Get("region").(string)
+	securityGroups := d.Get("security_groups")
+	clusterRoleArn := d.Get("cluster_role_arn").(string)
+	vpcID := d.Get("vpc_id").(string)
+	subnetID := d.Get("subnet_id")
+	logTypes := d.Get("log_types")
+	privateEndpointAccess := d.Get("enable_private_endpoint")
+	enableSecretsEncryption := d.Get("enable_secrets_encryption")
+	keyArn := d.Get("kms_key_arn")
+	enableIdentityProvider := d.Get("enable_identity_provider")
+	systemMetadata := d.Get("system_metadata")
+	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
+	clusterFieldOverride := d.Get("cluster_field_override")
+	nodepoolFieldOverride := d.Get("nodepool_field_override")
 
-	otherAddons = append(otherAddons, map[string]interface{}{
-		"modelIndex":    "AddOnSpec",
-		"name":          "kyverno",
-		"addOnSelector": "kyverno",
-		"catalog":       "default-addon-catalog",
-	},
-	)
+	fieldsToOverride := map[string]interface{}{
+		"cluster":  clusterFieldOverride,
+		"nodePool": nodepoolFieldOverride,
+	}
 
-	clusterType := map[string]interface{}{
+	var nodeobjArr = make([]interface{}, 0)
+	nodepools := d.Get("nodepools").([]interface{})
+	for i, node := range nodepools {
+		element, ok := node.(map[string]interface{})
+		if ok {
+			nodePoolObj := map[string]interface{}{
+				"modelIndex": "NodePoolType",
+				"name":       name + "-node-pool-" + strconv.Itoa(i),
+				"spec": map[string]interface{}{
+					"modelIndex":      "NodePoolSpec",
+					"nodeLabels":      element["node_labels"],
+					"nodeAnnotations": element["node_annotations"],
+					"eksConfig": map[string]interface{}{
+						"instanceType":   element["instance_type"],
+						"diskSize":       element["disk_size"],
+						"securityGroups": element["security_groups"],
+						"nodeIamRole":    element["iam_role"],
+						"keyName":        element["ssh_key_name"],
+						"amiType":        element["ami_type"],
+						"imageId":        element["image_id"],
+					},
+				},
+			}
+
+			nodeobjArr = append(nodeobjArr, nodePoolObj)
+		}
+	}
+
+	addons := addOnsSchemaToAddOns(d)
+
+	clusterTypeData := map[string]interface{}{
 		"name":        name,
 		"description": "",
 		"modelIndex":  "ClusterType",
 		"spec": map[string]interface{}{
-			"clusterMode": "providerManaged",
-			"modelIndex":  "ClusterSpec",
-			"version":     version,
-			"cloud":       "aws",
-			"addons": map[string]interface{}{
-				"dns":        false,
-				"modelIndex": "AddOns",
-				"other":      otherAddons,
-			},
+			"clusterMode":    "providerManaged",
+			"modelIndex":     "ClusterSpec",
+			"version":        version,
+			"cloud":          "aws",
+			"systemMetadata": systemMetadata,
+			"addons":         addons,
 			"cloudConfigSpec": map[string]interface{}{
-				"credentials":   cloudCredID.UUID(),
-				"id":            clouduuid,
-				"modelIndex":    "CloudConfigSpec",
-				"nodePoolTypes": nodepooluuid,
+				"modelIndex":               "CloudConfigSpec",
+				"credentials":              cloudCredID.UUID(),
+				"allowOverrideCredentials": allowOverrideCredentials,
+				"fieldsToOverride":         fieldsToOverride,
 				"eksConfig": map[string]interface{}{
-					"region":                region,
-					"vpcId":                 vpcID,
-					"subnetId":              subnetID,
-					"privateEndpointAccess": false,
-					"clusterRoleArn":        clusterRoleArn,
-					"securityGroups":        securityGroups,
-					"logTypes":              logTypes,
+					"region":                  region,
+					"vpcId":                   vpcID,
+					"subnetId":                subnetID,
+					"clusterRoleArn":          clusterRoleArn,
+					"securityGroups":          securityGroups,
+					"logTypes":                logTypes,
+					"privateEndpointAccess":   privateEndpointAccess,
+					"enableIdentityProvider":  enableIdentityProvider,
+					"enableSecretsEncryption": enableSecretsEncryption,
+					"keyArn":                  keyArn,
 				},
+				"nodePoolTypes": nodeobjArr,
 			},
 		},
 	}
 
-	nodePoolObj := map[string]interface{}{
-		"id":              nodepooluuid,
-		"modelIndex":      "NodePoolType",
-		"name":            name + "-default-node-pool-type",
-		"cloudConfigSpec": clouduuid,
-		"spec": map[string]interface{}{
-			"modelIndex": "NodePoolSpec",
-			"eksConfig": map[string]interface{}{
-				"securityGroups": nodeSecurityGroups,
-				"nodeIamRole":    nodeIamRole,
-				"keyName":        keyName,
-				"diskSize":       diskSize,
-				"instanceType":   instanceType,
-				"imageId":        "",
-			},
-		},
+	if _, ok := d.GetOk("vault_auth"); ok {
+		vl := d.Get("vault_auth").([]interface{})
+		vault := vl[0].(map[string]interface{})
+		clusterTypeData["spec"].(map[string]interface{})["vault"] = vaultAuthSchemaToVaultAuthSpec(vault)
 	}
+
 	txn := make(map[string]interface{})
 	var objArr = make([]interface{}, 0)
-	objArr = append(objArr, clusterType, nodePoolObj)
+	objArr = append(objArr, clusterTypeData)
 	txn["create"] = objArr
 	data, err := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
 	if err != nil {
@@ -214,47 +301,24 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		return err
 	}
 
-	changeID := data["changeId"].(string)
-	d.SetId(changeID)
+	obj, resultErr := extractCreateFromTxnResult(data, "ClusterType")
+	if resultErr != nil {
+		log.Printf("[ERROR] - %v", err)
+		return resultErr
+	}
 
+	d.SetId(obj.ID().UUID())
 	return nil
 }
 
 func resourceEksClusterTypeRead(d *schema.ResourceData, meta interface{}) error {
-
 	return nil
 }
 
 func resourceEksClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
-
 	return nil
 }
 
 func resourceEksClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
-	apiClient := meta.(client.Client)
-
-	name := d.Get("name").(string)
-
-	id, err := apiClient.QueryByName(client.ServiceClusters, "clustertypes", name)
-	if err != nil {
-		log.Printf("[ERROR] - %v", err)
-		return err
-	}
-
-	params := map[string]string{
-		"action": "delete",
-	}
-
-	if err := apiClient.Delete(id, params); err != nil {
-		if strings.Contains(err.Error(), "404") {
-			d.SetId("")
-			return nil
-		}
-
-		log.Printf("[ERROR] - %v", err)
-		return err
-	}
-
-	log.Printf("Deleted cluster type %s", name)
-	return nil
+	return deleteObj(d, meta, client.ServiceClusters, "ClusterType")
 }

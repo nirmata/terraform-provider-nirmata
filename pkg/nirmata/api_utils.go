@@ -129,3 +129,28 @@ func isUUID(id string) bool {
 
 	return false
 }
+
+func deleteObj(d *schema.ResourceData, meta interface{}, service client.Service, modelIndex string) error {
+	apiClient := meta.(client.Client)
+	name := d.Get("name").(string)
+
+	id, err := apiClient.QueryByName(service, modelIndex, name)
+	if err != nil {
+		log.Printf("[ERROR] - %v", err)
+		return err
+	}
+
+	if err := apiClient.Delete(id, nil); err != nil {
+		if strings.Contains(err.Error(), "404") {
+			log.Printf("[INFO] - %v not found: %v", id.Map(), err)
+			d.SetId("")
+			return nil
+		}
+
+		log.Printf("[ERROR] - %v", err)
+		return err
+	}
+
+	log.Printf("[INFO] Deleted cluster type %s", name)
+	return nil
+}
