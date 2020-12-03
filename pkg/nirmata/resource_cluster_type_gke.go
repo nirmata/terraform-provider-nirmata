@@ -243,6 +243,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	workloadPool := d.Get("workload_pool").(string)
 	network := d.Get("network").(string)
 	subnetwork := d.Get("subnetwork").(string)
+	nodepools := d.Get("nodepools").([]interface{})
 	clusterIpv4Cidr := d.Get("cluster_ipv4_cidr").(string)
 	servicesIpv4Cidr := d.Get("services_ipv4_cidr").(string)
 	cloudRun := d.Get("enable_cloud_run").(bool)
@@ -276,11 +277,11 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if enableSecretsEncryption && len(secretsEncryptionKey) == 0 {
-		return fmt.Errorf("\nError - wncryption key is required if secrets encryption is enabled")
+		return fmt.Errorf("\nError - encryption key is required if secrets encryption is enabled")
 	}
 
 	if enableWorkloadIdentity && len(workloadPool) == 0 {
-		return fmt.Errorf("\nworkload pool is required if workload identity is enabled")
+		return fmt.Errorf("\nError - workload pool is required if workload identity is enabled")
 	}
 
 	var gkeAddons []string
@@ -302,7 +303,6 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	var nodeobjArr = make([]interface{}, 0)
-	nodepools := d.Get("nodepools").([]interface{})
 	for i, node := range nodepools {
 		element, ok := node.(map[string]interface{})
 		if ok {
@@ -341,10 +341,10 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"systemMetadata": systemMetadata,
 			"addons":         addons,
 			"cloudConfigSpec": map[string]interface{}{
-				"modelIndex":               "CloudConfigSpec",
 				"credentials":              cloudCredID.UUID(),
 				"allowOverrideCredentials": allowOverrideCredentials,
 				"fieldsToOverride":         fieldsToOverride,
+				"modelIndex":               "CloudConfigSpec",
 				"gkeConfig": map[string]interface{}{
 					"modelIndex":                   "GkeClusterConfig",
 					"region":                       region,
