@@ -37,6 +37,7 @@ func Provider() *schema.Provider {
 			"nirmata_cluster_type_eks":          resourceEksClusterType(),
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 			"nirmata_environment":               resourceEnvironment(),
+			"nirmata_environment_type":          resourceEnvironmentType(),
 		},
 
 		ConfigureFunc: configureProvider,
