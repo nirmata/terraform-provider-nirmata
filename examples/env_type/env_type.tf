@@ -14,10 +14,10 @@ provider "nirmata" {
 resource "nirmata_environment_type" "tf-env-type-1" {
   name             = "tf-env"
   resource_limits  = {
-      cpu = "xx",
-      memory = "xx"
-      pod = "xx"
-      storage = "xx"
+      cpu = "500m",
+      memory = "4Gi"
+      pod = "50"
+      storage = "1Gi"
   }
   is_default      = false
 }
