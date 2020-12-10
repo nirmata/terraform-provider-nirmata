@@ -1,10 +1,10 @@
 variable "name" {
-  default = "gke-ar"
+  default = "cluster-tf"
 }
 variable "project" {
   default = "nirmata-demo"
 }
 
 variable "location" {
-  default = "asia-east1"
+  default = "us-central1-c"
 }
