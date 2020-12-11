@@ -81,23 +81,21 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 		log.Printf("Failed to fetch controller YAML %s: %v \n", name, err)
 		return err
 	}
-
 	yaml, yamlErr := getCtrlYAML(b)
 	if yamlErr != nil {
 		log.Printf("Failed to decode controller YAML %s: %v \n", name, yamlErr)
 		return yamlErr
 	}
-	f, ferr := writeToTempFile([]byte(yaml))
+	file, ferr := writeToTempFile([]byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("Failed to write temp file: %v", ferr)
 	}
-	cargs := []string{"apply", "-f", f.Name()}
-	bytes, eerr := exec.Command("kubectl", cargs...).CombinedOutput()
-	if eerr != nil {
-		return fmt.Errorf("Failed to execute command %v: %v %s", cargs, eerr, string(bytes))
+	commandArgs := []string{"apply", "-f", file.Name()}
+	bytes, execErr := exec.Command("kubectl", commandArgs...).CombinedOutput()
+	if execErr != nil {
+		return fmt.Errorf("Failed to execute command %v: %v %s", commandArgs, execErr, string(bytes))
 	}
-
-	defer os.Remove(f.Name())
+	defer os.Remove(file.Name())
 	return nil
 }
 

@@ -1,8 +1,8 @@
 variable "name" {
-  default = "cluster-tf"
+  default = "cluster-2"
 }
 variable "project" {
-  default = "nirmata-demo"
+  default = "xxxx"
 }
 
 variable "location" {
