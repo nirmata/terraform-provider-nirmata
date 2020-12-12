@@ -25,7 +25,7 @@ provider "kubernetes" {
   )
 }
 
-// A nirmata_cluster created by registered an existing cluster
+// A nirmata_cluster created by registered an existing GKE cluster
 resource "nirmata_cluster_registered" "gke-register-1" {
   name = "gke-cluster-tf"
   cluster_type  =  "default-add-ons"
