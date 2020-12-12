@@ -105,11 +105,10 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(clusterUUID)
 
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
-
 	state, waitErr := waitForClusterState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
 	if waitErr != nil {
 		log.Printf("[ERROR] - failed to check cluster status. Error - %v", waitErr)
-		return nil
+		return waitErr
 	}
 
 	if strings.EqualFold("failed", state) {
