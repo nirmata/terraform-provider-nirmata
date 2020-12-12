@@ -19,6 +19,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   enable_cloud_run           = false
   enable_http_load_balancing = false
   allow_override_credentials = true
+  channel                    = "REGULAR"
 
   system_metadata = {
     cluster = "gke"
@@ -39,6 +40,8 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     disk_size                = 110
     enable_preemptible_nodes = true
     service_account          = ""
+    auto_upgrade             = true
+    auto_repair              = true
     node_annotations = {
       node = "annotate"
     }
