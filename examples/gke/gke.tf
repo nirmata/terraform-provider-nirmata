@@ -42,6 +42,8 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     service_account          = ""
     auto_upgrade             = true
     auto_repair              = true
+    max_unavailable          = 1
+    max_surge                = 0
     node_annotations = {
       node = "annotate"
     }
