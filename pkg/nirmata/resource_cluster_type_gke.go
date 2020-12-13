@@ -33,6 +33,10 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Optional: true,
 	},
+	"channel": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
 	"location_type": {
 		Type:         schema.TypeString,
 		Required:     true,
@@ -197,6 +201,22 @@ var gkeNodePoolSchema = map[string]*schema.Schema{
 		Type:     schema.TypeBool,
 		Optional: true,
 	},
+	"auto_upgrade": {
+		Type:     schema.TypeBool,
+		Required: true,
+	},
+	"auto_repair": {
+		Type:     schema.TypeBool,
+		Required: true,
+	},
+	"max_unavailable": {
+		Type:     schema.TypeInt,
+		Optional: true,
+	},
+	"max_surge": {
+		Type:     schema.TypeInt,
+		Optional: true,
+	},
 	"node_annotations": {
 		Type:     schema.TypeMap,
 		Optional: true,
@@ -235,6 +255,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
 	zone := d.Get("zone").(string)
+	channel := d.Get("channel").(string)
 	locationType := d.Get("location_type").(string)
 	nodeLocations := d.Get("node_locations")
 	enableSecretsEncryption := d.Get("enable_secrets_encryption").(bool)
@@ -318,6 +339,10 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 						"diskSize":               element["disk_size"],
 						"serviceAccount":         element["service_account"],
 						"enablePreemptibleNodes": element["enable_preemptible_nodes"],
+						"autoUpgrade":            element["auto_upgrade"],
+						"autoRepair":             element["auto_repair"],
+						"maxUnavailable":         element["max_unavailable"],
+						"maxSurge":               element["max_surge"],
 						"modelIndex":             "GkeNodePoolConfig",
 					},
 				},
@@ -349,6 +374,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"modelIndex":                   "GkeClusterConfig",
 					"region":                       region,
 					"zone":                         zone,
+					"channel":                      channel,
 					"locationType":                 locationType,
 					"defaultNodeLocations":         nodeLocations,
 					"enableSecretsEncryption":      enableSecretsEncryption,
@@ -405,6 +431,7 @@ var gkeClusterTypePaths = map[string]string{
 	"network":                          "spec[0].cloudConfigSpec[0].gkeConfig[0].network",
 	"subnetwork":                       "spec[0].cloudConfigSpec[0].gkeConfig[0].subnetwork",
 	"zone":                             "spec[0].cloudConfigSpec[0].gkeConfig[0].zone",
+	"channel":                          "spec[0].cloudConfigSpec[0].gkeConfig[0].channel",
 	"location_type":                    "spec[0].cloudConfigSpec[0].gkeConfig[0].locationType",
 	"node_locations":                   "spec[0].cloudConfigSpec[0].gkeConfig[0].defaultNodeLocations",
 	"enable_workload_identity":         "spec[0].cloudConfigSpec[0].gkeConfig[0].enableWorkloadIdentity",
@@ -425,6 +452,10 @@ var gkeClusterTypePaths = map[string]string{
 var nodePoolTypePaths = map[string]string{
 	"machine_type":             "spec[0].gkeConfig[0].machineType",
 	"disk_size":                "spec[0].gkeConfig[0].diskSize",
+	"auto_upgrade":             "spec[0].gkeConfig[0].autoUpgrade",
+	"auto_repair":              "spec[0].gkeConfig[0].autoRepair",
+	"max_surge":              	"spec[0].gkeConfig[0].maxSurge",
+	"max_unavailable":          "spec[0].gkeConfig[0].maxUnavailable",
 	"enable_preemptible_nodes": "spec[0].gkeConfig[0].enablePreemptibleNodes",
 	"service_account":          "spec[0].gkeConfig[0].serviceAccount",
 	"node_labels":              "spec[0].nodeLabels",
@@ -465,6 +496,7 @@ var gkeAttributeMap = map[string]string{
 	"network":                         "network",
 	"subnetwork":                      "subnetwork",
 	"zone":                            "zone",
+	"channel":                         "channel",
 	"location_type":                   "locationType",
 	"node_locations":                  "defaultNodeLocations",
 	"enable_workload_identity":        "enableWorkloadIdentity",
@@ -484,6 +516,10 @@ var gkeAttributeMap = map[string]string{
 var nodePoolAttributeMap = map[string]string{
 	"machine_type":             "machineType",
 	"disksize":                 "diskSize",
+	"auto_upgrade":              "autoUpgrade",
+	"auto_repair":               "autoRepair",
+	"max_surge":               	 "maxSurge",
+	"max_unavailable":           "maxUnavailable",
 	"enable_preemptible_nodes": "enablePreemptibleNodes",
 	"service_account":          "serviceAccount",
 	"node_labels":              "nodeLabels",
@@ -509,6 +545,7 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 		"network",
 		"subnetwork",
 		"zone",
+		"channel",
 		"location_type",
 		"node_locations",
 		"enable_workload_identity",
@@ -535,6 +572,10 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	nodePoolChanges := buildChanges(d, nodePoolAttributeMap,
 		"machine_type",
 		"disk_size",
+		"auto_upgrade",
+		"auto_repair",
+		"max_surge",
+		"max_unavailable",
 		"enable_preemptible_nodes",
 		"service_account",
 		"node_labels",
