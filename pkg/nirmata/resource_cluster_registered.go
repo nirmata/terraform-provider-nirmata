@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -24,6 +22,19 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"controller_yaml": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"state": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"yaml_file": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+
 }
 
 func resourceClusterRegistered() *schema.Resource {
@@ -91,37 +102,15 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 		log.Printf("Failed to decode controller YAML %s: %v \n", name, yamlErr)
 		return yamlErr
 	}
-
+	d.Set("controller_yaml", yaml)
+	d.Set("state", clusterObj["state"])
 	file, ferr := writeToTempFile([]byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("Failed to write temp file: %v", ferr)
 	}
 
 	defer os.Remove(file.Name())
-	commandArgs := []string{"apply", "-f", file.Name()}
-	bytes, execErr := exec.Command("kubectl", commandArgs...).CombinedOutput()
-	if execErr != nil {
-		return fmt.Errorf("Failed to execute command %v: %v %s", commandArgs, execErr, string(bytes))
-	}
-
-	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
-	state, waitErr := waitForClusterState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
-	if waitErr != nil {
-		log.Printf("[ERROR] - failed to check cluster status. Error - %v", waitErr)
-		return waitErr
-	}
-
-	if strings.EqualFold("failed", state) {
-		status, err := getClusterStatus(apiClient, clusterID)
-		if err != nil {
-			log.Printf("[ERROR] - failed to retrieve cluster failure details: %v", err)
-			return fmt.Errorf("cluster creation failed")
-		}
-
-		return fmt.Errorf("cluster creation failed: %s", status)
-	}
-
-	log.Printf("[INFO] registered cluster %s with ID %s", name, clusterID)
+	d.Set("yaml_file", file.Name())
 	return nil
 }
 
@@ -147,6 +136,5 @@ func writeToTempFile(data []byte) (f *os.File, err error) {
 	if _, err = f.Write(data); err != nil {
 		return f, fmt.Errorf("Failed to write temporary file %s: %v", f.Name(), err)
 	}
-
 	return
 }
