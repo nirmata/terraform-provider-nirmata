@@ -8,7 +8,7 @@ go build
 
 ## Executing the samples
 
-The samples are available in the [samples](samples) folder.
+The samples are available in the [samples](examples) folder.
 
 To run the samples, initialize the Terraform provider and then run the `plan` and `apply` commands. 
 
