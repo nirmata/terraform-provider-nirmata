@@ -25,7 +25,14 @@ git clone
 Golang needs to be installed to build the provider from source. See: https://golang.org/doc/install for Golang installation instructions and then run:
 
 ```bash
-go build
+make install
+```
+
+**NOTE: for Windows use these commands instead:**
+```bash
+go build -o dist/windows_amd64/terraform-provider-nirmata_99.0.0
+mkdirs  %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\
+copy dist\windows_amd64\terraform-provider-nirmata_99.0.0 %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\terraform-provider-nirmata_99.0.0
 ```
 
 3. Set your `NIRMATA_TOKEN` environment variable to contain your Nirmata API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)
@@ -39,10 +46,17 @@ The example file first creates a ClusterType and then creates a single node `Clu
 
 5. Initialize the Terraform provider with the correct directory
 
-**NOTE: this assumes Terraform 0.12.x or lower. With Terraform 0.13.x local providers need to be initialized differently.** 
-
 ```bash
 terraform init examples/gke
+```
+
+If you see an error below, delete the `.terraform.lock.hcl` file and re-run the `init` command:
+
+```bash
+Error while installing local/nirmata/nirmata v99.0.0: the local package for
+local/nirmata/nirmata 99.0.0 doesn't match any of the checksums previously
+recorded in the dependency lock file (this might be because the available
+checksums are for packages targeting different platforms)
 ```
 
 6. Run `plan` to build the execution plan:

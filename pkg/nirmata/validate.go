@@ -37,7 +37,7 @@ func validateGKEMachineType(v interface{}, k string) (ws []string, errors []erro
 
 func validateGKEDiskSize(v interface{}, k string) (ws []string, errors []error) {
 	if v.(int) < 9 {
-		errors = append(errors, fmt.Errorf("%q disk_size (%s) must be grater than 9", k))
+		errors = append(errors, fmt.Errorf("disk_size (%s) must be greater than 9", k))
 	}
 	return
 }
