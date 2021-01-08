@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"time"
-
+	"strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
 )
@@ -104,13 +104,12 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	}
 	d.Set("controller_yaml", yaml)
 	d.Set("state", clusterObj["state"])
-	file, ferr := writeToTempFile([]byte(yaml))
+	file,path, ferr := writeToTempDir([]byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("Failed to write temp file: %v", ferr)
 	}
-
 	defer os.Remove(file.Name())
-	d.Set("yaml_file", file.Name())
+	d.Set("yaml_file", path)
 	return nil
 }
 
@@ -127,14 +126,25 @@ func getCtrlYAML(b []byte) (string, error) {
 	return "", fmt.Errorf("Invalid controller YAML: %v", m)
 }
 
-func writeToTempFile(data []byte) (f *os.File, err error) {
-	f, err = ioutil.TempFile(os.TempDir(), "temp-")
-	if err != nil {
-		return f, fmt.Errorf("Cannot create temporary file: %v", err)
-	}
-
-	if _, err = f.Write(data); err != nil {
-		return f, fmt.Errorf("Failed to write temporary file %s: %v", f.Name(), err)
-	}
-	return
+func writeToTempDir(data []byte) (f *os.File, path string, err error) {
+	path, err = ioutil.TempDir("", "controller-")
+    if err != nil {
+        fmt.Println(err)
+    }
+	defer os.RemoveAll(path)
+	result := strings.Split(string(data), "---") 
+    for i := range result {
+		if result[i] != "" {
+			fmt.Println(result[i])
+			f, err = ioutil.TempFile(path, "temp-")
+			if err != nil {
+				return f,path, fmt.Errorf("Cannot create temporary file: %v", err)
+			}
+		
+			if _, err = f.Write([]byte(result[i])); err != nil {
+				return f, path,fmt.Errorf("Failed to write temporary file %s: %v", f.Name(), err)
+			}
+		}
+    }
+	return 
 }
