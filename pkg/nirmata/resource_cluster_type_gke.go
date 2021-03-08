@@ -147,18 +147,18 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 		Default:  false,
 	},
 	"cluster_field_override": {
-		Type:     schema.TypeMap,
-		Optional: true,
+		Type: schema.TypeList,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
+		Optional: true,
 	},
 	"nodepool_field_override": {
-		Type:     schema.TypeMap,
-		Optional: true,
+		Type: schema.TypeList,
 		Elem: &schema.Schema{
 			Type: schema.TypeString,
 		},
+		Optional: true,
 	},
 	"nodepools": {
 		Type:     schema.TypeList,

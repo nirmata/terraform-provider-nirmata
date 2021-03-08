@@ -25,15 +25,8 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     cluster = "gke"
   }
 
-  cluster_field_override = {
-    network    = "String"
-    subnetwork = "String"
-  }
-
-  nodepool_field_override = {
-    disk_size    = "Integer"
-    machine_type = "String"
-  }
+  cluster_field_override = [ "enableWorkloadIdentity","subnetwork","workloadPool","network"]
+  nodepool_field_override = [ "diskSize","serviceAccount","machineType"]
 
   nodepools {
     machine_type             = "c2-standard-16"
