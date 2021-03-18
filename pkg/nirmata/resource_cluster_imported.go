@@ -29,6 +29,10 @@ var importedClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"project": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
 }
 
 func resourceClusterImported() *schema.Resource {
@@ -53,6 +57,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
 	clusterType := d.Get("cluster_type").(string)
+	project := d.Get("project").(string)
 
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	if err != nil {
@@ -64,10 +69,13 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 		"mode":                "providerManaged",
 		"clusterTypeSelector": clusterType,
 		"credentialsRef":      cloudCredID.UUID(),
+
 		"clusters": map[string]interface{}{
 			name: map[string]interface{}{
-				"name":   name,
-				"region": region,
+				"name":    name,
+				"region":  region,
+				"project": project,
+				"id":      name,
 			},
 		},
 	}

@@ -12,4 +12,5 @@ resource "nirmata_cluster_imported" "gke-import-1" {
   credentials = "gke-test"
   cluster_type  =  "gke-test"
   region = "us-central1-c"
+   project = "my-project"
 }
