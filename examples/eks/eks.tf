@@ -18,6 +18,12 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
   // kms_key_arn = ""
   // log_types = ""
 
+  //enable_fargate = true
+  //pod_execution_role_arn = ""
+  //subnets= ["sg-xxxxxxxxxxxxxxxx","sg-xxxxxxxxxxxxxxxx"]
+  //namespace_label_selectors = {}
+  //pod_label_selectors = {}
+
   nodepools {
     name                = "default"
     instance_type       = "t3.medium"
