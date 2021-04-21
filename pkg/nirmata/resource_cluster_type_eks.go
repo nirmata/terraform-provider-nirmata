@@ -163,6 +163,10 @@ func resourceEksClusterType() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"auto_sync_namespaces": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
 		},
 	}
 }
@@ -243,6 +247,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	keyArn := d.Get("kms_key_arn")
 	enableIdentityProvider := d.Get("enable_identity_provider")
 	systemMetadata := d.Get("system_metadata")
+	autoSyncNamespaces := d.Get("auto_sync_namespaces").(bool)
 
 	// Cluster override fields
 	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
@@ -305,12 +310,13 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"description": "",
 		"modelIndex":  "ClusterType",
 		"spec": map[string]interface{}{
-			"clusterMode":    "providerManaged",
-			"modelIndex":     "ClusterSpec",
-			"version":        version,
-			"cloud":          "aws",
-			"systemMetadata": systemMetadata,
-			"addons":         addons,
+			"clusterMode":        "providerManaged",
+			"modelIndex":         "ClusterSpec",
+			"version":            version,
+			"cloud":              "aws",
+			"systemMetadata":     systemMetadata,
+			"autoSyncNamespaces": autoSyncNamespaces,
+			"addons":             addons,
 			"cloudConfigSpec": map[string]interface{}{
 				"modelIndex":               "CloudConfigSpec",
 				"credentials":              cloudCredID.UUID(),

@@ -20,6 +20,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   enable_http_load_balancing = false
   allow_override_credentials = true
   channel                    = "REGULAR"
+  auto_sync_namespaces       = true
 
   system_metadata = {
     cluster = "gke"

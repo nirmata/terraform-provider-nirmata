@@ -102,6 +102,10 @@ func resourceAksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"auto_sync_namespaces": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
 		},
 	}
 }
@@ -178,6 +182,7 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	serviceCidr := d.Get("service_cidr").(string)
 	dnsServiceIp := d.Get("dns_serviceI_ip").(string)
 	dockerBridgeCidr := d.Get("docker_bridge_cidr").(string)
+	autoSyncNamespaces := d.Get("auto_sync_namespaces").(bool)
 
 	// Cluster override fields
 	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
@@ -229,12 +234,13 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 		"description": "",
 		"modelIndex":  "ClusterType",
 		"spec": map[string]interface{}{
-			"clusterMode":    "providerManaged",
-			"modelIndex":     "ClusterSpec",
-			"version":        version,
-			"cloud":          "aws",
-			"systemMetadata": systemMetadata,
-			"addons":         addons,
+			"clusterMode":        "providerManaged",
+			"modelIndex":         "ClusterSpec",
+			"version":            version,
+			"cloud":              "azure",
+			"systemMetadata":     systemMetadata,
+			"autoSyncNamespaces": autoSyncNamespaces,
+			"addons":             addons,
 			"cloudConfigSpec": map[string]interface{}{
 				"modelIndex":               "CloudConfigSpec",
 				"credentials":              cloudCredID.UUID(),
