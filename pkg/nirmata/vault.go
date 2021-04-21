@@ -11,6 +11,10 @@ var vaultAuthSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"delete_auth_path": {
+		Type:     schema.TypeBool,
+		Required: false,
+	},
 	"addon_name": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -53,10 +57,11 @@ var vaultRoleSchema = map[string]*schema.Schema{
 
 func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}) map[string]interface{} {
 	vaultAuthSpec := map[string]interface{}{
-		"modelIndex": "VaultKubernetesAuthSpec",
-		"name":       vaultAuthSchema["name"],
-		"path":       vaultAuthSchema["path"],
-		"addOnName":  vaultAuthSchema["addon_name"],
+		"modelIndex":           "VaultKubernetesAuthSpec",
+		"name":                 vaultAuthSchema["name"],
+		"path":                 vaultAuthSchema["path"],
+		"shouldDeleteAuthPath": vaultAuthSchema["delete_auth_path"],
+		"addOnName":            vaultAuthSchema["addon_name"],
 	}
 
 	var rolesSpec []map[string]interface{}
