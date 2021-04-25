@@ -35,10 +35,11 @@ func Provider() *schema.Provider {
 			"nirmata_cluster_type_oke":          resourceOkeClusterType(),
 			"nirmata_cluster_type_gke":          resourceGkeClusterType(),
 			"nirmata_cluster_type_eks":          resourceEksClusterType(),
+			"nirmata_cluster_type_register":     resourceRegisterClusterType(),
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 			"nirmata_environment":               resourceEnvironment(),
 			"nirmata_environment_type":          resourceEnvironmentType(),
-			"nirmata_cluster_registered":          resourceClusterRegistered(),
+			"nirmata_cluster_registered":        resourceClusterRegistered(),
 		},
 
 		ConfigureFunc: configureProvider,
