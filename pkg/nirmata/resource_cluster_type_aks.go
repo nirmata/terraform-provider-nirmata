@@ -94,7 +94,7 @@ func resourceAksClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"dns_serviceI_ip": {
+			"dns_service_ip": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -180,7 +180,7 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	networkProfile := d.Get("network_profile").(string)
 	networkPolicy := d.Get("network_policy").(string)
 	serviceCidr := d.Get("service_cidr").(string)
-	dnsServiceIp := d.Get("dns_serviceI_ip").(string)
+	dnsServiceIp := d.Get("dns_service_ip").(string)
 	dockerBridgeCidr := d.Get("docker_bridge_cidr").(string)
 	autoSyncNamespaces := d.Get("auto_sync_namespaces").(bool)
 
