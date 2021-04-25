@@ -31,7 +31,7 @@ make install
 **NOTE: for Windows use these commands instead:**
 ```bash
 go build -o dist/windows_amd64/terraform-provider-nirmata_99.0.0
-mkdirs  %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\
+mkdir %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\
 copy dist\windows_amd64\terraform-provider-nirmata_99.0.0 %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\terraform-provider-nirmata_99.0.0
 ```
 
@@ -50,7 +50,7 @@ The example file first creates a ClusterType and then creates a single node `Clu
 terraform init examples/gke
 ```
 
-If you see an error below, delete the `.terraform.lock.hcl` file and re-run the `init` command:
+If you see the error below, delete the `.terraform.lock.hcl` file and re-run the `init` command:
 
 ```bash
 Error while installing local/nirmata/nirmata v99.0.0: the local package for
