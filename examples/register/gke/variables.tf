@@ -1,6 +1,7 @@
 variable "name" {
   default = "cluster-2"
 }
+
 variable "project" {
   default = "xxxx"
 }

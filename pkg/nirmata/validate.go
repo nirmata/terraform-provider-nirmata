@@ -18,6 +18,15 @@ func validateName(v interface{}, k string) (ws []string, errors []error) {
 	return
 }
 
+func validateAksFields(v interface{}, k string) (ws []string, errors []error) {
+	value := v.(string)
+	if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+		errors = append(errors, fmt.Errorf(
+			"%q must match [\\w+=,.@-]", k))
+	}
+	return
+}
+
 func validateNodeCount(v interface{}, k string) (ws []string, errors []error) {
 	count := v.(int)
 	if count < 0 || count > 1000 {
