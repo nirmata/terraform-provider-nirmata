@@ -182,6 +182,10 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 			Schema: vaultAuthSchema,
 		},
 	},
+	"auto_sync_namespaces": {
+		Type:     schema.TypeBool,
+		Required: true,
+	},
 }
 
 var gkeNodePoolSchema = map[string]*schema.Schema{
@@ -283,6 +287,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
+	autoSyncNamespaces := d.Get("auto_sync_namespaces").(bool)
 
 	apiClient := meta.(client.Client)
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
@@ -361,12 +366,13 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"description": "",
 		"modelIndex":  "ClusterType",
 		"spec": map[string]interface{}{
-			"clusterMode":    "providerManaged",
-			"modelIndex":     "ClusterSpec",
-			"version":        version,
-			"cloud":          "googlecloudplatform",
-			"systemMetadata": systemMetadata,
-			"addons":         addons,
+			"clusterMode":        "providerManaged",
+			"modelIndex":         "ClusterSpec",
+			"version":            version,
+			"cloud":              "googlecloudplatform",
+			"systemMetadata":     systemMetadata,
+			"addons":             addons,
+			"autoSyncNamespaces": autoSyncNamespaces,
 			"cloudConfigSpec": map[string]interface{}{
 				"credentials":              cloudCredID.UUID(),
 				"allowOverrideCredentials": allowOverrideCredentials,

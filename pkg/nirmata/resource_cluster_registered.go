@@ -6,10 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
-
+	"strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
 )
@@ -23,6 +21,18 @@ var registeredClusterSchema = map[string]*schema.Schema{
 	"cluster_type": {
 		Type:     schema.TypeString,
 		Required: true,
+	},
+	"controller_yaml": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"state": {
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"yaml_file": {
+		Type:     schema.TypeString,
+		Computed: true,
 	},
 	"delete_action": {
 		Type:         schema.TypeString,
@@ -97,13 +107,14 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 		log.Printf("Failed to decode controller YAML %s: %v \n", name, yamlErr)
 		return yamlErr
 	}
-
-	file, ferr := writeToTempFile([]byte(yaml))
+	d.Set("controller_yaml", yaml)
+	d.Set("state", clusterObj["state"])
+	file,path, ferr := writeToTempDir([]byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("failed to write temp file: %v", ferr)
 	}
-
 	defer os.Remove(file.Name())
+<<<<<<< HEAD
 	commandArgs := []string{"apply", "-f", file.Name()}
 	bytes, execErr := exec.Command("kubectl", commandArgs...).CombinedOutput()
 	if execErr != nil {
@@ -128,6 +139,9 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	log.Printf("[INFO] registered cluster %s with ID %s", name, clusterID)
+=======
+	d.Set("yaml_file", path)
+>>>>>>> master
 	return nil
 }
 
@@ -144,6 +158,7 @@ func getCtrlYAML(b []byte) (string, error) {
 	return "", fmt.Errorf("invalid controller YAML: %v", m)
 }
 
+<<<<<<< HEAD
 func writeToTempFile(data []byte) (f *os.File, err error) {
 	f, err = ioutil.TempFile(os.TempDir(), "temp-")
 	if err != nil {
@@ -155,4 +170,27 @@ func writeToTempFile(data []byte) (f *os.File, err error) {
 	}
 
 	return
+=======
+func writeToTempDir(data []byte) (f *os.File, path string, err error) {
+	path, err = ioutil.TempDir("", "controller-")
+    if err != nil {
+        fmt.Println(err)
+    }
+	defer os.RemoveAll(path)
+	result := strings.Split(string(data), "---") 
+    for i := range result {
+		if result[i] != "" {
+			fmt.Println(result[i])
+			f, err = ioutil.TempFile(path, "temp-")
+			if err != nil {
+				return f,path, fmt.Errorf("Cannot create temporary file: %v", err)
+			}
+		
+			if _, err = f.Write([]byte(result[i])); err != nil {
+				return f, path,fmt.Errorf("Failed to write temporary file %s: %v", f.Name(), err)
+			}
+		}
+    }
+	return 
+>>>>>>> master
 }

@@ -14,9 +14,16 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
   cluster_role_arn          = "arn:aws:iam::xxxxxxxx:role/xxxxxxxx"
   enable_private_endpoint   = true
   enable_identity_provider  = true
+  auto_sync_namespaces       = false
   // enable_secrets_encryption = true
   // kms_key_arn = ""
   // log_types = ""
+
+  //enable_fargate = true
+  //pod_execution_role_arn = ""
+  //subnets= ["sg-xxxxxxxxxxxxxxxx","sg-xxxxxxxxxxxxxxxx"]
+  //namespace_label_selectors = {}
+  //pod_label_selectors = {}
 
   nodepools {
     name                = "default"

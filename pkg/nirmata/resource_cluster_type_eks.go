@@ -133,6 +133,40 @@ func resourceEksClusterType() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"enable_fargate": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+			"pod_execution_role_arn": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"subnets": {
+				Type: schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
+			"namespace_label_selectors": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pod_label_selectors": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"auto_sync_namespaces": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
 		},
 	}
 }
@@ -213,13 +247,32 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	keyArn := d.Get("kms_key_arn")
 	enableIdentityProvider := d.Get("enable_identity_provider")
 	systemMetadata := d.Get("system_metadata")
+	autoSyncNamespaces := d.Get("auto_sync_namespaces").(bool)
+
+	// Cluster override fields
 	allowOverrideCredentials := d.Get("allow_override_credentials").(bool)
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
 
+	// Enable Fragment Fields
+	enableFargate := d.Get("enable_fargate").(bool)
+	podExecutionRoleArn := d.Get("pod_execution_role_arn").(string)
+	subnets := d.Get("subnet_id")
+	namespaceLabelSelectors := d.Get("namespace_label_selectors")
+	podLabelSelectors := d.Get("pod_label_selectors")
+
 	fieldsToOverride := map[string]interface{}{
 		"cluster":  clusterFieldOverride,
 		"nodePool": nodepoolFieldOverride,
+	}
+	fargate := map[string]interface{}{}
+	if enableFargate {
+		fargate = map[string]interface{}{
+			"podExecutionRoleArn":     podExecutionRoleArn,
+			"subnets":                 subnets,
+			"namespaceLabelSelectors": namespaceLabelSelectors,
+			"podLabelSelectors":       podLabelSelectors,
+		}
 	}
 
 	var nodeobjArr = make([]interface{}, 0)
@@ -257,12 +310,13 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"description": "",
 		"modelIndex":  "ClusterType",
 		"spec": map[string]interface{}{
-			"clusterMode":    "providerManaged",
-			"modelIndex":     "ClusterSpec",
-			"version":        version,
-			"cloud":          "aws",
-			"systemMetadata": systemMetadata,
-			"addons":         addons,
+			"clusterMode":        "providerManaged",
+			"modelIndex":         "ClusterSpec",
+			"version":            version,
+			"cloud":              "aws",
+			"systemMetadata":     systemMetadata,
+			"autoSyncNamespaces": autoSyncNamespaces,
+			"addons":             addons,
 			"cloudConfigSpec": map[string]interface{}{
 				"modelIndex":               "CloudConfigSpec",
 				"credentials":              cloudCredID.UUID(),
@@ -275,6 +329,8 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"clusterRoleArn":          clusterRoleArn,
 					"securityGroups":          securityGroups,
 					"logTypes":                logTypes,
+					"enableFargate":           enableFargate,
+					"fargateSettings":         fargate,
 					"privateEndpointAccess":   privateEndpointAccess,
 					"enableIdentityProvider":  enableIdentityProvider,
 					"enableSecretsEncryption": enableSecretsEncryption,

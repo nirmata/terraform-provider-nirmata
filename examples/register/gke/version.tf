@@ -1,10 +1,14 @@
-# terraform {
-#   required_version = ">= 0.13"
+terraform {
+  required_version = ">= 0.14"
+  required_providers {
+      nirmata = {
+      source  = "registry.terraform.io/nirmata/nirmata"
+      version = "1.0.0"
+    }
 
-#   # required_providers {
-#   #   kubectl = {
-#   #     source  = "gavinbunney/kubectl"
-#   #     version = ">= 1.7.0"
-#   #   }
-#   # }
-# }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
+    }
+  }
+}

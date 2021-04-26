@@ -18,6 +18,15 @@ func validateName(v interface{}, k string) (ws []string, errors []error) {
 	return
 }
 
+func validateAksFields(v interface{}, k string) (ws []string, errors []error) {
+	value := v.(string)
+	if !regexp.MustCompile(`^[\w+=,.@-]*$`).MatchString(value) {
+		errors = append(errors, fmt.Errorf(
+			"%q must match [\\w+=,.@-]", k))
+	}
+	return
+}
+
 func validateNodeCount(v interface{}, k string) (ws []string, errors []error) {
 	count := v.(int)
 	if count < 0 || count > 1000 {
@@ -37,7 +46,7 @@ func validateGKEMachineType(v interface{}, k string) (ws []string, errors []erro
 
 func validateGKEDiskSize(v interface{}, k string) (ws []string, errors []error) {
 	if v.(int) < 9 {
-		errors = append(errors, fmt.Errorf("%q disk_size (%s) must be grater than 9", k, v))
+		errors = append(errors, fmt.Errorf("disk_size (%s) must be greater than 9", k))
 	}
 	return
 }
