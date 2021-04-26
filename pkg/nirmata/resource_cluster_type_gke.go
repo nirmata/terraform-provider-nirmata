@@ -186,12 +186,14 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 
 var gkeNodePoolSchema = map[string]*schema.Schema{
 	"machine_type": {
-		Type:     schema.TypeString,
-		Required: true,
+		Type:         schema.TypeString,
+		ValidateFunc: validateGKEMachineType,
+		Required:     true,
 	},
 	"disk_size": {
-		Type:     schema.TypeInt,
-		Required: true,
+		Type:         schema.TypeInt,
+		ValidateFunc: validateGKEDiskSize,
+		Required:     true,
 	},
 	"service_account": {
 		Type:     schema.TypeString,
@@ -454,7 +456,7 @@ var nodePoolTypePaths = map[string]string{
 	"disk_size":                "spec[0].gkeConfig[0].diskSize",
 	"auto_upgrade":             "spec[0].gkeConfig[0].autoUpgrade",
 	"auto_repair":              "spec[0].gkeConfig[0].autoRepair",
-	"max_surge":              	"spec[0].gkeConfig[0].maxSurge",
+	"max_surge":                "spec[0].gkeConfig[0].maxSurge",
 	"max_unavailable":          "spec[0].gkeConfig[0].maxUnavailable",
 	"enable_preemptible_nodes": "spec[0].gkeConfig[0].enablePreemptibleNodes",
 	"service_account":          "spec[0].gkeConfig[0].serviceAccount",
@@ -516,10 +518,10 @@ var gkeAttributeMap = map[string]string{
 var nodePoolAttributeMap = map[string]string{
 	"machine_type":             "machineType",
 	"disksize":                 "diskSize",
-	"auto_upgrade":              "autoUpgrade",
-	"auto_repair":               "autoRepair",
-	"max_surge":               	 "maxSurge",
-	"max_unavailable":           "maxUnavailable",
+	"auto_upgrade":             "autoUpgrade",
+	"auto_repair":              "autoRepair",
+	"max_surge":                "maxSurge",
+	"max_unavailable":          "maxUnavailable",
 	"enable_preemptible_nodes": "enablePreemptibleNodes",
 	"service_account":          "serviceAccount",
 	"node_labels":              "nodeLabels",
