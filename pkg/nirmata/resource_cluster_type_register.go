@@ -27,6 +27,14 @@ func resourceRegisterClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"vault_auth": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: vaultAuthSchema,
+				},
+			},
 		},
 	}
 }
@@ -47,6 +55,11 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 			"cloud":       cloud,
 			"addons":      addons,
 		},
+	}
+	if _, ok := d.GetOk("vault_auth"); ok {
+		vl := d.Get("vault_auth").([]interface{})
+		vault := vl[0].(map[string]interface{})
+		clustertype["spec"].(map[string]interface{})["vault"] = vaultAuthSchemaToVaultAuthSpec(vault)
 	}
 
 	log.Printf("[DEBUG] - creating register cluster type %s with %+v", name, clustertype)
