@@ -13,6 +13,7 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
   version                    = "1.17.13-gke.2001"
   credentials                = "gke-test"
   location_type              = "Zonal"
+  project                    = "XXX"
   zone                       = "us-central1-a"
   network                    = "default"
   subnetwork                 = "default"
