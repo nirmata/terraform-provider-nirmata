@@ -13,7 +13,7 @@ var vaultAuthSchema = map[string]*schema.Schema{
 	},
 	"delete_auth_path": {
 		Type:     schema.TypeBool,
-		Required: false,
+		Optional: true,
 	},
 	"addon_name": {
 		Type:     schema.TypeString,

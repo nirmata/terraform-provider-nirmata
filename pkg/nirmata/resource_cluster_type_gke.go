@@ -35,6 +35,10 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 	},
 	"channel": {
 		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"project": {
+		Type:     schema.TypeString,
 		Required: true,
 	},
 	"location_type": {
@@ -262,6 +266,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	region := d.Get("region").(string)
 	zone := d.Get("zone").(string)
 	channel := d.Get("channel").(string)
+	project := d.Get("project").(string)
 	locationType := d.Get("location_type").(string)
 	nodeLocations := d.Get("node_locations")
 	enableSecretsEncryption := d.Get("enable_secrets_encryption").(bool)
@@ -383,6 +388,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"region":                       region,
 					"zone":                         zone,
 					"channel":                      channel,
+					"project":                      project,
 					"locationType":                 locationType,
 					"defaultNodeLocations":         nodeLocations,
 					"enableSecretsEncryption":      enableSecretsEncryption,
