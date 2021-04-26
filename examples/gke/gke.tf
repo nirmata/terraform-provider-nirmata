@@ -60,6 +60,7 @@ resource "nirmata_cluster" "gke-cluster-1" {
     network    = ""
     subnetwork = ""
   }
+  //delete_action = "remove"
 }
 
 output "cluster_type_name" {

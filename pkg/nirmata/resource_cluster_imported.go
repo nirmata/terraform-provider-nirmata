@@ -33,6 +33,12 @@ var importedClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"delete_action": {
+		Type:         schema.TypeString,
+		Optional:     true,
+		Default:      "remove",
+		ValidateFunc: validateDeleteAction,
+	},
 }
 
 func resourceClusterImported() *schema.Resource {

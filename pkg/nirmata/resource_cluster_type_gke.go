@@ -190,12 +190,14 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 
 var gkeNodePoolSchema = map[string]*schema.Schema{
 	"machine_type": {
-		Type:     schema.TypeString,
-		Required: true,
+		Type:         schema.TypeString,
+		ValidateFunc: validateGKEMachineType,
+		Required:     true,
 	},
 	"disk_size": {
-		Type:     schema.TypeInt,
-		Required: true,
+		Type:         schema.TypeInt,
+		ValidateFunc: validateGKEDiskSize,
+		Required:     true,
 	},
 	"service_account": {
 		Type:     schema.TypeString,

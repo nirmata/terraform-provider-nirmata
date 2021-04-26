@@ -34,7 +34,12 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-
+	"delete_action": {
+		Type:         schema.TypeString,
+		Optional:     true,
+		Default:      "remove",
+		ValidateFunc: validateDeleteAction,
+	},
 }
 
 func resourceClusterRegistered() *schema.Resource {
@@ -106,10 +111,37 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	d.Set("state", clusterObj["state"])
 	file,path, ferr := writeToTempDir([]byte(yaml))
 	if ferr != nil {
-		return fmt.Errorf("Failed to write temp file: %v", ferr)
+		return fmt.Errorf("failed to write temp file: %v", ferr)
 	}
 	defer os.Remove(file.Name())
+<<<<<<< HEAD
+	commandArgs := []string{"apply", "-f", file.Name()}
+	bytes, execErr := exec.Command("kubectl", commandArgs...).CombinedOutput()
+	if execErr != nil {
+		return fmt.Errorf("failed to execute command %v: %v %s", commandArgs, execErr, string(bytes))
+	}
+
+	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
+	state, waitErr := waitForClusterState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
+	if waitErr != nil {
+		log.Printf("[ERROR] - failed to check cluster status. Error - %v", waitErr)
+		return waitErr
+	}
+
+	if strings.EqualFold("failed", state) {
+		status, err := getClusterStatus(apiClient, clusterID)
+		if err != nil {
+			log.Printf("[ERROR] - failed to retrieve cluster failure details: %v", err)
+			return fmt.Errorf("cluster creation failed")
+		}
+
+		return fmt.Errorf("cluster creation failed: %s", status)
+	}
+
+	log.Printf("[INFO] registered cluster %s with ID %s", name, clusterID)
+=======
 	d.Set("yaml_file", path)
+>>>>>>> master
 	return nil
 }
 
@@ -123,9 +155,22 @@ func getCtrlYAML(b []byte) (string, error) {
 		return v, nil
 	}
 
-	return "", fmt.Errorf("Invalid controller YAML: %v", m)
+	return "", fmt.Errorf("invalid controller YAML: %v", m)
 }
 
+<<<<<<< HEAD
+func writeToTempFile(data []byte) (f *os.File, err error) {
+	f, err = ioutil.TempFile(os.TempDir(), "temp-")
+	if err != nil {
+		return f, fmt.Errorf("cannot create temporary file: %v", err)
+	}
+
+	if _, err = f.Write(data); err != nil {
+		return f, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
+	}
+
+	return
+=======
 func writeToTempDir(data []byte) (f *os.File, path string, err error) {
 	path, err = ioutil.TempDir("", "controller-")
     if err != nil {
@@ -147,4 +192,5 @@ func writeToTempDir(data []byte) (f *os.File, path string, err error) {
 		}
     }
 	return 
+>>>>>>> master
 }

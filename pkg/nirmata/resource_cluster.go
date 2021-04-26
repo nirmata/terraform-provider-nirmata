@@ -54,6 +54,11 @@ func resourceManagedCluster() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"delete_action": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "delete",
+			},
 		},
 	}
 }
@@ -241,8 +246,13 @@ func resourceClusterDelete(d *schema.ResourceData, meta interface{}) error {
 	name := d.Get("name").(string)
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", d.Id())
 
+	action := "delete"
+	if d.Get("delete_action") != nil {
+		action = d.Get("delete_action").(string)
+	}
+
 	params := map[string]string{
-		"action": "delete",
+		"action": action,
 	}
 
 	if err := apiClient.Delete(clusterID, params); err != nil {

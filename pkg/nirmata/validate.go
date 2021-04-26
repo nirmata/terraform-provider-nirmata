@@ -30,7 +30,7 @@ func validateAksFields(v interface{}, k string) (ws []string, errors []error) {
 func validateNodeCount(v interface{}, k string) (ws []string, errors []error) {
 	count := v.(int)
 	if count < 0 || count > 1000 {
-		errors = append(errors, fmt.Errorf("The node count (%d) must be between 0 and 1000", count))
+		errors = append(errors, fmt.Errorf("node count (%d) must be between 0 and 1000", count))
 	}
 
 	return
@@ -64,6 +64,16 @@ func validateEKSDiskSize(v interface{}, k string) (ws []string, errors []error) 
 	if v.(int) < 9 {
 		errors = append(errors, fmt.Errorf(
 			"%q The disk size must be grater than 9", k))
+	}
+
+	return
+}
+
+func validateDeleteAction(v interface{}, k string) (ws []string, errors []error) {
+	val := v.(string)
+	if val != "delete" && val != "remove" {
+		errors = append(errors, fmt.Errorf(
+			"%s is not a valid delete_action; expected 'delete' or 'remove'", val))
 	}
 
 	return
