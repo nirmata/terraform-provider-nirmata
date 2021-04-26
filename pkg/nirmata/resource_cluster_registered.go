@@ -24,6 +24,12 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"delete_action": {
+		Type:         schema.TypeString,
+		Optional:     true,
+		Default:      "remove",
+		ValidateFunc: validateDeleteAction,
+	},
 }
 
 func resourceClusterRegistered() *schema.Resource {
@@ -94,14 +100,14 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 
 	file, ferr := writeToTempFile([]byte(yaml))
 	if ferr != nil {
-		return fmt.Errorf("Failed to write temp file: %v", ferr)
+		return fmt.Errorf("failed to write temp file: %v", ferr)
 	}
 
 	defer os.Remove(file.Name())
 	commandArgs := []string{"apply", "-f", file.Name()}
 	bytes, execErr := exec.Command("kubectl", commandArgs...).CombinedOutput()
 	if execErr != nil {
-		return fmt.Errorf("Failed to execute command %v: %v %s", commandArgs, execErr, string(bytes))
+		return fmt.Errorf("failed to execute command %v: %v %s", commandArgs, execErr, string(bytes))
 	}
 
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
@@ -135,17 +141,17 @@ func getCtrlYAML(b []byte) (string, error) {
 		return v, nil
 	}
 
-	return "", fmt.Errorf("Invalid controller YAML: %v", m)
+	return "", fmt.Errorf("invalid controller YAML: %v", m)
 }
 
 func writeToTempFile(data []byte) (f *os.File, err error) {
 	f, err = ioutil.TempFile(os.TempDir(), "temp-")
 	if err != nil {
-		return f, fmt.Errorf("Cannot create temporary file: %v", err)
+		return f, fmt.Errorf("cannot create temporary file: %v", err)
 	}
 
 	if _, err = f.Write(data); err != nil {
-		return f, fmt.Errorf("Failed to write temporary file %s: %v", f.Name(), err)
+		return f, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
 	}
 
 	return

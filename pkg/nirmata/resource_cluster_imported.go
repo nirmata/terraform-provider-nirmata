@@ -34,9 +34,10 @@ var importedClusterSchema = map[string]*schema.Schema{
 		Required: true,
 	},
 	"delete_action": {
-		Type:     schema.TypeString,
-		Optional: true,
-		Default:  "delete",
+		Type:         schema.TypeString,
+		Optional:     true,
+		Default:      "remove",
+		ValidateFunc: validateDeleteAction,
 	},
 }
 
