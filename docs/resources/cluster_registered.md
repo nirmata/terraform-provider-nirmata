@@ -52,7 +52,7 @@ data "kubectl_filename_list" "manifests" {
 }
 
 resource "kubectl_manifest" "test" {
-  count     = length(data.kubectl_filename_list.manifests.matches)
+  count     = nirmata_cluster_registered.controller_yamls_count
   yaml_body = file(element(data.kubectl_filename_list.manifests.matches, count.index))
 }
 
@@ -64,6 +64,7 @@ resource "kubectl_manifest" "test" {
 * `cluster_type` - (Required) the cluster type to apply.
 * `controller_yamls` - (Computed) the controller YAML
 * `controller_yamls_folder` - (Computed) a local temporary folder with the controller YAML files
+* `controller_yamls_count` - (Computed) the controller YAML file count
 * `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
 
 
