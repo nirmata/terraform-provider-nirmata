@@ -35,6 +35,8 @@ mkdir %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\v1.0.0\windows_amd64\
 copy dist\windows_amd64\terraform-provider-nirmata_v1.0.0 %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\v1.0.0\windows_amd64\terraform-provider-nirmata_1.0.0
 ```
 
+For testing local changes see: https://github.com/hashicorp/terraform-provider-aws/issues/5396#issuecomment-409592871
+
 3. Set your `NIRMATA_TOKEN` environment variable to contain your Nirmata API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)
 
 4. Edit the sample Terraform config file `samples/cloud_provider/gke/gke.tf` and include your credentials, and desired region, machine_type, and disk_size.
