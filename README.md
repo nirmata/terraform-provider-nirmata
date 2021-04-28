@@ -30,9 +30,9 @@ make install
 
 **NOTE: for Windows use these commands instead:**
 ```bash
-go build -o dist/windows_amd64/terraform-provider-nirmata_99.0.0
-mkdir %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\
-copy dist\windows_amd64\terraform-provider-nirmata_99.0.0 %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\99.0.0\windows_amd64\terraform-provider-nirmata_99.0.0
+go build -o dist/windows_amd64/terraform-provider-nirmata_v1.0.0
+mkdir %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\v1.0.0\windows_amd64\
+copy dist\windows_amd64\terraform-provider-nirmata_v1.0.0 %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\v1.0.0\windows_amd64\terraform-provider-nirmata_1.0.0
 ```
 
 3. Set your `NIRMATA_TOKEN` environment variable to contain your Nirmata API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)

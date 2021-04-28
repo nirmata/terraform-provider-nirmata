@@ -1,8 +1,7 @@
 .DEFAULT_GOAL      := build
 OS                 := $(shell go env GOOS)
 ARCH               := $(shell go env GOARCH)
-GIT_VERSION        := $(shell git describe)
-VERSION            := 99.0.0
+VERSION        	   := $(shell git describe)
 PLUGINS            ?=${HOME}/.terraform.d/plugins
 PLUGIN_PATH        ?=local/nirmata/nirmata/${VERSION}/${OS}_${ARCH}
 PLUGIN_NAME        := terraform-provider-nirmata_${VERSION}
@@ -32,7 +31,7 @@ build: ${DIST_PATH}/${PLUGIN_NAME}
 install: clean build
 	mkdir -p $(PLUGIN_PATH); \
 	rm -rf ${PLUGINS}/$(PLUGIN_PATH)/${PLUGIN_NAME}; \
-	install -m 0755 $(DIST_PATH)/${PLUGIN_NAME} ${PLUGINS}/$(PLUGIN_PATH)/${PLUGIN_NAME}
+	install -m 0755 "$(DIST_PATH)/${PLUGIN_NAME}" "${PLUGINS}/$(PLUGIN_PATH)/${PLUGIN_NAME}"
 
 .PHONY: clean
 clean:

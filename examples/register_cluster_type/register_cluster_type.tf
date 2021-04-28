@@ -9,9 +9,8 @@ provider "nirmata" {
   // url = ""
 }
 
-// An register Cluster type is used while  creating register clusters
-// cloud : Other, GoogleCloudPlatform, AWS .....
-resource "nirmata_cluster_type_register" "tf-register-type-1" {
-  name             = "tf-register-cluster"
-  cloud      = "" 
+// An registered Cluster type is used while creating registered clusters
+resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
+  name  = "tf-registered-cluster"
+  cloud = "Other"
 }
