@@ -37,6 +37,6 @@ data "kubectl_filename_list" "manifests" {
 }
 
 resource "kubectl_manifest" "test" {
-  count     = length(data.kubectl_filename_list.manifests.matches)
+  count     = nirmata_cluster_registered.gke-register.controller_yamls_count
   yaml_body = file(element(data.kubectl_filename_list.manifests.matches, count.index))
 }

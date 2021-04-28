@@ -35,6 +35,10 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 	},
+	"controller_yamls_count": {
+		Type:     schema.TypeInt,
+		Computed: true,
+	},
 	"delete_action": {
 		Type:         schema.TypeString,
 		Optional:     true,
@@ -111,11 +115,12 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 
 	d.Set("controller_yamls", yaml)
 	d.Set("state", clusterObj["state"])
-	path, ferr := writeToTempDir([]byte(yaml))
+	path, count, ferr := writeToTempDir([]byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("failed to write temp file: %v", ferr)
 	}
 
+	d.Set("controller_yamls_count", count)
 	d.Set("controller_yamls_folder", path)
 	return nil
 }
@@ -133,7 +138,7 @@ func getCtrlYAML(b []byte) (string, error) {
 	return "", fmt.Errorf("invalid controller YAML: %v", m)
 }
 
-func writeToTempDir(data []byte) (path string, err error) {
+func writeToTempDir(data []byte) (path string, count int, err error) {
 	path, err = ioutil.TempDir("", "controller-")
 	if err != nil {
 		fmt.Println(err)
@@ -141,18 +146,20 @@ func writeToTempDir(data []byte) (path string, err error) {
 
 	defer os.RemoveAll(path)
 	result := strings.Split(string(data), "---")
+	count = 0
 	for i := range result {
 		if result[i] != "" {
 			fmt.Println(result[i])
 			f, err := ioutil.TempFile(path, "temp-")
 			if err != nil {
-				return "", fmt.Errorf("cannot create temporary file: %v", err)
+				return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
 			}
 
 			if _, err = f.Write([]byte(result[i])); err != nil {
-				return "", fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
+				return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
 			}
 
+			count += 1
 			f.Close()
 		}
 	}
