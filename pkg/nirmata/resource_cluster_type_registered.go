@@ -42,6 +42,13 @@ func resourceRegisteredClusterType() *schema.Resource {
 					Schema: vaultAuthSchema,
 				},
 			},
+			"labels": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -50,6 +57,7 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	cloud := d.Get("cloud").(string)
+	labels := d.Get("labels")
 	addons := addOnsSchemaToAddOns(d)
 
 	clustertype := map[string]interface{}{
@@ -61,6 +69,7 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 			"modelIndex":  "ClusterSpec",
 			"cloud":       cloud,
 			"addons":      addons,
+			"labels":      labels,
 		},
 	}
 	if _, ok := d.GetOk("vault_auth"); ok {
