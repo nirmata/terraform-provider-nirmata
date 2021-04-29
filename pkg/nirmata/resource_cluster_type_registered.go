@@ -7,7 +7,7 @@ import (
 	"github.com/nirmata/go-client/pkg/client"
 )
 
-func resourceRegisterClusterType() *schema.Resource {
+func resourceRegisteredClusterType() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceRegisterClusterTypeCreate,
 		Read:   resourceRegisterClusterTypeRead,

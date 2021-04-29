@@ -1,38 +1,18 @@
 .DEFAULT_GOAL      := build
 OS                 := $(shell go env GOOS)
 ARCH               := $(shell go env GOARCH)
-GIT_VERSION        := $(shell git describe)
-VERSION            := 99.0.0
-PLUGINS            ?=${HOME}/.terraform.d/plugins
-PLUGIN_PATH        ?=local/nirmata/nirmata/${VERSION}/${OS}_${ARCH}
+VERSION        	   := $(shell git describe)
+
 PLUGIN_NAME        := terraform-provider-nirmata_${VERSION}
 DIST_PATH          := dist/${OS}_${ARCH}
-GO_PACKAGES        := $(shell go list ./... | grep -v /vendor/)
-GO_FILES           := $(shell find . -type f -name '*.go')
-GO                 ?= go
 
 .PHONY: all
-all: test build
-
-.PHONY: test
-test: test-all
-
-.PHONY: test-all
-test-all:
-	@TF_ACC=1 $(GO) test -v -race $(GO_PACKAGES)
-
-${DIST_PATH}/${PLUGIN_NAME}: ${GO_FILES}
-	mkdir -p $(DIST_PATH); \
-	$(GO) build -o $(DIST_PATH)/${PLUGIN_NAME}
+all: build
 
 .PHONY: build
-build: ${DIST_PATH}/${PLUGIN_NAME}
-
-.PHONY: install
-install: clean build
-	mkdir -p $(PLUGIN_PATH); \
-	rm -rf ${PLUGINS}/$(PLUGIN_PATH)/${PLUGIN_NAME}; \
-	install -m 0755 $(DIST_PATH)/${PLUGIN_NAME} ${PLUGINS}/$(PLUGIN_PATH)/${PLUGIN_NAME}
+build:
+	mkdir -p $(DIST_PATH); \
+	go build -o $(DIST_PATH)/${PLUGIN_NAME}
 
 .PHONY: clean
 clean:

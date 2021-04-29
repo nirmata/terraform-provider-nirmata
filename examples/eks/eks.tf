@@ -21,9 +21,6 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
 
   //enable_fargate = true
   //pod_execution_role_arn = ""
-  //subnets= ["sg-xxxxxxxxxxxxxxxx","sg-xxxxxxxxxxxxxxxx"]
-  //namespace_label_selectors = {}
-  //pod_label_selectors = {}
 
   nodepools {
     name                = "default"

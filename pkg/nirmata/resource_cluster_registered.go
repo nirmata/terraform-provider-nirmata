@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -23,7 +22,7 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
-	"controller_yaml": {
+	"controller_yamls": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
@@ -31,14 +30,17 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"yaml_file": {
+	"controller_yamls_folder": {
 		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"controller_yamls_count": {
+		Type:     schema.TypeInt,
 		Computed: true,
 	},
 	"delete_action": {
 		Type:         schema.TypeString,
 		Optional:     true,
-		Default:      "remove",
 		ValidateFunc: validateDeleteAction,
 	},
 }
@@ -64,6 +66,11 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	name := d.Get("name").(string)
 	clusterType := d.Get("cluster_type").(string)
 
+	deleteAction := d.Get("delete_action").(string)
+	if deleteAction == "" {
+		d.Set("delete_action", "remove")
+	}
+
 	typeID, err := apiClient.QueryByName(client.ServiceClusters, "ClusterType", clusterType)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
@@ -86,7 +93,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 		"typeSelector": clusterType,
 	}
 
-	log.Printf("[DEBUG] - importing cluster %s with %+v", name, data)
+	log.Printf("[DEBUG] - registering cluster %s with %+v", name, data)
 	clusterObj, err := apiClient.PostFromJSON(client.ServiceClusters, "KubernetesCluster", data, nil)
 	if err != nil {
 		log.Printf("[ERROR] - failed to register cluster %s with data %v: %v", name, data, err)
@@ -99,23 +106,28 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	clusterData, _ := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
 	b, _, err := apiClient.GetURLWithID(clusterData, "controllerYAML")
 	if err != nil {
-		log.Printf("Failed to fetch controller YAML %s: %v \n", name, err)
+		log.Printf("[ERROR] - Failed to fetch controller YAML %s: %v \n", name, err)
 		return err
 	}
 
 	yaml, yamlErr := getCtrlYAML(b)
 	if yamlErr != nil {
-		log.Printf("Failed to decode controller YAML %s: %v \n", name, yamlErr)
+		log.Printf("[ERROR] - Failed to decode controller YAML %s: %v \n", name, yamlErr)
 		return yamlErr
 	}
-	d.Set("controller_yaml", yaml)
+
+	d.Set("controller_yamls", yaml)
 	d.Set("state", clusterObj["state"])
-	file, path, ferr := writeToTempDir([]byte(yaml))
+
+	path, count, ferr := writeToTempDir([]byte(yaml))
 	if ferr != nil {
-		return fmt.Errorf("Failed to write temp file: %v", ferr)
+		return fmt.Errorf("failed to write temporary files: %v", ferr)
 	}
-	defer os.Remove(file.Name())
-	d.Set("yaml_file", path)
+
+	log.Printf("[INFO] - wrote temporary YAMLs files to %s:", path)
+
+	d.Set("controller_yamls_count", count)
+	d.Set("controller_yamls_folder", path)
 	return nil
 }
 
@@ -129,28 +141,33 @@ func getCtrlYAML(b []byte) (string, error) {
 		return v, nil
 	}
 
-	return "", fmt.Errorf("Invalid controller YAML: %v", m)
+	return "", fmt.Errorf("invalid controller YAML: %v", m)
 }
 
-func writeToTempDir(data []byte) (f *os.File, path string, err error) {
+func writeToTempDir(data []byte) (path string, count int, err error) {
 	path, err = ioutil.TempDir("", "controller-")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer os.RemoveAll(path)
+
 	result := strings.Split(string(data), "---")
+	count = 0
 	for i := range result {
 		if result[i] != "" {
 			fmt.Println(result[i])
-			f, err = ioutil.TempFile(path, "temp-")
+			f, err := ioutil.TempFile(path, "temp-")
 			if err != nil {
-				return f, path, fmt.Errorf("Cannot create temporary file: %v", err)
+				return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
 			}
 
 			if _, err = f.Write([]byte(result[i])); err != nil {
-				return f, path, fmt.Errorf("Failed to write temporary file %s: %v", f.Name(), err)
+				return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
 			}
+
+			count += 1
+			f.Close()
 		}
 	}
+
 	return
 }

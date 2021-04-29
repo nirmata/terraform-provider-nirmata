@@ -29,17 +29,17 @@ func Provider() *schema.Provider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"nirmata_cluster":                   resourceManagedCluster(),
-			"nirmata_cluster_direct_connect":    resourceClusterDirectConnect(),
 			"nirmata_cluster_imported":          resourceClusterImported(),
 			"nirmata_cluster_type_aks":          resourceAksClusterType(),
 			"nirmata_cluster_type_oke":          resourceOkeClusterType(),
 			"nirmata_cluster_type_gke":          resourceGkeClusterType(),
 			"nirmata_cluster_type_eks":          resourceEksClusterType(),
-			"nirmata_cluster_type_register":     resourceRegisterClusterType(),
+			"nirmata_cluster_type_registered":   resourceRegisteredClusterType(),
+			"nirmata_cluster_registered":        resourceClusterRegistered(),
+			"nirmata_cluster_direct_connect":    resourceClusterDirectConnect(),
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 			"nirmata_environment":               resourceEnvironment(),
 			"nirmata_environment_type":          resourceEnvironmentType(),
-			"nirmata_cluster_registered":        resourceClusterRegistered(),
 		},
 
 		ConfigureFunc: configureProvider,

@@ -65,6 +65,11 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	clusterType := d.Get("cluster_type").(string)
 	project := d.Get("project").(string)
 
+	deleteAction := d.Get("delete_action").(string)
+	if deleteAction == "" {
+		d.Set("delete_action", "remove")
+	}
+
 	cloudCredID, err := apiClient.QueryByName(client.ServiceClusters, "CloudCredentials", credentials)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)

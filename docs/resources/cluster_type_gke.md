@@ -4,14 +4,15 @@ page_title: "nirmata_cluster_type_gke Resource"
 
 # nirmata_cluster_type_gke Resource
 
-Represents a Google Kubernetes Engine (GKE) cluster type.
+A Google Kubernetes Engine (GKE) cluster type. A cluster type can be used to create multiple clusters.
 
 ## Example Usage
 
-Create a GKE cluster type 
+Create a GKE cluster type with a Vault Agent Injector add-on:
 
 ```hcl
 resource "nirmata_cluster_type_gke" "gke-us-west" {
+
   name = "gke-us-west"
   version = ""1.17.13-gke.2001"
   credentials = "gcp"
@@ -20,12 +21,35 @@ resource "nirmata_cluster_type_gke" "gke-us-west" {
   zone = "us-central1-a"
   network = "default"
   subnetwork = "default"
+
   nodepools { 
     machine_type = "c2-standard-16"
     disk_size= 120
     enable_preemptible_nodes  =  true
     node_annotations = {
        node = "annotate"
+    }
+  }
+
+  addons {
+    name            = "vault-agent-injector"
+    addon_selector  = "vault-agent-injector"
+    catalog         = "default-catalog"
+    channel         = "Stable"
+    sequence_number = 15
+  }
+
+  vault_auth {
+    name             = "gke-vault-auth"
+    path             = "nirmata/$(cluster.name)"
+    addon_name       = "vault-agent-injector"
+    credentials_name = "vault_access"
+
+    roles {
+      name                 = "sample-role"
+      service_account_name = "application-sample-sa"
+      namespace            = "application-sample-ns"
+      policies             = "application-sample-policy"
     }
   }
 }
@@ -63,6 +87,8 @@ resource "nirmata_cluster_type_gke" "gke-us-west" {
 * `cluster_field_override` - (Optional) Allow override of cluster settings ('network' and 'subnetwork') when a cluster is created using this cluster type.
 * `nodepool_field_override` - (Optional)  Allow override of node fields ('disk_size' and 'machine_type') when a cluster is created using this cluster type.
 * `nodepools` - (Optional) A list of [nodepool](#nodepool) types.
+* `addons` - (Optional) a list of add-on services.
+* `vault_auth` - (Optional) vault authentication configuration.
 
 ## Nested Blocks
 
@@ -74,3 +100,26 @@ resource "nirmata_cluster_type_gke" "gke-us-west" {
 * `enable_preemptible_nodes` - (Optional) Preemptible nodes are Compute Engine instances that last up to 24 hours and provide no availability guarantees, but are priced lower. This setting is permanent.
 * `node_annotations` -  (Optional) Annotations to set on each node in this pool. This setting is permanent.
 * `node_labels` - (Optional) Labels to set on each Kubernetes node in this node pool. This setting is permanent.
+
+### addons
+
+* `name` - (Required) a unique name for the add-on service
+* `addon_selector` - (Required) the catalog application name
+* `catalog` - (Required) the catalog name
+* `channel` - (Required) the release channel
+* `sequence_number` - (Optional) a sequence number to control installation order
+
+### vault_auth
+
+* `name` - (Required) a unique name
+* `path` - (Required) the vault authentication path. The variable $(cluster.name) is allowed in the path for uniquenes.
+* `addon_name` - (Required) the associated Vault Agent Injector add-on
+* `credentials_name` - (Required) the Vault credentials to use 
+* `roles` - (Required) a list of application roles to configure for add-on services
+
+#### roles
+
+* `name` - (Required) a unique name
+* `service_account_name` - (Required) the allowed service account name
+* `namespace` - (Required) the allowed namespace
+* `policies` - (Required) the applied policies
