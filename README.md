@@ -1,6 +1,6 @@
 # Terraform Provider for Nirmata
 
-<h3> See documrntation and examples at the [Terraform Registry](https://registry.terraform.io/providers/nirmata/nirmata/latest) </h3>
+**See documentation and examples at the [Terraform Registry](https://registry.terraform.io/providers/nirmata/nirmata/latest).**
 
 
 ## Releasing
