@@ -27,6 +27,13 @@ func resourceRegisteredClusterType() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"addons": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: addonSchema,
+				},
+			},
 			"vault_auth": {
 				Type:     schema.TypeList,
 				Optional: true,
