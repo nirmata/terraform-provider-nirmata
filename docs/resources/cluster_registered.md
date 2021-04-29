@@ -31,7 +31,7 @@ data "google_client_config" "provider" {
 
 data "google_container_cluster" "my_cluster" {
   name     = "cluster-1"
-  project  = "nirmata-demo"
+  project  = "xxx"
   location = "us-central1-c"
 }
 
