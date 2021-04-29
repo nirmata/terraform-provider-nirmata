@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -42,7 +41,6 @@ var registeredClusterSchema = map[string]*schema.Schema{
 	"delete_action": {
 		Type:         schema.TypeString,
 		Optional:     true,
-		Default:      "remove",
 		ValidateFunc: validateDeleteAction,
 	},
 }
@@ -67,6 +65,11 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	clusterType := d.Get("cluster_type").(string)
+
+	deleteAction := d.Get("delete_action").(string)
+	if deleteAction == "" {
+		d.Set("delete_action", "remove")
+	}
 
 	typeID, err := apiClient.QueryByName(client.ServiceClusters, "ClusterType", clusterType)
 	if err != nil {
@@ -115,10 +118,13 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 
 	d.Set("controller_yamls", yaml)
 	d.Set("state", clusterObj["state"])
+
 	path, count, ferr := writeToTempDir([]byte(yaml))
 	if ferr != nil {
-		return fmt.Errorf("failed to write temp file: %v", ferr)
+		return fmt.Errorf("failed to write temporary files: %v", ferr)
 	}
+
+	log.Printf("[INFO] - wrote temporary YAMLs files to %s:", path)
 
 	d.Set("controller_yamls_count", count)
 	d.Set("controller_yamls_folder", path)
@@ -144,7 +150,6 @@ func writeToTempDir(data []byte) (path string, count int, err error) {
 		fmt.Println(err)
 	}
 
-	defer os.RemoveAll(path)
 	result := strings.Split(string(data), "---")
 	count = 0
 	for i := range result {

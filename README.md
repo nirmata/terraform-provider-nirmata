@@ -1,55 +1,50 @@
 # Terraform Provider for Nirmata
 
+<h3> See documrntation and examples at the [Terraform Registry](https://registry.terraform.io/providers/nirmata/nirmata/latest) </h3>
+
+
+## Releasing
+
+To release a new version create a tag (using semantic versioning) and push upstream. The release process is completed via a [GitHub Action](.github/workflows/release.yml)
+
+```bash
+git tag -a v1.x.x -m "...."
+git push --tags
+```
+
 ## Building
 
-````bash
-go build
-````
-
-## Executing the samples
-
-The samples are available in the [examples](examples) folder.
-
-To run the samples, initialize the Terraform provider and then run the `plan` and `apply` commands. 
-
-Here is an example of how to run the GKE cluster provisioning:
-
-1. Clone this repository
-
 ```bash
-git clone 
+make
 ```
 
-2. Build the Nirmata Terraform Provider
+## Testing locally
 
-Golang needs to be installed to build the provider from source. See: https://golang.org/doc/install for Golang installation instructions and then run:
+1. Configure `dev_overrides` in your `.terraform.rc` or `terraform.rc` file. See: https://www.terraform.io/docs/cli/config/config-file.html#development-overrides-for-provider-developers.
 
-```bash
-make install
+```hcl
+provider_installation {
+    dev_overrides {
+        "registry.terraform.io/nirmata/nirmata" = "<repo path>/dist/<platform>_<architecture>"
+    }
+
+    # For all other providers, install them directly from their origin provider
+    # registries as normal. If you omit this, Terraform will _only_ use
+    # the dev_overrides block, and so no other providers will be available.
+    direct {}
+}
 ```
 
-**NOTE: for Windows use these commands instead:**
-```bash
-go build -o dist/windows_amd64/terraform-provider-nirmata_v1.0.0
-mkdir %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\v1.0.0\windows_amd64\
-copy dist\windows_amd64\terraform-provider-nirmata_v1.0.0 %APPDATA%\terraform.d\plugins\local\nirmata\nirmata\v1.0.0\windows_amd64\terraform-provider-nirmata_1.0.0
-```
+For example on Windows the `nirmata/nirmata` provider would be set to `"C:\\go\\src\\github.com\\nirmata\\terraform-provider-nirmata\\dist\\windows_amd64"`
 
-For testing local changes see: https://github.com/hashicorp/terraform-provider-aws/issues/5396#issuecomment-409592871
+2. Build the plugin using `make`.
 
 3. Set your `NIRMATA_TOKEN` environment variable to contain your Nirmata API key. You can optionally set `NIRMATA_URL` to point to the Nirmata address (defaults to https://nirmata.io.)
 
-4. Edit the sample Terraform config file `samples/cloud_provider/gke/gke.tf` and include your credentials, and desired region, machine_type, and disk_size.
-
-In Nirmata, a `ClusterType` is a reusable configuration that you can use to create several clusters. 
-
-The example file first creates a ClusterType and then creates a single node `Cluster` using that type. Optionally, you can create the ClusterType via the Nirmata web console, or using 
-[nctl](https://downloads.nirmata.io/nctl/downloads/), and then use the Terraform provider to create clusters of that type.
-
-5. Initialize the Terraform provider with the correct directory
+4. Navigate to the examples and initialize the Terraform provider:
 
 ```bash
-terraform init examples/gke
+terraform init 
 ```
 
 If you see the error below, delete the `.terraform.lock.hcl` file and re-run the `init` command:
@@ -64,13 +59,13 @@ checksums are for packages targeting different platforms)
 6. Run `plan` to build the execution plan:
 
 ```bash
-terraform plan examples/gke
+terraform plan
 ```
 
 7. Run `apply` to execute the plan:
 
 ```bash
-terraform apply examples/gke
+terraform apply
 ```
 
 8. Run `show` to see the created resources:
@@ -87,14 +82,8 @@ terraform destroy samples/cloud_provider/gke
 
 ## Troubleshooting
 
-Set the TF_LOG environment variable to `debug` or `trace`.
+Set the TF_LOG environment variable to `DEBUG` or `TRACE`.
 
-
-## Documentation
-
-The provider documentation is available in the [docs](./docs) folder.
-
-
-## Examples
-
-Examples are available in the [examples](./examples) folder.
+```bash
+export TF_LOG=DEBUG
+```

@@ -175,14 +175,16 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	d.Set("state", data["state"])
+
 	nodePools := data["nodePools"].([]interface{})
 	if len(nodePools) == 0 {
-		return fmt.Errorf("failed to find nodepool for cluster %s (%s)", name, clusterID)
-	}
-
-	setErr := d.Set("nodepools", nodePools)
-	if setErr != nil {
-		log.Printf("[ERROR] failed to set nodepools: %v", nodePools)
+		log.Printf("[INFO] failed to find nodepool for cluster %s (%s)", name, clusterID)
+	} else {
+		setErr := d.Set("nodepools", nodePools)
+		if setErr != nil {
+			log.Printf("[ERROR] failed to set nodepools: %v", nodePools)
+		}
 	}
 
 	return nil
@@ -190,12 +192,24 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
+	if err := updateNodeCount(d, apiClient); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateNodeCount(d *schema.ResourceData, apiClient client.Client) error {
 	var nodeCount int
 	name := d.Get("name").(string)
 
 	if d.HasChanges("node_count") {
 		_, newNodeCount := d.GetChange("node_count")
 		nodeCount = newNodeCount.(int)
+	}
+
+	if nodeCount == 0 {
+		return nil
 	}
 
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", d.Id())
