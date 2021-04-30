@@ -1,8 +1,8 @@
-// This example first creates an EKS cluster type and then creates
-// a EKS cluster using that type.
+#  This example first creates an EKS cluster type and then creates
+#  a EKS cluster using that type.
 
 
-// 1. Create a EKS cluster type
+#  1. Create a EKS cluster type
 resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
   name                      = "tf-eks-cluster-type-1"
   version                   = "1.18"
@@ -15,12 +15,12 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
   enable_private_endpoint   = true
   enable_identity_provider  = true
   auto_sync_namespaces       = false
-  // enable_secrets_encryption = true
-  // kms_key_arn = ""
-  // log_types = ""
+  #  enable_secrets_encryption = true
+  #  kms_key_arn = ""
+  #  log_types = ""
 
-  //enable_fargate = true
-  //pod_execution_role_arn = ""
+  # enable_fargate = true
+  # pod_execution_role_arn = ""
 
   nodepools {
     name                = "default"
@@ -29,8 +29,8 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
     ssh_key_name        = "xxxxxxxx"
     security_groups     = ["sg-xxxxxxxxxxxxxxxx"]
     iam_role            = "arn:aws:iam::xxxxxxxx:role/eks-xxxxxxxx"
-    // ami_type = ""
-    // image_id = ""
+    #  ami_type = ""
+    #  image_id = ""
   }
 }
 
@@ -39,7 +39,7 @@ resource "nirmata_cluster" "eks-cluster-1" {
   name                 = "eks-cluster-1"
   cluster_type         = nirmata_cluster_type_eks.eks-cluster-type-1.name
   node_count           = 1
-  //delete_action = "remove"
+  # delete_action = "remove"
 }
 
 output "cluster_type_name" {

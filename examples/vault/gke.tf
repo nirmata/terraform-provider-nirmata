@@ -1,12 +1,12 @@
 provider "nirmata" {
-  // Nirmata API Key. Best configured as the environment variable NIRMATA_TOKEN.
-  // token = ""
+  #  Nirmata API Key. Best configured as the environment variable NIRMATA_TOKEN.
+  #  token = ""
 
-  // Nirmata address. Defaults to https://nirmata.io and can be configured as the environment variable NIRMATA_URL.
-  // url = ""
+  #  Nirmata address. Defaults to https://nirmata.io and can be configured as the environment variable NIRMATA_URL.
+  #  url = ""
 }
 
-// A ClusterType contains reusable configuration to create clusters.
+#  A ClusterType contains reusable configuration to create clusters.
 resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
 
   name                       = "gke-cluster-type-test"
