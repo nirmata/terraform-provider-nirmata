@@ -9,14 +9,11 @@ provider "nirmata" {
 
 resource "nirmata_cluster_addons" "cluster_addon" {
   name                       = "addon1"
-  cluster                    = "my-cluster-1"
-  application                = "cert-manager"
-  environment                = "cert-manager"
+  cluster                    = "cluster-1"
   catalog                    = "default-addon-catalog"
-  namespace                  = "cert-manager"
-  channel                    = "Rapid"
+  application                = "app"
+  environment                = "env"
+  namespace                  = "ns"
+  channel                    = "channel"
   # labels                     = {cluster = "addon"}
-  # service_name               ="service_name"
-  # service_scheme             ="service_scheme"
-  # service_port               = "service_port"
 }

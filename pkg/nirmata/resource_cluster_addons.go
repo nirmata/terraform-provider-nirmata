@@ -34,7 +34,7 @@ func resoureClusterAddon() *schema.Resource {
 			},
 			"environment": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"catalog": {
 				Type:     schema.TypeString,

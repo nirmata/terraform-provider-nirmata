@@ -22,7 +22,7 @@ func Provider() *schema.Provider {
 			"url": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_URL", "https://devtest5.nirmata.co"),
+				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_URL", "https://nirmata.io"),
 				Description: "Nirmata URL (HTTPS) address",
 			},
 		},
