@@ -22,7 +22,7 @@ func Provider() *schema.Provider {
 			"url": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_URL", "https://nirmata.io"),
+				DefaultFunc: schema.EnvDefaultFunc("NIRMATA_URL", "https://devtest5.nirmata.co"),
 				Description: "Nirmata URL (HTTPS) address",
 			},
 		},
@@ -40,6 +40,7 @@ func Provider() *schema.Provider {
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 			"nirmata_environment":               resourceEnvironment(),
 			"nirmata_environment_type":          resourceEnvironmentType(),
+			"nirmata_cluster_addons":            resoureClusterAddon(),
 		},
 
 		ConfigureFunc: configureProvider,
