@@ -7,13 +7,13 @@ import (
 	"github.com/nirmata/go-client/pkg/client"
 )
 
-func resoureClusterAddon() *schema.Resource {
+func resoureClusterAddOn() *schema.Resource {
 	return &schema.Resource{
 
-		Create: resourceClusterAddonCreate,
-		Read:   resourceClusterAddonRead,
-		Update: resourceClusterAddonUpdate,
-		Delete: resourceClusterAddonDelete,
+		Create: resourceClusterAddOnCreate,
+		Read:   resourceClusterAddOnRead,
+		Update: resourceClusterAddOnUpdate,
+		Delete: resourceClusterAddOnDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -70,7 +70,7 @@ func resoureClusterAddon() *schema.Resource {
 		},
 	}
 }
-func resourceClusterAddonCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterAddOnCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	clusterNameOrID := d.Get("cluster").(string)
@@ -81,25 +81,36 @@ func resourceClusterAddonCreate(d *schema.ResourceData, meta interface{}) error 
 	environment := d.Get("environment").(string)
 	labels := d.Get("labels")
 
-	if namespace == "" {
-		namespace = application
-	}
-	if environment == "" {
-		environment = application + "-" + clusterNameOrID
-	}
-	clusterID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
+	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
 	if err != nil {
 		log.Printf("[ERROR] - failed to resolve cluster %s %v", clusterNameOrID, err)
 		return err
 	}
-	clusterID1, err := apiClient.GetRelationID(clusterID, "ClusterAddOns")
+
+	addOnId, err := apiClient.GetRelationID(clusterID, "ClusterAddOns")
 	if err != nil {
-		log.Printf("[ERROR] - failed to resolve cluster %s %v", clusterID1, err)
+		log.Printf("[ERROR] - failed to resolve cluster %s %v", addOnId, err)
 		return err
 	}
+
+	if namespace == "" {
+		namespace = application
+	}
+	if environment == "" {
+		if isUUID(clusterNameOrID) {
+			clusterData, err := apiClient.Get(clusterID, nil)
+			if err != nil {
+				log.Printf("[ERROR] - failed to get cluster details %s %v", clusterID, err)
+				return err
+			}
+			clusterNameOrID = application + "-" + clusterData["name"].(string)
+		}
+		environment = application + "-" + clusterNameOrID
+	}
+
 	data := map[string]interface{}{
 		"name":        name,
-		"parent":      clusterID1.UUID(),
+		"parent":      addOnId.UUID(),
 		"namespace":   namespace,
 		"application": application,
 		"channel":     channel,
@@ -109,57 +120,57 @@ func resourceClusterAddonCreate(d *schema.ResourceData, meta interface{}) error 
 		"modelIndex":  "ClusterAddOn",
 	}
 
-	log.Printf("[DEBUG] - creating cluster addon %s with %+v", name, data)
+	log.Printf("[DEBUG] - creating cluster add-on %s with %+v", name, data)
 	addonData, err := apiClient.PostFromJSON(client.ServiceClusters, "ClusterAddOn", data, nil)
 	if err != nil {
-		log.Printf("[ERROR] - failed to create cluster addon %s with data %v: %v", name, data, err)
+		log.Printf("[ERROR] - failed to create cluster add-on %s with data %v: %v", name, data, err)
 		return err
 	}
 
-	addonUUID := addonData["id"].(string)
-	d.SetId(addonUUID)
-	log.Printf("[INFO] - created cluster addon %s %s", name, addonUUID)
+	addOnUUID := addonData["id"].(string)
+	d.SetId(addOnUUID)
+	log.Printf("[INFO] - created cluster addon %s %s", name, addOnUUID)
 
 	return nil
 }
 
-func resourceClusterAddonRead(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterAddOnRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-var addonMap = map[string]string{
+var addOnMap = map[string]string{
 	"service_name":   "serviceName",
 	"service_port":   "servicePort",
 	"service_scheme": "serviceScheme",
 	"labels":         "labels",
 }
 
-func resourceClusterAddonUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterAddOnUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	id := client.NewID(client.ServiceClusters, "clusteraddon", d.Id())
-	addonChanges := buildChanges(d, addonMap, "service_name", "service_port", "service_scheme", "labels")
-	if len(addonChanges) > 0 {
-		addonData, err := apiClient.Get(id, &client.GetOptions{})
+	addOnChanges := buildChanges(d, addOnMap, "service_name", "service_port", "service_scheme", "labels")
+	if len(addOnChanges) > 0 {
+		addOnData, err := apiClient.Get(id, &client.GetOptions{})
 		if err != nil {
-			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "cluster addon", id.Map(), err)
+			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "cluster add-on", id.Map(), err)
 			return err
 		}
-		d, plainErr := client.NewObject(addonData)
+		d, plainErr := client.NewObject(addOnData)
 		if plainErr != nil {
-			log.Printf("[ERROR] - failed to decode %s %v: %v", "cluster addon", d, err)
+			log.Printf("[ERROR] - failed to decode %s %v: %v", "cluster ad-don", d, err)
 			return err
 		}
-		_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), addonData)
+		_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), addOnData)
 		if plainErr != nil {
 			log.Printf("[ERROR] - failed to update %s %v: %v", "cluster", d.ID().Map(), err)
 			return err
 		}
-		log.Printf("[DEBUG] updated %v %v", d.ID().Map(), addonData)
+		log.Printf("[DEBUG] updated %v %v", d.ID().Map(), addOnData)
 	}
 	return nil
 }
 
-func resourceClusterAddonDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceClusterAddOnDelete(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	id := client.NewID(client.ServiceClusters, "ClusterAddOn", d.Id())
@@ -168,6 +179,6 @@ func resourceClusterAddonDelete(d *schema.ResourceData, meta interface{}) error 
 		return err
 	}
 
-	log.Printf("[INFO] - deleted addon %s %s", name, id.UUID())
+	log.Printf("[INFO] - deleted add-on %s %s", name, id.UUID())
 	return nil
 }
