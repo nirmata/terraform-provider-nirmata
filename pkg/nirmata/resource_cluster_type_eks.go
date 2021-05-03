@@ -265,15 +265,6 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"cluster":  clusterFieldOverride,
 		"nodePool": nodepoolFieldOverride,
 	}
-	fargate := map[string]interface{}{}
-	if enableFargate {
-		fargate = map[string]interface{}{
-			"podExecutionRoleArn":     podExecutionRoleArn,
-			"subnets":                 subnets,
-			"namespaceLabelSelectors": namespaceLabelSelectors,
-			"podLabelSelectors":       podLabelSelectors,
-		}
-	}
 
 	var nodeobjArr = make([]interface{}, 0)
 	nodepools := d.Get("nodepools").([]interface{})
@@ -330,7 +321,6 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 					"securityGroups":          securityGroups,
 					"logTypes":                logTypes,
 					"enableFargate":           enableFargate,
-					"fargateSettings":         fargate,
 					"privateEndpointAccess":   privateEndpointAccess,
 					"enableIdentityProvider":  enableIdentityProvider,
 					"enableSecretsEncryption": enableSecretsEncryption,
@@ -339,6 +329,16 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"nodePoolTypes": nodeobjArr,
 			},
 		},
+	}
+
+	if enableFargate {
+		fargate := map[string]interface{}{
+			"podExecutionRoleArn":     podExecutionRoleArn,
+			"subnets":                 subnets,
+			"namespaceLabelSelectors": namespaceLabelSelectors,
+			"podLabelSelectors":       podLabelSelectors,
+		}
+		clusterTypeData["spec"].(map[string]interface{})["cloudConfigSpec"].(map[string]interface{})["eksConfig"].(map[string]interface{})["fargateSettings"] = fargate
 	}
 
 	if _, ok := d.GetOk("vault_auth"); ok {
