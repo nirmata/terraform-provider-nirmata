@@ -27,8 +27,8 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     cluster = "gke"
   }
 
-  cluster_field_override = [ "enableWorkloadIdentity","subnetwork","workloadPool","network"]
-  nodepool_field_override = [ "diskSize","serviceAccount","machineType"]
+  cluster_field_override  = ["enableWorkloadIdentity", "subnetwork", "workloadPool", "network"]
+  nodepool_field_override = ["diskSize", "serviceAccount", "machineType"]
 
   nodepools {
     machine_type             = "c2-standard-16"
@@ -42,6 +42,22 @@ resource "nirmata_cluster_type_gke" "gke-cluster-type-1" {
     node_annotations = {
       node = "annotate"
     }
+  }
+
+  addons {
+    name            = "kyverno"
+    addon_selector  = "kyverno"
+    catalog         = "default-catalog"
+    channel         = "Stable"
+    sequence_number = 10
+  }
+
+  addons {
+    name            = "vault-agent-injector"
+    addon_selector  = "vault-agent-injector"
+    catalog         = "default-catalog"
+    channel         = "Stable"
+    sequence_number = 20
   }
 }
 
