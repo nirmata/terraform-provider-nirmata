@@ -23,5 +23,5 @@ resource "nirmata_environment" "tf-env-1" {
 
 * `name` - (Required) a unique name for the environment.
 * `type` - (Required) the environnment type.
-* `cluster` - (Required) the host cluster.
+* `cluster` - (Required)  the kubernetes cluster.
 * `namespace` - (Optional) the cluster namespace bound to this environment. Defaults to the environment name.
