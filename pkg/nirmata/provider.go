@@ -40,6 +40,7 @@ func Provider() *schema.Provider {
 			"nirmata_host_group_direct_connect": resourceHostGroupDirectConnect(),
 			"nirmata_environment":               resourceEnvironment(),
 			"nirmata_environment_type":          resourceEnvironmentType(),
+			"nirmata_cluster_addons":            resoureClusterAddOn(),
 		},
 
 		ConfigureFunc: configureProvider,

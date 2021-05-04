@@ -13,5 +13,5 @@ resource "nirmata_cluster_imported" "gke-import-1" {
   cluster_type  =  "gke-test"
   region = "us-central1-c"
   project = "my-project"
-  #  delete_action = "remove"
+  delete_action = "remove"
 }
