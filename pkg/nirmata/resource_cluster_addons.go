@@ -55,18 +55,6 @@ func resoureClusterAddOn() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"service_name": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"service_port": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"service_scheme": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 		},
 	}
 }
@@ -139,16 +127,13 @@ func resourceClusterAddOnRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 var addOnMap = map[string]string{
-	"service_name":   "serviceName",
-	"service_port":   "servicePort",
-	"service_scheme": "serviceScheme",
-	"labels":         "labels",
+	"labels": "labels",
 }
 
 func resourceClusterAddOnUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	id := client.NewID(client.ServiceClusters, "clusteraddon", d.Id())
-	addOnChanges := buildChanges(d, addOnMap, "service_name", "service_port", "service_scheme", "labels")
+	addOnChanges := buildChanges(d, addOnMap, "labels")
 	if len(addOnChanges) > 0 {
 		addOnData, err := apiClient.Get(id, &client.GetOptions{})
 		if err != nil {
