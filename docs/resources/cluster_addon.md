@@ -30,6 +30,3 @@ resource "nirmata_cluster_addons" "cluster_addon" {
 * `environment` - (Optional) defaults to the application name and cluster name.
 * `channel` - (Required) the release channel
 * `labels` - (Optional) labels to set on  cluster add-on.
-* `service_name` - (Optional).
-* `service_port` - (Optional).
-* `service_scheme` - (Optional).
