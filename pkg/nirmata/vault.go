@@ -1,6 +1,11 @@
 package nirmata
 
-import "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+import (
+	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/nirmata/go-client/pkg/client"
+)
 
 var vaultAuthSchema = map[string]*schema.Schema{
 	"name": {
@@ -55,7 +60,8 @@ var vaultRoleSchema = map[string]*schema.Schema{
 	},
 }
 
-func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}) map[string]interface{} {
+func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}, m interface{}) map[string]interface{} {
+	apiClient := m.(client.Client)
 	vaultAuthSpec := map[string]interface{}{
 		"modelIndex":           "VaultKubernetesAuthSpec",
 		"name":                 vaultAuthSchema["name"],
@@ -89,6 +95,14 @@ func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}) map[
 
 	if ci, ok := vaultAuthSchema["credentials_id"]; ok {
 		credentialSpec["id"] = ci
+	} else {
+		if _, ok := vaultAuthSchema["credentials_name"]; ok {
+			vaultID, err := apiClient.QueryByName(client.ServiceClusters, "VaultCredentials", vaultAuthSchema["credentials_name"].(string))
+			if err != nil {
+				log.Printf("[ERROR] - %v", err)
+			}
+			credentialSpec["id"] = vaultID.UUID()
+		}
 	}
 
 	if cn, ok := vaultAuthSchema["credentials_name"]; ok {
