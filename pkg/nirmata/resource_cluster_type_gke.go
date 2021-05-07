@@ -553,6 +553,11 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 		}
 	}
 
+	if err := updateClusterTypeAddonAndVault(d, meta); err != nil {
+		log.Printf("[ERROR] - failed to update cluster type add-on and vault auth with data : %v", err)
+		return err
+	}
+
 	// update GkeClusterConfig
 	gkeConfigChanges := buildChanges(d, gkeAttributeMap,
 		"region",
@@ -629,6 +634,7 @@ func buildChanges(d *schema.ResourceData, nameMap map[string]string, attributes 
 }
 
 func updateDescendant(apiClient client.Client, id client.ID, descendant string, changes map[string]interface{}) error {
+
 	clusterSpecData, err := apiClient.GetDescendant(id, descendant, &client.GetOptions{})
 	if err != nil {
 		log.Printf("[ERROR] - failed to retrieve %s from %v: %v", descendant, id.Map(), err)

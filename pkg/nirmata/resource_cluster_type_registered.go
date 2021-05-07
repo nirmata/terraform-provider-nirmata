@@ -107,7 +107,10 @@ func resourceRegisterClusterTypeRead(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceRegisterClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
-
+	if err := updateClusterTypeAddonAndVault(d, meta); err != nil {
+		log.Printf("[ERROR] - failed to update cluster type add-on and vault auth with data : %v", err)
+		return err
+	}
 	return nil
 }
 
