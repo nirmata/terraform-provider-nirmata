@@ -1,12 +1,11 @@
 provider "nirmata" {
   #  Nirmata API Key. Best configured as the environment variable NIRMATA_TOKEN.
-  
-    token = "L0DIoi44ma1FFDjNVqEtdZaZTprTlYDrxbDvY1CiElSiFLbaVBySRth/aiZcGS25BZpKf3kI6Cee3lYvEhcMaA=="
+
 
   #  Nirmata address. Defaults to https://nirmata.io and can be configured as
   #  the environment variable NIRMATA_URL.
   
-  url = "https://devtest5.nirmata.co/"
+  
 }
 
 #  An registered Cluster type is used while creating registered clusters
