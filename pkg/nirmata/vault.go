@@ -95,18 +95,17 @@ func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}, m in
 
 	if ci, ok := vaultAuthSchema["credentials_id"]; ok {
 		credentialSpec["id"] = ci
-	} else {
-		if _, ok := vaultAuthSchema["credentials_name"]; ok {
-			vaultID, err := apiClient.QueryByName(client.ServiceClusters, "VaultCredentials", vaultAuthSchema["credentials_name"].(string))
-			if err != nil {
-				log.Printf("[ERROR] - %v", err)
-			}
-			credentialSpec["id"] = vaultID.UUID()
-		}
 	}
 
 	if cn, ok := vaultAuthSchema["credentials_name"]; ok {
+		name := vaultAuthSchema["credentials_name"].(string)
+		vaultID, err := apiClient.QueryByName(client.ServiceClusters, "VaultCredentials", name)
+		if err != nil {
+			log.Printf("[ERROR] - %v", err)
+
+		}
 		credentialSpec["name"] = cn
+		credentialSpec["id"] = vaultID.UUID()
 	}
 
 	vaultAuthSpec["credentials"] = credentialSpec
