@@ -42,6 +42,21 @@ func resourceRegisteredClusterType() *schema.Resource {
 					Schema: vaultAuthSchema,
 				},
 			},
+			"enable_iam_authentication": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"enable_iam_authorization": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"cluster_roles": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: clusterRoleSchema,
+				},
+			},
 			"labels": {
 				Type:     schema.TypeMap,
 				Optional: true,

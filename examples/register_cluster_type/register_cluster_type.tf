@@ -18,6 +18,8 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
   labels = {
     foo = "bar"
   }
+  enable_iam_authentication = true
+  enable_iam_authorization = true
 
   vault_auth {
     name             = ""
@@ -40,6 +42,17 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
     catalog         = "default-catalog"
     channel         = "Stable"
     sequence_number = 2
+  }
+  cluster_roles {
+    api_groups = ["*"]
+    resources = ["*"]
+    verbs = ["*"]
+
+  }
+  cluster_roles {
+    api_groups = []
+    resources = []
+    verbs = ["*"]
   }
 
 }

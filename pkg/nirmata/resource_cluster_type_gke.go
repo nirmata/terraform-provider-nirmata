@@ -621,42 +621,6 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	return nil
 }
 
-func buildChanges(d *schema.ResourceData, nameMap map[string]string, attributes ...string) map[string]interface{} {
-	changes := map[string]interface{}{}
-	for _, a := range attributes {
-		if d.HasChange(a) {
-			name := nameMap[a]
-			changes[name] = d.Get(a)
-		}
-	}
-
-	return changes
-}
-
-func updateDescendant(apiClient client.Client, id client.ID, descendant string, changes map[string]interface{}) error {
-
-	clusterSpecData, err := apiClient.GetDescendant(id, descendant, &client.GetOptions{})
-	if err != nil {
-		log.Printf("[ERROR] - failed to retrieve %s from %v: %v", descendant, id.Map(), err)
-		return err
-	}
-
-	d, plainErr := client.NewObject(clusterSpecData)
-	if plainErr != nil {
-		log.Printf("[ERROR] - failed to decode %s %v: %v", descendant, d, err)
-		return err
-	}
-
-	_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), changes)
-	if plainErr != nil {
-		log.Printf("[ERROR] - failed to update %s %v: %v", descendant, d.ID().Map(), err)
-		return err
-	}
-
-	log.Printf("[DEBUG] updated %v %v", d.ID().Map(), changes)
-	return nil
-}
-
 func resourceGkeClusterTypeDelete(d *schema.ResourceData, meta interface{}) error {
 	return deleteObj(d, meta, client.ServiceClusters, "ClusterType")
 }
