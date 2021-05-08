@@ -20,17 +20,17 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
   }
 
   vault_auth {
-    name             = "gke-vaults"
-    path             = "nirmata/$(cluster.nyt)"
-    addon_name       = "vault-test"
-    credentials_id   = "a30ab89f-cbb6-488d-96f4-86d5b6439be9"
+    name             = ""
+    path             = ""
+    addon_name       = ""
+    credentials_id   = ""
     delete_auth_path = false
 
     roles {
       name                 = "nginx"
       service_account_name = "default"
       namespace            = "nginx"
-      policies             = "get-secrets"
+      policies             = ""
     }
   }
 
