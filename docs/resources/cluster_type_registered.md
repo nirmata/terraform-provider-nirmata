@@ -13,7 +13,9 @@ A cluster type used to configure add-on services for existing clusters that are 
 resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
   name  = "tf-registered-cluster"
   cloud = "Other"
-
+  system_metadata = {
+    clustertype = "registered"
+  }
   addons {
     name            = "vault-agent-injector"
     addon_selector  = "vault-agent-injector"
@@ -45,6 +47,7 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
 * `cloud` - (Optional) the cloud provider. Defaults to `Other`.
 * `addons` - (Optional) a list of add-on services.
 * `vault_auth` - (Optional) vault authentication configuration.
+* `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster type.
 
 ## Nested Blocks
 

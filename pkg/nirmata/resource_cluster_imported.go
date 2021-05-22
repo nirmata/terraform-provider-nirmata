@@ -39,6 +39,13 @@ var importedClusterSchema = map[string]*schema.Schema{
 		Default:      "remove",
 		ValidateFunc: validateDeleteAction,
 	},
+	"system_metadata": {
+		Type:     schema.TypeMap,
+		Optional: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
 }
 
 func resourceClusterImported() *schema.Resource {
@@ -64,7 +71,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	region := d.Get("region").(string)
 	clusterType := d.Get("cluster_type").(string)
 	project := d.Get("project").(string)
-
+	systemMetadata := d.Get("system_metadata")
 	deleteAction := d.Get("delete_action").(string)
 	if deleteAction == "" {
 		d.Set("delete_action", "remove")
@@ -80,7 +87,6 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 		"mode":                "providerManaged",
 		"clusterTypeSelector": clusterType,
 		"credentialsRef":      cloudCredID.UUID(),
-
 		"clusters": map[string]interface{}{
 			name: map[string]interface{}{
 				"name":    name,
@@ -89,6 +95,9 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 				"id":      name,
 			},
 		},
+	}
+	data["config"] = map[string]interface{}{
+		"systemMetadata": systemMetadata,
 	}
 
 	log.Printf("[DEBUG] - importing cluster %s with %+v", name, data)

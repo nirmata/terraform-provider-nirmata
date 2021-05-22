@@ -19,6 +19,9 @@ resource "nirmata_cluster_imported" "gke-import-1" {
   region = "us-central1-c"
   project = "my-project"
   delete_action = "remove"
+  system_metadata = {
+    cluster = "import"
+  }
 }
 
 ```
@@ -31,6 +34,7 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 * `region` - (Required) the region the cluster is located in.
 * `project` - (Required) the project the cluster is located in.
 * `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
+* `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
 
 
 
