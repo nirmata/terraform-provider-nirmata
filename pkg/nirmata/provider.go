@@ -41,6 +41,7 @@ func Provider() *schema.Provider {
 			"nirmata_environment":               resourceEnvironment(),
 			"nirmata_environment_type":          resourceEnvironmentType(),
 			"nirmata_cluster_addons":            resoureClusterAddOn(),
+			"nirmata_aws_role_credentials":      resoureAwsRoleCredentials(),
 		},
 
 		ConfigureFunc: configureProvider,
