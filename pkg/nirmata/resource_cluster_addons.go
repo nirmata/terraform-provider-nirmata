@@ -145,12 +145,12 @@ func resourceClusterAddOnUpdate(d *schema.ResourceData, meta interface{}) error 
 			log.Printf("[ERROR] - failed to decode %s %v: %v", "cluster ad-don", d, err)
 			return err
 		}
-		_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), addOnData)
+		_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), addOnChanges)
 		if plainErr != nil {
 			log.Printf("[ERROR] - failed to update %s %v: %v", "cluster", d.ID().Map(), err)
 			return err
 		}
-		log.Printf("[DEBUG] updated %v %v", d.ID().Map(), addOnData)
+		log.Printf("[DEBUG] updated %v %v", d.ID().Map(), addOnChanges)
 	}
 	return nil
 }

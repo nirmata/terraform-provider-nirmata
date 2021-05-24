@@ -75,7 +75,7 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 	if _, ok := d.GetOk("vault_auth"); ok {
 		vl := d.Get("vault_auth").([]interface{})
 		vault := vl[0].(map[string]interface{})
-		clustertype["spec"].(map[string]interface{})["vault"] = vaultAuthSchemaToVaultAuthSpec(vault)
+		clustertype["spec"].(map[string]interface{})["vault"] = vaultAuthSchemaToVaultAuthSpec(vault, apiClient)
 	}
 
 	log.Printf("[DEBUG] - creating register cluster type %s with %+v", name, clustertype)
