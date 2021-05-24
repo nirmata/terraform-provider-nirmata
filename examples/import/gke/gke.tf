@@ -14,4 +14,18 @@ resource "nirmata_cluster_imported" "gke-import-1" {
   region = "us-central1-c"
   project = "my-project"
   delete_action = "remove"
+  vault_auth {
+    name             = ""
+    path             = ""
+    addon_name       = ""
+    credentials_id   = ""
+    delete_auth_path = false
+
+    roles {
+      name                 = "nginx"
+      service_account_name = "default"
+      namespace            = "nginx"
+      policies             = ""
+    }
+  }
 }

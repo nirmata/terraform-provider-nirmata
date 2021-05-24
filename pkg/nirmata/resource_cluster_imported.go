@@ -46,13 +46,21 @@ var importedClusterSchema = map[string]*schema.Schema{
 			Type: schema.TypeString,
 		},
 	},
+	"vault_auth": {
+		Type:     schema.TypeList,
+		Optional: true,
+		MaxItems: 1,
+		Elem: &schema.Resource{
+			Schema: vaultAuthSchema,
+		},
+	},
 }
 
 func resourceClusterImported() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceClusterImportedCreate,
 		Read:   resourceClusterRead,
-		Update: resourceClusterUpdate,
+		Update: resourceClusterImportUpdate,
 		Delete: resourceClusterDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
@@ -89,15 +97,16 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 		"credentialsRef":      cloudCredID.UUID(),
 		"clusters": map[string]interface{}{
 			name: map[string]interface{}{
-				"name":    name,
-				"region":  region,
-				"project": project,
-				"id":      name,
+				"name":           name,
+				"region":         region,
+				"project":        project,
+				"id":             name,
+				"systemMetadata": systemMetadata,
 			},
 		},
-	}
-	data["config"] = map[string]interface{}{
-		"systemMetadata": systemMetadata,
+		"config": map[string]interface{}{
+			"systemMetadata": systemMetadata,
+		},
 	}
 
 	log.Printf("[DEBUG] - importing cluster %s with %+v", name, data)
@@ -142,6 +151,22 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	return nil
 }
 
+var clustervaultMap = map[string]string{
+	"vault_auth": "vault",
+}
+
+func resourceClusterImportUpdate(d *schema.ResourceData, meta interface{}) error {
+	apiClient := meta.(client.Client)
+	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", d.Id())
+	vaultAuthChanges := buildChanges(d, clustervaultMap, "vault_auth")
+	if len(vaultAuthChanges) > 0 {
+		if err := updateVaultAddon(d, apiClient, clusterID); err != nil {
+			log.Printf("[ERROR] - failed to update cluster  vault with data : %v", err)
+			return err
+		}
+	}
+	return nil
+}
 func waitForImportClustersAction(apiClient client.Client, maxTime time.Duration, actionID client.ID) (string, client.Object, error) {
 	states := []interface{}{"success", "failed"}
 	stateRaw, err := apiClient.WaitForStates(actionID, "status", states, maxTime, "")
