@@ -42,7 +42,29 @@ func resourceRegisteredClusterType() *schema.Resource {
 					Schema: vaultAuthSchema,
 				},
 			},
+			"enable_iam_authentication": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"enable_iam_authorization": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"cluster_roles": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: clusterRoleSchema,
+				},
+			},
 			"labels": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"system_metadata": {
 				Type:     schema.TypeMap,
 				Optional: true,
 				Elem: &schema.Schema{
@@ -58,6 +80,7 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 	name := d.Get("name").(string)
 	cloud := d.Get("cloud").(string)
 	labels := d.Get("labels")
+	systemMetadata := d.Get("system_metadata")
 	addons := addOnsSchemaToAddOns(d)
 
 	clustertype := map[string]interface{}{
@@ -65,11 +88,12 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 		"description": "",
 		"modelIndex":  "ClusterType",
 		"spec": map[string]interface{}{
-			"clusterMode": "discovered",
-			"modelIndex":  "ClusterSpec",
-			"cloud":       cloud,
-			"addons":      addons,
-			"labels":      labels,
+			"clusterMode":    "discovered",
+			"modelIndex":     "ClusterSpec",
+			"cloud":          cloud,
+			"addons":         addons,
+			"labels":         labels,
+			"systemMetadata": systemMetadata,
 		},
 	}
 	if _, ok := d.GetOk("vault_auth"); ok {
@@ -107,7 +131,10 @@ func resourceRegisterClusterTypeRead(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceRegisterClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
-
+	if err := updateClusterTypeAddonAndVault(d, meta); err != nil {
+		log.Printf("[ERROR] - failed to update cluster type add-on and vault auth with data : %v", err)
+		return err
+	}
 	return nil
 }
 

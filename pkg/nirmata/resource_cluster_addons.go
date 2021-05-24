@@ -123,6 +123,15 @@ func resourceClusterAddOnCreate(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourceClusterAddOnRead(d *schema.ResourceData, meta interface{}) error {
+	apiClient := meta.(client.Client)
+	cluster := d.Get("cluster").(string)
+	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", cluster)
+	if err != nil {
+		log.Printf("[INFO] cluster  %+v not found", clusterID.Map())
+		d.SetId("")
+		return err
+	}
+
 	return nil
 }
 
