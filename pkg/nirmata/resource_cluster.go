@@ -54,6 +54,13 @@ func resourceManagedCluster() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"nodepool_field_override": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"delete_action": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -71,8 +78,9 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	credentials := d.Get("override_credentials").(string)
 	systemMetadata := d.Get("system_metadata")
 	clusterFieldOverride := d.Get("cluster_field_override")
+	nodepoolFieldOverride := d.Get("nodepool_field_override")
 
-	spec, _, nodepool, err := getClusterTypeSpec(apiClient, typeSelector)
+	spec, _, nodepool, err := getClusterTypeSpec(apiClient, typeSelector, nodeCount)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
 		return err
@@ -81,6 +89,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	mode := spec["clusterMode"]
 	fieldsToOverride := map[string]interface{}{
 		"cluster": clusterFieldOverride,
+		"nodePool": nodepoolFieldOverride,
 	}
 
 	data := map[string]interface{}{
@@ -130,7 +139,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func getClusterTypeSpec(api client.Client, typeSelector string) (map[string]interface{}, []map[string]interface{}, []interface{}, error) {
+func getClusterTypeSpec(api client.Client, typeSelector string, nodeCount int) (map[string]interface{}, []map[string]interface{}, []interface{}, error) {
 	typeID, err := api.QueryByName(client.ServiceClusters, "ClusterType", typeSelector)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
@@ -145,7 +154,7 @@ func getClusterTypeSpec(api client.Client, typeSelector string) (map[string]inte
 			"name":         "node-pool-" + strconv.Itoa(key),
 			"minCount":     1,
 			"maxCount":     1,
-			"nodeCount":    1,
+			"nodeCount":    nodeCount,
 			"typeSelector": nodepoolType["name"],
 		}
 		nodePoolObjArr = append(nodePoolObjArr, nodePoolObj)
