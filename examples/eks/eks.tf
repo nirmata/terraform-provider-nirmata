@@ -38,7 +38,9 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
 resource "nirmata_cluster" "eks-cluster-1" {
   name                 = "eks-cluster-1"
   cluster_type         = nirmata_cluster_type_eks.eks-cluster-type-1.name
-  node_count           = 1
+   nodepools {
+      node_count                = 2
+   }
   # delete_action = "remove"
 }
 
