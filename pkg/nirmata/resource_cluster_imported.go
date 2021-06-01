@@ -93,6 +93,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 
 	data := map[string]interface{}{
 		"mode":                "providerManaged",
+		"systemMetadata":      systemMetadata,
 		"clusterTypeSelector": clusterType,
 		"credentialsRef":      cloudCredID.UUID(),
 		"clusters": map[string]interface{}{
@@ -103,9 +104,6 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 				"id":             name,
 				"systemMetadata": systemMetadata,
 			},
-		},
-		"config": map[string]interface{}{
-			"systemMetadata": systemMetadata,
 		},
 	}
 

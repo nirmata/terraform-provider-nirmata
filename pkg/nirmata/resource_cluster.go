@@ -27,11 +27,6 @@ func resourceManagedCluster() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validateName,
 			},
-			"node_count": {
-				Type:         schema.TypeInt,
-				Required:     true,
-				ValidateFunc: validateNodeCount,
-			},
 			"cluster_type": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -66,21 +61,52 @@ func resourceManagedCluster() *schema.Resource {
 				Optional: true,
 				Default:  "delete",
 			},
+			"nodepools": {
+				Type:     schema.TypeList,
+				Required: true,
+				Elem: &schema.Resource{
+					Schema: clusterNodePoolSchema,
+				},
+			},
 		},
 	}
+}
+
+var clusterNodePoolSchema = map[string]*schema.Schema{
+	"node_count": {
+		Type:         schema.TypeInt,
+		Required:     true,
+		ValidateFunc: validateNodeCount,
+	},
+	"min_count": {
+		Type:         schema.TypeInt,
+		Optional:     true,
+		Default:      1,
+		ValidateFunc: validateNodeCount,
+	},
+	"max_count": {
+		Type:         schema.TypeInt,
+		Optional:     true,
+		ValidateFunc: validateNodeCount,
+	},
+	"enable_auto_scaling": {
+		Type:     schema.TypeBool,
+		Optional: true,
+		Default:  false,
+	},
 }
 
 func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
-	nodeCount := d.Get("node_count").(int)
+	nodepools := d.Get("nodepools").([]interface{})
 	typeSelector := d.Get("cluster_type").(string)
 	credentials := d.Get("override_credentials").(string)
 	systemMetadata := d.Get("system_metadata")
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
 
-	spec, _, nodepool, err := getClusterTypeSpec(apiClient, typeSelector, nodeCount)
+	spec, _, nodepool, err := getClusterTypeSpec(apiClient, typeSelector, nodepools)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
 		return err
@@ -88,7 +114,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 
 	mode := spec["clusterMode"]
 	fieldsToOverride := map[string]interface{}{
-		"cluster": clusterFieldOverride,
+		"cluster":  clusterFieldOverride,
 		"nodePool": nodepoolFieldOverride,
 	}
 
@@ -102,7 +128,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	data["config"] = map[string]interface{}{
 		"modelIndex":     "ClusterConfig",
 		"version":        spec["version"],
-		"nodeCount":      nodeCount,
+		"nodeCount":      nil,
 		"cloudProvider":  spec["cloud"],
 		"systemMetadata": systemMetadata,
 		"overrideValues": fieldsToOverride,
@@ -139,7 +165,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func getClusterTypeSpec(api client.Client, typeSelector string, nodeCount int) (map[string]interface{}, []map[string]interface{}, []interface{}, error) {
+func getClusterTypeSpec(api client.Client, typeSelector string, nodepools []interface{}) (map[string]interface{}, []map[string]interface{}, []interface{}, error) {
 	typeID, err := api.QueryByName(client.ServiceClusters, "ClusterType", typeSelector)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
@@ -148,17 +174,30 @@ func getClusterTypeSpec(api client.Client, typeSelector string, nodeCount int) (
 	var nodePoolObjArr = make([]interface{}, 0)
 	nodepoolTypes, _ := api.GetDescendants(typeID, "NodePoolType", nil)
 	cloudConfigSpec, _ := api.GetDescendants(typeID, "CloudConfigSpec", nil)
-	for key, nodepoolType := range nodepoolTypes {
-		nodePoolObj := map[string]interface{}{
-			"modelIndex":   "NodePool",
-			"name":         "node-pool-" + strconv.Itoa(key),
-			"minCount":     1,
-			"maxCount":     1,
-			"nodeCount":    nodeCount,
-			"typeSelector": nodepoolType["name"],
+
+	for key, nodepool := range nodepools {
+		element, ok := nodepool.(map[string]interface{})
+		if ok {
+			maxCount := element["node_count"].(int)
+			minCount := 1
+			if element["enable_auto_scaling"] == true {
+				minCount = element["min_count"].(int)
+				maxCount = element["max_count"].(int)
+			}
+
+			nodePoolObj := map[string]interface{}{
+				"modelIndex":        "NodePool",
+				"name":              "node-pool-" + strconv.Itoa(key),
+				"minCount":          minCount,
+				"maxCount":          maxCount,
+				"nodeCount":         element["node_count"],
+				"enableAutoScaling": element["enable_auto_scaling"],
+				"typeSelector":      nodepoolTypes[key]["name"],
+			}
+			nodePoolObjArr = append(nodePoolObjArr, nodePoolObj)
 		}
-		nodePoolObjArr = append(nodePoolObjArr, nodePoolObj)
 	}
+
 	spec, err := api.GetRelation(typeID, "clusterSpecs")
 	if err != nil {
 		fmt.Println(err)
