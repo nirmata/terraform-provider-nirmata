@@ -441,7 +441,11 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 
 var gkeClusterTypePaths = map[string]string{
 	"version":                          "spec[0].version",
+	"system_metadata":                  "spec[0].systemMetadata",
+	"auto_sync_namespaces":             "spec[0].autoSyncNamespaces",
+	"allow_override_credentials":       "spec[0].cloudConfigSpec[0].allowOverrideCredentials",
 	"region":                           "spec[0].cloudConfigSpec[0].gkeConfig[0].region",
+	"project":                          "spec[0].cloudConfigSpec[0].gkeConfig[0].project",
 	"network":                          "spec[0].cloudConfigSpec[0].gkeConfig[0].network",
 	"subnetwork":                       "spec[0].cloudConfigSpec[0].gkeConfig[0].subnetwork",
 	"zone":                             "spec[0].cloudConfigSpec[0].gkeConfig[0].zone",
@@ -464,16 +468,16 @@ var gkeClusterTypePaths = map[string]string{
 }
 
 var nodePoolTypePaths = map[string]string{
-	"machine_type":             "spec[0].gkeConfig[0].machineType",
-	"disk_size":                "spec[0].gkeConfig[0].diskSize",
-	"auto_upgrade":             "spec[0].gkeConfig[0].autoUpgrade",
-	"auto_repair":              "spec[0].gkeConfig[0].autoRepair",
-	"max_surge":                "spec[0].gkeConfig[0].maxSurge",
-	"max_unavailable":          "spec[0].gkeConfig[0].maxUnavailable",
-	"enable_preemptible_nodes": "spec[0].gkeConfig[0].enablePreemptibleNodes",
-	"service_account":          "spec[0].gkeConfig[0].serviceAccount",
-	"node_labels":              "spec[0].nodeLabels",
-	"node_annotations":         "spec[0].nodeAnnotations",
+	"machine_type":             "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].machineType",
+	"disk_size":                "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].diskSize",
+	"auto_upgrade":             "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].autoUpgrade",
+	"auto_repair":              "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].autoRepair",
+	"max_surge":                "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].maxSurge",
+	"max_unavailable":          "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].maxUnavailable",
+	"enable_preemptible_nodes": "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].enablePreemptibleNodes",
+	"service_account":          "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].serviceAccount",
+	"node_labels":              "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeLabels",
+	"node_annotations":         "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeAnnotations",
 }
 
 func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) (err error) {
@@ -525,6 +529,9 @@ var gkeAttributeMap = map[string]string{
 	"enable_vertical_pod_autoscaling": "enableVerticalPodAutoscaling",
 	"duration":                        "duration",
 	"enable_network_policy":           "enableNetworkPolicy",
+	"auto_sync_namespaces":            "autoSyncNamespaces",
+	"allow_override_credentials":      "allowOverrideCredentials",
+	"project":                         "project",
 }
 
 var nodePoolAttributeMap = map[string]string{
@@ -545,7 +552,7 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	clusterTypeID := client.NewID(client.ServiceClusters, "ClusterType", d.Id())
 
 	// update ClusterSpec
-	clusterSpecChanges := buildChanges(d, gkeAttributeMap, "version")
+	clusterSpecChanges := buildChanges(d, gkeAttributeMap, "version", "auto_sync_namespaces", "")
 	if len(clusterSpecChanges) > 0 {
 		err := updateDescendant(apiClient, clusterTypeID, "ClusterSpec", clusterSpecChanges)
 		if err != nil {
@@ -564,6 +571,10 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 		"network",
 		"subnetwork",
 		"zone",
+		"system_metadata",
+		"auto_sync_namespaces",
+		"allow_override_credentials",
+		"project",
 		"channel",
 		"location_type",
 		"node_locations",
@@ -601,18 +612,7 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 		"node_annotations")
 
 	if len(nodePoolChanges) > 0 {
-		nodePoolData, err := getNodePoolType(apiClient, clusterTypeID)
-		if err != nil {
-			return err
-		}
-
-		npo, err := client.NewObject(nodePoolData)
-		if err != nil {
-			log.Printf("[ERROR] - failed to decode node pool %v: %v", nodePoolData, err)
-			return err
-		}
-
-		err = updateDescendant(apiClient, npo.ID(), "GkeNodePoolConfig", nodePoolChanges)
+		err = updateDescendant(apiClient, clusterTypeID, "GkeNodePoolConfig", nodePoolChanges)
 		if err != nil {
 			return err
 		}
