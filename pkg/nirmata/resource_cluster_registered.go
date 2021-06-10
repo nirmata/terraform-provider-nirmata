@@ -43,6 +43,13 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Optional:     true,
 		ValidateFunc: validateDeleteAction,
 	},
+	"labels": {
+		Type:     schema.TypeMap,
+		Optional: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
 }
 
 func resourceClusterRegistered() *schema.Resource {
@@ -64,6 +71,7 @@ func resourceClusterRegistered() *schema.Resource {
 func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
+	labels := d.Get("labels")
 	clusterType := d.Get("cluster_type").(string)
 
 	deleteAction := d.Get("delete_action").(string)
@@ -90,6 +98,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	data := map[string]interface{}{
 		"name":         name,
 		"mode":         mode,
+		"labels":       labels,
 		"typeSelector": clusterType,
 	}
 

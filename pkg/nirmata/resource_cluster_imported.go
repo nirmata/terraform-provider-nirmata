@@ -54,6 +54,13 @@ var importedClusterSchema = map[string]*schema.Schema{
 			Schema: vaultAuthSchema,
 		},
 	},
+	"labels": {
+		Type:     schema.TypeMap,
+		Optional: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	},
 }
 
 func resourceClusterImported() *schema.Resource {
@@ -75,6 +82,7 @@ func resourceClusterImported() *schema.Resource {
 func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
+	labels := d.Get("labels")
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
 	clusterType := d.Get("cluster_type").(string)
@@ -93,6 +101,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 
 	data := map[string]interface{}{
 		"mode":                "providerManaged",
+		"labels":              labels,
 		"systemMetadata":      systemMetadata,
 		"clusterTypeSelector": clusterType,
 		"credentialsRef":      cloudCredID.UUID(),

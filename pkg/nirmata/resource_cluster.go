@@ -61,6 +61,13 @@ func resourceManagedCluster() *schema.Resource {
 				Optional: true,
 				Default:  "delete",
 			},
+			"labels": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"nodepools": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -99,6 +106,7 @@ var clusterNodePoolSchema = map[string]*schema.Schema{
 func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
+	labels := d.Get("labels")
 	nodepools := d.Get("nodepools").([]interface{})
 	typeSelector := d.Get("cluster_type").(string)
 	credentials := d.Get("override_credentials").(string)
@@ -123,6 +131,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		"mode":                mode,
 		"typeSelector":        typeSelector,
 		"credentialsSelector": credentials,
+		"labels":              labels,
 	}
 
 	data["config"] = map[string]interface{}{
