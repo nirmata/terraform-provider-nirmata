@@ -32,6 +32,28 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
     security_groups     = ["sg-xxxxxxxxxxxxxxxx"]
     iam_role            = "arn:aws:iam::xxxxxxxx:role/eks-xxxxxxxx"
   }
+  addons {
+    name            = "vault-agent-injector"
+    addon_selector  = "vault-agent-injector"
+    catalog         = "default-catalog"
+    channel         = "Stable"
+    sequence_number = 1
+  }
+
+  vault_auth {
+    name             = "vault-auth"
+    path             = "nirmata/$(cluster.name)"
+    addon_name       = "vault-agent-injector"
+    credentials_name = "vault_access"
+    delete_auth_path = true
+
+    roles {
+      name                 = "sample-role"
+      service_account_name = "application-sample-sa"
+      namespace            = "application-sample-ns"
+      policies             = "application-sample-policy"
+    }
+  }
 }
 
 // 2. Create a nirmata_cluster using the cluster_type
@@ -99,6 +121,7 @@ resource "nirmata_cluster" "eks-cluster-1" {
 * `addon_name` - (Required) the associated Vault Agent Injector add-on
 * `credentials_name` - (Required) the Vault credentials to use 
 * `roles` - (Required) a list of application roles to configure for add-on services
+* `delete_auth_path` - (Optional) delete auth path on cluster delete
 
 #### roles
 

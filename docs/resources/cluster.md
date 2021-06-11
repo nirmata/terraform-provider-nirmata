@@ -14,7 +14,7 @@ Create a cluster using an available cluster_type
 resource "nirmata_cluster" "eks-eu-1" {
   name = "eks-eu-1"
   cluster_type = "eks-eu-prod"
- 
+  labels  = {foo = "bar"}
    nodepools {
       node_count                = 1 
       enable_auto_scaling       = false
@@ -31,6 +31,7 @@ resource "nirmata_cluster" "eks-eu-1" {
 * `name` - (Required) a unique name for the cluster.
 * `cluster_type` - (Required) the type of cluster to create.
 * `nodepools` - A list of [nodepool](#nodepool) types.
+* `labels` - (Optional) labels to set on cluster.
 
 ## Nested Blocks
 

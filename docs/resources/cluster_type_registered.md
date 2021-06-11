@@ -16,6 +16,7 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
   system_metadata = {
     clustertype = "registered"
   }
+  
   addons {
     name            = "vault-agent-injector"
     addon_selector  = "vault-agent-injector"
@@ -29,6 +30,7 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
     path             = "nirmata/$(cluster.name)"
     addon_name       = "vault-agent-injector"
     credentials_name = "vault_access"
+    delete_auth_path = false
 
     roles {
       name                 = "sample-role"
@@ -66,6 +68,7 @@ resource "nirmata_cluster_type_registered" "tf-registered-type-1" {
 * `addon_name` - (Required) the associated Vault Agent Injector add-on
 * `credentials_name` - (Required) the Vault credentials to use 
 * `roles` - (Required) a list of application roles to configure for add-on services
+* `delete_auth_path` - (Optional) delete auth path on cluster delete
 
 #### roles
 
