@@ -22,6 +22,7 @@ resource "nirmata_cluster_imported" "gke-import-1" {
   system_metadata = {
     cluster = "import"
   }
+  labels = {foo = "bar"}
 }
 
 ```
@@ -35,6 +36,7 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 * `project` - (Required) the project the cluster is located in.
 * `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
 * `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
+* `labels` - (Optional) labels to set on  cluster.
 
 
 

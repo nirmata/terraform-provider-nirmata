@@ -468,16 +468,16 @@ var gkeClusterTypePaths = map[string]string{
 }
 
 var nodePoolTypePaths = map[string]string{
-	"machine_type":             "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].machineType",
-	"disk_size":                "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].diskSize",
-	"auto_upgrade":             "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].autoUpgrade",
-	"auto_repair":              "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].autoRepair",
-	"max_surge":                "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].maxSurge",
-	"max_unavailable":          "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].maxUnavailable",
-	"enable_preemptible_nodes": "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].enablePreemptibleNodes",
-	"service_account":          "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].gkeConfig[0].serviceAccount",
-	"node_labels":              "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeLabels",
-	"node_annotations":         "spec[0].cloudConfigSpec[0].nodePoolTypes[0].spec[0].nodeAnnotations",
+	"machine_type":             "spec[0].gkeConfig[0].machineType",
+	"disk_size":                "spec[0].gkeConfig[0].diskSize",
+	"auto_upgrade":             "spec[0].gkeConfig[0].autoUpgrade",
+	"auto_repair":              "spec[0].gkeConfig[0].autoRepair",
+	"max_surge":                "spec[0].gkeConfig[0].maxSurge",
+	"max_unavailable":          "spec[0].gkeConfig[0].maxUnavailable",
+	"enable_preemptible_nodes": "spec[0].gkeConfig[0].enablePreemptibleNodes",
+	"service_account":          "spec[0].gkeConfig[0].serviceAccount",
+	"node_labels":              "spec[0].nodeLabels",
+	"node_annotations":         "spec[0].nodeAnnotations",
 }
 
 func resourceGkeClusterTypeRead(d *schema.ResourceData, meta interface{}) (err error) {
@@ -532,6 +532,7 @@ var gkeAttributeMap = map[string]string{
 	"auto_sync_namespaces":            "autoSyncNamespaces",
 	"allow_override_credentials":      "allowOverrideCredentials",
 	"project":                         "project",
+	"nodepools":                       "nodepools",
 }
 
 var nodePoolAttributeMap = map[string]string{
@@ -552,7 +553,7 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	clusterTypeID := client.NewID(client.ServiceClusters, "ClusterType", d.Id())
 
 	// update ClusterSpec
-	clusterSpecChanges := buildChanges(d, gkeAttributeMap, "version", "auto_sync_namespaces", "")
+	clusterSpecChanges := buildChanges(d, gkeAttributeMap, "version", "auto_sync_namespaces", "system_metadata")
 	if len(clusterSpecChanges) > 0 {
 		err := updateDescendant(apiClient, clusterTypeID, "ClusterSpec", clusterSpecChanges)
 		if err != nil {
@@ -599,22 +600,54 @@ func resourceGkeClusterTypeUpdate(d *schema.ResourceData, meta interface{}) (err
 	}
 
 	// update NodePool
-	nodePoolChanges := buildChanges(d, nodePoolAttributeMap,
-		"machine_type",
-		"disk_size",
-		"auto_upgrade",
-		"auto_repair",
-		"max_surge",
-		"max_unavailable",
-		"enable_preemptible_nodes",
-		"service_account",
-		"node_labels",
-		"node_annotations")
+	nodePoolChanges := buildChanges(d, gkeAttributeMap, "nodepools")
 
 	if len(nodePoolChanges) > 0 {
-		err = updateDescendant(apiClient, clusterTypeID, "GkeNodePoolConfig", nodePoolChanges)
+		cloudConfigSpecData, err := apiClient.GetDescendant(clusterTypeID, "CloudConfigSpec", &client.GetOptions{})
 		if err != nil {
+			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "CloudConfigSpec", clusterTypeID.Map(), err)
 			return err
+		}
+		parent := map[string]interface{}{
+			"id":         cloudConfigSpecData["id"],
+			"service":    "Cluster",
+			"modelIndex": "CloudConfigSpec",
+		}
+		nodepools := d.Get("nodepools").([]interface{})
+		var createdNodepool []map[string]interface{}
+		for i, nodepool := range nodepools {
+			element, ok := nodepool.(map[string]interface{})
+			if ok {
+				createdNodepool = append(createdNodepool, map[string]interface{}{
+					"modelIndex": "NodePoolType",
+					"name":       d.Get("name").(string) + "-node-pool-" + strconv.Itoa(i),
+					"spec": map[string]interface{}{
+						"modelIndex":      "NodePoolSpec",
+						"nodeLabels":      element["node_labels"],
+						"nodeAnnotations": element["node_annotations"],
+						"gkeConfig": map[string]interface{}{
+							"machineType":            element["machine_type"],
+							"diskSize":               element["disk_size"],
+							"serviceAccount":         element["service_account"],
+							"enablePreemptibleNodes": element["enable_preemptible_nodes"],
+							"autoUpgrade":            element["auto_upgrade"],
+							"autoRepair":             element["auto_repair"],
+							"maxUnavailable":         element["max_unavailable"],
+							"maxSurge":               element["max_surge"],
+							"modelIndex":             "GkeNodePoolConfig",
+						},
+					},
+					"parent": parent,
+				})
+			}
+		}
+		txn := make(map[string]interface{})
+		txn["delete"] = cloudConfigSpecData["nodePoolTypes"]
+		txn["create"] = createdNodepool
+		_, txnErr := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
+		if txnErr != nil {
+			log.Printf("[ERROR] - failed to update cluster type nodeool with data : %v", txnErr)
+			return txnErr
 		}
 	}
 

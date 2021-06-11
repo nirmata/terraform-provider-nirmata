@@ -370,11 +370,123 @@ func resourceEksClusterTypeRead(d *schema.ResourceData, meta interface{}) error 
 	return nil
 }
 
+var eksAttributeMap = map[string]string{
+	"version":                    "version",
+	"region":                     "region",
+	"vpc_id":                     "vpcId",
+	"subnet_id":                  "subnetId",
+	"cluster_role_arn":           "clusterRoleArn",
+	"security_groups":            "securityGroups",
+	"log_types":                  "logTypes",
+	"enable_private_endpoint":    "privateEndpointAccess",
+	"enable_secrets_encryption":  "enableSecretsEncryption",
+	"kms_key_arn":                "keyArn",
+	"enable_identity_provider":   "enableIdentityProvider",
+	"system_metadata":            "systemMetadata",
+	"allow_override_credentials": "allowOverrideCredentials",
+	"enable_fargate":             "enableFargate",
+	"pod_execution_role_arn":     "podExecutionRoleArn",
+	"subnets":                    "subnets",
+	"namespace_label_selectors":  "namespaceLabelSelectors",
+	"pod_label_selectors":        "podLabelSelectors",
+	"auto_sync_namespaces":       "autoSyncNamespaces",
+	"nodepools":                  "nodepools",
+}
+
 func resourceEksClusterTypeUpdate(d *schema.ResourceData, meta interface{}) error {
+	apiClient := meta.(client.Client)
+	clusterTypeID := client.NewID(client.ServiceClusters, "ClusterType", d.Id())
+
+	// update ClusterSpec
+	clusterSpecChanges := buildChanges(d, eksAttributeMap, "version", "auto_sync_namespaces", "system_metadata")
+	if len(clusterSpecChanges) > 0 {
+		err := updateDescendant(apiClient, clusterTypeID, "ClusterSpec", clusterSpecChanges)
+		if err != nil {
+			return err
+		}
+	}
 	if err := updateClusterTypeAddonAndVault(d, meta); err != nil {
 		log.Printf("[ERROR] - failed to update cluster type add-on and vault auth with data : %v", err)
 		return err
 	}
+
+	// update EksClusterConfig
+	eksConfigChanges := buildChanges(d, eksAttributeMap,
+		"region",
+		"vpc_id",
+		"subnet_id",
+		"cluster_role_arn",
+		"system_metadata",
+		"auto_sync_namespaces",
+		"allow_override_credentials",
+		"security_groups",
+		"log_types",
+		"enable_private_endpoint",
+		"enable_secrets_encryption",
+		"kms_key_arn",
+		"enable_identity_provider",
+		"enable_fargate",
+		"pod_execution_role_arn",
+		"subnets",
+		"namespace_label_selectors",
+		"pod_label_selectors",
+		"auto_sync_namespaces")
+
+	if len(eksConfigChanges) > 0 {
+		err := updateDescendant(apiClient, clusterTypeID, "EksClusterConfig", eksConfigChanges)
+		if err != nil {
+			return err
+		}
+	}
+	nodePoolChanges := buildChanges(d, eksAttributeMap, "nodepools")
+
+	if len(nodePoolChanges) > 0 {
+		cloudConfigSpecData, err := apiClient.GetDescendant(clusterTypeID, "CloudConfigSpec", &client.GetOptions{})
+		if err != nil {
+			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "CloudConfigSpec", clusterTypeID.Map(), err)
+			return err
+		}
+		parent := map[string]interface{}{
+			"id":         cloudConfigSpecData["id"],
+			"service":    "Cluster",
+			"modelIndex": "CloudConfigSpec",
+		}
+		nodepools := d.Get("nodepools").([]interface{})
+		var createdNodepool []map[string]interface{}
+		for i, nodepool := range nodepools {
+			element, ok := nodepool.(map[string]interface{})
+			if ok {
+				createdNodepool = append(createdNodepool, map[string]interface{}{
+					"modelIndex": "NodePoolType",
+					"name":       d.Get("name").(string) + "-node-pool-" + strconv.Itoa(i),
+					"spec": map[string]interface{}{
+						"modelIndex":      "NodePoolSpec",
+						"nodeLabels":      element["node_labels"],
+						"nodeAnnotations": element["node_annotations"],
+						"eksConfig": map[string]interface{}{
+							"instanceType":   element["instance_type"],
+							"diskSize":       element["disk_size"],
+							"securityGroups": element["security_groups"],
+							"nodeIamRole":    element["iam_role"],
+							"keyName":        element["ssh_key_name"],
+							"amiType":        element["ami_type"],
+							"imageId":        element["image_id"],
+						},
+					},
+					"parent": parent,
+				})
+			}
+		}
+		txn := make(map[string]interface{})
+		txn["delete"] = cloudConfigSpecData["nodePoolTypes"]
+		txn["create"] = createdNodepool
+		_, txnErr := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
+		if txnErr != nil {
+			log.Printf("[ERROR] - failed to update cluster type nodeool with data : %v", txnErr)
+			return txnErr
+		}
+	}
+
 	return nil
 }
 
