@@ -45,7 +45,7 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
     path             = "nirmata/$(cluster.name)"
     addon_name       = "vault-agent-injector"
     credentials_name = "vault_access"
-    delete_auth_path = false
+    delete_auth_path = true
 
     roles {
       name                 = "sample-role"

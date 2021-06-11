@@ -23,6 +23,21 @@ resource "nirmata_cluster_imported" "gke-import-1" {
     cluster = "import"
   }
   labels = {foo = "bar"}
+
+  vault_auth {
+    name             = "vault-auth"
+    path             = "nirmata/$(cluster.name)"
+    addon_name       = "vault-agent-injector"
+    credentials_name = "vault_access"
+    delete_auth_path = true
+
+    roles {
+      name                 = "sample-role"
+      service_account_name = "application-sample-sa"
+      namespace            = "application-sample-ns"
+      policies             = "application-sample-policy"
+    }
+  }
 }
 
 ```
@@ -37,6 +52,23 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 * `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
 * `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
 * `labels` - (Optional) labels to set on  cluster.
+
+
+### vault_auth
+
+* `name` - (Required) a unique name
+* `path` - (Required) the vault authentication path. The variable $(cluster.name) is allowed in the path for uniquenes.
+* `addon_name` - (Required) the associated Vault Agent Injector add-on
+* `credentials_name` - (Required) the Vault credentials to use 
+* `roles` - (Required) a list of application roles to configure for add-on services
+* `delete_auth_path` - (Optional) delete auth path on cluster delete
+
+#### roles
+
+* `name` - (Required) a unique name
+* `service_account_name` - (Required) the allowed service account name
+* `namespace` - (Required) the allowed namespace
+* `policies` - (Required) the applied policies
 
 
 
