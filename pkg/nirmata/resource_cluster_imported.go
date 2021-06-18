@@ -160,18 +160,28 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 
 var clustervaultMap = map[string]string{
 	"vault_auth": "vault",
+	"labels":     "labels",
 }
 
 func resourceClusterImportUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", d.Id())
 	vaultAuthChanges := buildChanges(d, clustervaultMap, "vault_auth")
+	labelsChanges := buildChanges(d, clustervaultMap, "labels")
 	if len(vaultAuthChanges) > 0 {
 		if err := updateVaultAddon(d, apiClient, clusterID); err != nil {
 			log.Printf("[ERROR] - failed to update cluster  vault with data : %v", err)
 			return err
 		}
 	}
+
+	if len(labelsChanges) > 0 {
+		if err := updateClusterLabels(d, apiClient); err != nil {
+			log.Printf("[ERROR] - failed to update labels with data : %v", err)
+			return err
+		}
+	}
+
 	return nil
 }
 func waitForImportClustersAction(apiClient client.Client, maxTime time.Duration, actionID client.ID) (string, client.Object, error) {

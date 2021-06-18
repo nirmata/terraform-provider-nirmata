@@ -252,7 +252,13 @@ func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	if err := updateNodeCount(d, apiClient); err != nil {
 		return err
 	}
-
+	labelsChanges := buildChanges(d, clustervaultMap, "labels")
+	if len(labelsChanges) > 0 {
+		if err := updateClusterLabels(d, apiClient); err != nil {
+			log.Printf("[ERROR] - failed to update labels with data : %v", err)
+			return err
+		}
+	}
 	return nil
 }
 

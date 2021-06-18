@@ -257,6 +257,25 @@ func updateVaultAddon(d *schema.ResourceData, m interface{}, clusterTypeID clien
 	return nil
 }
 
+func updateClusterLabels(d *schema.ResourceData, m interface{}) error {
+	apiClient := m.(client.Client)
+	var labelMap []map[string]interface{}
+	labelMap = append(labelMap, map[string]interface{}{
+		"modelIndex": "KubernetesCluster",
+		"id":         d.Id(),
+		"labels":     d.Get("labels"),
+	})
+	txn := make(map[string]interface{})
+	txn["update"] = labelMap
+
+	_, txnErr := apiClient.PostFromJSON(client.ServiceClusters, "txn", txn, nil)
+	if txnErr != nil {
+		log.Printf("[ERROR] - failed to update labels with data : %v", txnErr)
+		return txnErr
+	}
+	return nil
+}
+
 func updateDescendant(apiClient client.Client, id client.ID, descendant string, changes map[string]interface{}) error {
 
 	clusterSpecData, err := apiClient.GetDescendant(id, descendant, &client.GetOptions{})
