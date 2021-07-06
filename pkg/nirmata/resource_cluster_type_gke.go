@@ -188,7 +188,8 @@ var gkeClusterTypeSchema = map[string]*schema.Schema{
 	},
 	"auto_sync_namespaces": {
 		Type:     schema.TypeBool,
-		Required: true,
+		Optional: true,
+		Default:  false,
 	},
 }
 
