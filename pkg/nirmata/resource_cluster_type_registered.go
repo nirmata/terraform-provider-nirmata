@@ -1,6 +1,7 @@
 package nirmata
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -99,7 +100,12 @@ func resourceRegisterClusterTypeCreate(d *schema.ResourceData, meta interface{})
 	if _, ok := d.GetOk("vault_auth"); ok {
 		vl := d.Get("vault_auth").([]interface{})
 		vault := vl[0].(map[string]interface{})
-		clustertype["spec"].(map[string]interface{})["vault"] = vaultAuthSchemaToVaultAuthSpec(vault, apiClient)
+		vaultAuth, vErr := vaultAuthSchemaToVaultAuthSpec(vault, apiClient)
+		if vErr != nil {
+			log.Printf("Vault Credential Name not found")
+			return fmt.Errorf("vault credential name not found : %v", vErr)
+		}
+		clustertype["spec"].(map[string]interface{})["vault"] = vaultAuth
 	}
 
 	log.Printf("[DEBUG] - creating register cluster type %s with %+v", name, clustertype)
