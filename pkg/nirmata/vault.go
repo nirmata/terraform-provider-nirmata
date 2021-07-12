@@ -1,6 +1,7 @@
 package nirmata
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -60,7 +61,7 @@ var vaultRoleSchema = map[string]*schema.Schema{
 	},
 }
 
-func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}, m interface{}) map[string]interface{} {
+func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}, m interface{}) (map[string]interface{}, error) {
 	apiClient := m.(client.Client)
 	vaultAuthSpec := map[string]interface{}{
 		"modelIndex":           "VaultKubernetesAuthSpec",
@@ -101,10 +102,11 @@ func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}, m in
 	if vaultAuthSchema["credentials_name"] != "" {
 		if cn, ok := vaultAuthSchema["credentials_name"]; ok {
 			name := vaultAuthSchema["credentials_name"].(string)
-			vaultID, err := apiClient.QueryByName(client.ServiceClusters, "VaultCredentials", name)
-			if err != nil {
-				log.Printf("[ERROR] - %v", err)
-
+			vaultID, vaultErr := apiClient.QueryByName(client.ServiceClusters, "VaultCredentials", name)
+			if vaultErr != nil {
+				log.Printf("Vault Credential Name not found")
+				log.Printf("[ERROR] - %v", vaultErr)
+				return nil, fmt.Errorf("vault credential name not found : %v", vaultErr)
 			}
 			credentialSpec["name"] = cn
 			credentialSpec["id"] = vaultID.UUID()
@@ -113,5 +115,5 @@ func vaultAuthSchemaToVaultAuthSpec(vaultAuthSchema map[string]interface{}, m in
 
 	vaultAuthSpec["credentials"] = credentialSpec
 
-	return vaultAuthSpec
+	return vaultAuthSpec, nil
 }
