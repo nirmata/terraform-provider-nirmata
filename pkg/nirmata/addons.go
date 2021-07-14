@@ -37,6 +37,7 @@ func addOnsSchemaToAddOns(d *schema.ResourceData) map[string]interface{} {
 		"addOnSelector":  "kyverno",
 		"catalog":        "default-addon-catalog",
 		"sequenceNumber": 1,
+		"channel":        "Rapid",
 	})
 
 	if _, ok := d.GetOk("addons"); ok {
