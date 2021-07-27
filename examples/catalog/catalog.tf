@@ -9,7 +9,6 @@ provider "nirmata" {
   #  url = ""
 }
 
-#  An Environment Resource Type is used while run application
 
 resource "nirmata_catalog" "tf-catalog-1" {
   name              = "tf-cat"
