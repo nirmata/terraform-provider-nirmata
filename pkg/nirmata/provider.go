@@ -44,6 +44,8 @@ func Provider() *schema.Provider {
 			"nirmata_aws_role_credentials":      resoureAwsRoleCredentials(),
 			"nirmata_catalog":                   resourceCatalog(),
 			"nirmata_git_application":           resourceGitApplication(),
+			"nirmata_run_application":           resourceRunApplication(),
+			"nirmata_promote_version":           resourcePromoteVersion(),
 		},
 
 		ConfigureFunc: configureProvider,
