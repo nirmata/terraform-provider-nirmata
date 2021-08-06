@@ -1,0 +1,75 @@
+name: 'Terraform'
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest.
+    defaults:
+      run:
+        shell: bash
+ 
+    steps:
+      # Checkout the repository to the GitHub Actions runner/ no specific path
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+
+      # Build Nirmata provider 
+      - name: Build nirmata provider
+        run: |
+          go build 
+          ls -alt
+      
+      - name: Store nirmata provider build.
+        run: |
+          mkdir /tmp/provider
+          mv /home/runner/work/terraform-provider-alex/terraform-provider-alex/terraform-provider-nirmata /tmp/provider/terraform-provider-nirmata_v1.0.1_linux_amd64
+     
+
+      # Check out create EKS Cluster..
+      - name: Checkout create eks clustertype and cluster repository
+        uses: actions/checkout@v2
+        with:
+          repository: nirmata/nirmata_terraform_cluster_eks
+         
+  
+      # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      # Replace terraform provider
+      - name: Replace terraform provider
+        run: |
+          mkdir -p terraform.d/plugins/registry.terraform.io/nirmata/nirmata/1.0.1/linux_amd64
+          mv /tmp/provider/terraform-provider-nirmata_v1.0.1_linux_amd64 terraform.d/plugins/registry.terraform.io/nirmata/nirmata/1.0.1/linux_amd64/terraform-provider-nirmata_v1.0.1_linux_amd64
+          cd /home/runner/work/terraform-provider-alex/terraform-provider-alex/terraform.d/plugins/registry.terraform.io/nirmata/nirmata/1.0.1/linux_amd64
+          pwd
+          ls -l
+         
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Generates an execution plan for Terraform
+      - name: Terraform Plan
+        run: terraform plan
+      # On push to master, build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+
+      - name: Terraform Apply.
+        run: terraform apply -auto-approve
+
+      # Destroy 
+      - name: Terraform Destroy.
+        run: terraform destroy -auto-approve
+
