@@ -41,6 +41,20 @@ func waitForClusterState(apiClient client.Client, maxTime time.Duration, cluster
 	return state.(string), nil
 }
 
+func waitForClusterDeletedState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
+	states := []interface{}{"deleted"}
+	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
+	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			log.Printf("[INFO] cluster deleted")
+			return "", nil
+		}
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
 func getClusterStatus(api client.Client, clusterID client.ID) (string, error) {
 	clusterData, err := api.Get(clusterID, client.NewGetOptions(nil, nil))
 	if err != nil {
