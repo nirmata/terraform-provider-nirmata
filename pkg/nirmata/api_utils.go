@@ -45,6 +45,10 @@ func waitForClusterDeletedState(apiClient client.Client, maxTime time.Duration, 
 	states := []interface{}{"deleted"}
 	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
 	if err != nil {
+		if strings.Contains(err.Error(), "404") {
+			log.Printf("[INFO] cluster deleted")
+			return "", nil
+		}
 		return "", err
 	}
 
