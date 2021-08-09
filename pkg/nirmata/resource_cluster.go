@@ -166,7 +166,6 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 			log.Printf("[ERROR] - failed to retrieve cluster failure details: %v", err)
 			return fmt.Errorf("cluster creation failed")
 		}
-
 		return fmt.Errorf("cluster creation failed: %s", status)
 	}
 
@@ -335,6 +334,8 @@ func resourceClusterDelete(d *schema.ResourceData, meta interface{}) error {
 	if err := apiClient.Delete(clusterID, params); err != nil {
 		return err
 	}
+
+	waitForClusterDeletedState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
 
 	log.Printf("[INFO] Deleted cluster %s", name)
 	return nil
