@@ -1,10 +1,11 @@
 package nirmata
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/nirmata/go-client/pkg/client"
 	"log"
 	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/nirmata/go-client/pkg/client"
 )
 
 func resourceEnvironment() *schema.Resource {
@@ -36,6 +37,13 @@ func resourceEnvironment() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"labels": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -46,6 +54,7 @@ func resourceEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
 	envType := d.Get("type").(string)
 	clusterNameOrID := d.Get("cluster").(string)
 	namespace := d.Get("namespace").(string)
+	labels := d.Get("labels")
 
 	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
 	if err != nil {
@@ -58,6 +67,7 @@ func resourceEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
 		"resourceType": envType,
 		"hostCluster":  clusterID.Map(),
 		"namespace":    namespace,
+		"labels":       labels,
 	}
 
 	log.Printf("[DEBUG] - creating environment %s with %+v", name, data)

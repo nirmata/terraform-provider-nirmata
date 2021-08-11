@@ -15,6 +15,7 @@ resource "nirmata_environment" "tf-env-1" {
   type        = "medium"
   cluster     = "prod-demo"
   namespace   = "tf-ns-1"
+  labels = {foo = "bar"}
 }
 
 ```
@@ -24,4 +25,5 @@ resource "nirmata_environment" "tf-env-1" {
 * `name` - (Required) a unique name for the environment.
 * `type` - (Required) the environnment type.
 * `cluster` - (Required)  the kubernetes cluster.
+* `labels` - (Optional) labels to set on environment  add-on.
 * `namespace` - (Optional) the cluster namespace bound to this environment. Defaults to the environment name.
