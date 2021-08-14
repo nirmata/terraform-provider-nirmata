@@ -1,7 +1,7 @@
 provider "nirmata" {
   #  Nirmata API Key. Best configured as the environment variable NIRMATA_TOKEN.
   
-    token = ""
+  #  token = ""
 
   #  Nirmata address. Defaults to https://nirmata.io and can be configured as
   #  the environment variable NIRMATA_URL.

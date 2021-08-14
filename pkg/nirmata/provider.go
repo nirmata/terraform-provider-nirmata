@@ -46,6 +46,7 @@ func Provider() *schema.Provider {
 			"nirmata_git_application":           resourceGitApplication(),
 			"nirmata_run_application":           resourceRunApplication(),
 			"nirmata_promote_version":           resourcePromoteVersion(),
+			"nirmata_helm_application":          resourceHelmApplication(),
 		},
 
 		ConfigureFunc: configureProvider,
