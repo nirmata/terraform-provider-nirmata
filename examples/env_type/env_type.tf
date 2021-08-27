@@ -20,4 +20,5 @@ resource "nirmata_environment_type" "tf-env-type-1" {
       storage = "1Gi"
   }
   is_default      = false
+  labels = {foo = "bar"}
 }

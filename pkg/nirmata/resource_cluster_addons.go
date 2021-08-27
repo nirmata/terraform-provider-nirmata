@@ -1,6 +1,7 @@
 package nirmata
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -68,11 +69,34 @@ func resourceClusterAddOnCreate(d *schema.ResourceData, meta interface{}) error 
 	catalog := d.Get("catalog").(string)
 	environment := d.Get("environment").(string)
 	labels := d.Get("labels")
-
+	isAppPresent := false
 	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
 	if err != nil {
 		log.Printf("[ERROR] - failed to resolve cluster %s %v", clusterNameOrID, err)
 		return err
+	}
+
+	catalogID, catalogErr := fetchID(apiClient, client.ServiceCatalogs, "Catalogs", catalog)
+	if catalogErr != nil {
+		log.Printf("[ERROR] - failed to get catalog %s %v", catalog, catalogErr)
+		return catalogErr
+	}
+
+	fields := []string{"name", "id"}
+	applicationList, appErr := apiClient.GetDescendants(catalogID, "Application", &client.GetOptions{Fields: fields})
+	if appErr != nil {
+		log.Printf("[ERROR] - failed to get application - %v", appErr)
+		return err
+	}
+	for _, apps := range applicationList {
+		if application == apps["name"] {
+			isAppPresent = true
+		}
+	}
+
+	if !isAppPresent {
+		log.Printf("[ERROR] - no application found with name %v in catalog - %v", application, catalog)
+		return fmt.Errorf("[ERROR] - no application found with name %v in catalog - %v", application, catalog)
 	}
 
 	addOnId, err := apiClient.GetRelationID(clusterID, "ClusterAddOns")

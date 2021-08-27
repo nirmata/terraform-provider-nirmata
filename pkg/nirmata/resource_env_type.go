@@ -1,9 +1,10 @@
 package nirmata
 
 import (
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
-	"log"
 )
 
 func resourceEnvironmentType() *schema.Resource {
@@ -34,6 +35,13 @@ func resourceEnvironmentType() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"labels": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -43,11 +51,13 @@ func resourceEnvironmentTypeCreate(d *schema.ResourceData, meta interface{}) err
 	name := d.Get("name").(string)
 	isDefault := d.Get("is_default").(bool)
 	resourceLimits := d.Get("resource_limits")
+	labels := d.Get("labels")
 
 	data := map[string]interface{}{
-		"name":         name,
+		"name":           name,
 		"resourceLimits": resourceLimits,
-		"isDefault":  isDefault,
+		"isDefault":      isDefault,
+		"labels":         labels,
 	}
 
 	log.Printf("[DEBUG] - creating environment type %s with %+v", name, data)
@@ -80,15 +90,15 @@ func resourceEnvironmentTypeRead(d *schema.ResourceData, meta interface{}) error
 
 var envTypeMap = map[string]string{
 	"is_default":      "isDefault",
-	"resource_limits": "resourceLimits" ,
-	}
+	"resource_limits": "resourceLimits",
+}
 
 func resourceEnvironmentTypeUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	id := client.NewID(client.ServiceEnvironments, "EnvironmentResourceType", d.Id())
-	envChanges := buildChanges(d, envTypeMap, "is_default","resource_limits")
+	envChanges := buildChanges(d, envTypeMap, "is_default", "resource_limits")
 	if len(envChanges) > 0 {
-		envTypeData, err :=  apiClient.Get(id, &client.GetOptions{})
+		envTypeData, err := apiClient.Get(id, &client.GetOptions{})
 		if err != nil {
 			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "EnvironmentResourceType", id.Map(), err)
 			return err

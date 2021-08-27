@@ -15,4 +15,5 @@ resource "nirmata_environment" "tf-env-1" {
   type        = "medium"
   cluster     = "prod-demo"
   namespace   = "tf-ns-1"
+  labels = {foo = "bar"}
 }
