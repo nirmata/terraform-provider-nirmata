@@ -28,7 +28,7 @@ resource "nirmata_helm_application" "tf-helm-git" {
 
 * `name` - (Required) a unique name for the application in catalog.
 * `application` - (Required) the application name.
-* `repository` - (Required)  the repository URL .
-* `location` - (Required).
-* `app_version` - (Required).
-* `chart_version` - (Required).
+* `repository` - (Required)  the repository URL.
+* `location` - (Required). the location of the chart. (https://charts.bitnami.com/bitnami/airflow-0.0.1.tgz)
+* `app_version` - (Required). specify the version of the application. ("0.0.1")
+* `chart_version` - (Required).the version of the chart. ("1.2.3")
