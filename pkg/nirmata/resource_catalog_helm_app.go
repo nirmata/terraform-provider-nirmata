@@ -84,7 +84,11 @@ func resourceHelmApplicationCreate(d *schema.ResourceData, meta interface{}) err
 		log.Printf("[ERROR] - failed to create cluster type  with data : %v", err)
 		return err
 	}
-	catID, err := apiClient.QueryByName(client.ServiceCatalogs, "Catalogs", catalog)
+	catID, cerr := apiClient.QueryByName(client.ServiceCatalogs, "Catalogs", catalog)
+	if cerr != nil {
+		log.Printf("[ERROR] - failed to find catalog with name : %v", name)
+		return cerr
+	}
 
 	appData := map[string]interface{}{
 		"name":         name,

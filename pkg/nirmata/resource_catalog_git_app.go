@@ -84,7 +84,11 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 		credentialID = credID.UUID()
 	}
-	catID, err := apiClient.QueryByName(client.ServiceCatalogs, "Catalogs", catalog)
+	catID, cerr := apiClient.QueryByName(client.ServiceCatalogs, "Catalogs", catalog)
+	if cerr != nil {
+		log.Printf("[ERROR] - failed to find catalog with name : %v", name)
+		return cerr
+	}
 
 	appData := map[string]interface{}{
 		"name":         name,
@@ -107,8 +111,8 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 
 	data, marshalErr := json.Marshal(appData)
 	if marshalErr != nil {
-		fmt.Printf("Error - %v", err)
-		return err
+		fmt.Printf("Error - %v", marshalErr)
+		return marshalErr
 	}
 
 	log.Printf("[DEBUG] - creating  application %s with %+v", name, appData)
