@@ -93,8 +93,8 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	channelList, channelErr := apiClient.GetDescendants(applicationID, "Channel", &client.GetOptions{Fields: fields})
-	if appErr != nil {
-		log.Printf("Error channel not found - %v", appErr)
+	if channelErr != nil {
+		log.Printf("Error channel not found - %v", channelErr)
 		return channelErr
 	}
 
@@ -110,8 +110,8 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	versionList, versionErr := apiClient.GetDescendants(applicationID, "Version", &client.GetOptions{Fields: fields})
-	if appErr != nil {
-		log.Printf("Error version not found - %v", appErr)
+	if versionErr != nil {
+		log.Printf("Error version not found - %v", versionErr)
 		return versionErr
 	}
 
