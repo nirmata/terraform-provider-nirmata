@@ -41,7 +41,28 @@ func waitForClusterState(apiClient client.Client, maxTime time.Duration, cluster
 	return state.(string), nil
 }
 
-func waitForClusterDeletedState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
+// waitForRollloutState waits until rollout is created or has failed
+func waitForRollutState(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
+	states := []interface{}{"completed", "failed"}
+	state, err := apiClient.WaitForStates(rolloutID, "state", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
+func getRolloutStatus(api client.Client, rolloutID client.ID) (string, error) {
+	rolloutData, err := api.Get(rolloutID, client.NewGetOptions(nil, nil))
+	if err != nil {
+		log.Printf("[ERROR] Failed to retrieve failed rollout details: %v", err)
+		return "", err
+	}
+	statusMsg := rolloutData["errorInfo"].(string)
+	return statusMsg, nil
+}
+
+func waitForDeletedState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
 	states := []interface{}{"deleted"}
 	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
 	if err != nil {

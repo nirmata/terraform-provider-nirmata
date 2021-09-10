@@ -335,7 +335,7 @@ func resourceClusterDelete(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
-	waitForClusterDeletedState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
+	waitForDeletedState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
 
 	log.Printf("[INFO] Deleted cluster %s", name)
 	return nil

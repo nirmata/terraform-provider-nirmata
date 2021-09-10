@@ -1,0 +1,872 @@
+2021/08/31 20:48:56 [INFO] Terraform version: 0.12.14  
+2021/08/31 20:48:56 [INFO] Go runtime version: go1.12.13
+2021/08/31 20:48:56 [INFO] CLI args: []string{"C:\\ProgramData\\chocolatey\\lib\\terraform\\tools\\terraform.exe", "apply", "examples/catalog_app/"}
+2021/08/31 20:48:56 [DEBUG] Attempting to open CLI config file: C:\Users\vyank\AppData\Roaming\terraform.rc
+2021/08/31 20:48:56 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2021/08/31 20:48:56 [INFO] CLI command args: []string{"apply", "examples/catalog_app/"}
+2021/08/31 20:48:56 [TRACE] Meta.Backend: no config given or present on disk, so returning nil config
+2021/08/31 20:48:56 [TRACE] Meta.Backend: backend has not previously been initialized in this working directory
+2021/08/31 20:48:56 [DEBUG] New state was assigned lineage "8a2c13ca-e097-b11e-a225-1b87f265aa64"
+2021/08/31 20:48:56 [TRACE] Meta.Backend: using default local state only (no backend configuration, and no existing initialized backend)
+2021/08/31 20:48:56 [TRACE] Meta.Backend: instantiated backend of type <nil>
+2021/08/31 20:48:56 [DEBUG] checking for provider in "."
+2021/08/31 20:48:56 [WARN] found legacy provider "terraform-provider-nirmata.exe"
+2021/08/31 20:48:56 [DEBUG] checking for provider in "C:\\ProgramData\\chocolatey\\lib\\terraform\\tools"
+2021/08/31 20:48:56 [DEBUG] checking for provider in ".terraform\\plugins\\windows_amd64"
+2021/08/31 20:48:56 [DEBUG] found valid plugin: "nirmata", "0.0.0", "D:\\Terraform\\terraform-provider-nirmata\\terraform-provider-nirmata.exe"
+2021/08/31 20:48:56 [DEBUG] checking for provisioner in "."
+2021/08/31 20:48:56 [DEBUG] checking for provisioner in "C:\\ProgramData\\chocolatey\\lib\\terraform\\tools"
+2021/08/31 20:48:56 [DEBUG] checking for provisioner in ".terraform\\plugins\\windows_amd64"
+2021/08/31 20:48:56 [TRACE] Meta.Backend: backend <nil> does not support operations, so wrapping it in a local backend
+2021/08/31 20:48:56 [INFO] backend/local: starting Apply operation
+2021/08/31 20:48:56 [TRACE] backend/local: requesting state manager for workspace "default"
+2021/08/31 20:48:56 [TRACE] backend/local: state manager for workspace "default" will:
+ - read initial snapshot from terraform.tfstate
+ - write new snapshots to terraform.tfstate
+ - create any backup at terraform.tfstate.backup
+2021/08/31 20:48:56 [TRACE] backend/local: requesting state lock for workspace "default"
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: preparing to manage state snapshots at terraform.tfstate
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: no previously-stored snapshot exists
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: locking terraform.tfstate using LockFileEx
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: writing lock metadata to .terraform.tfstate.lock.info
+2021/08/31 20:48:56 [TRACE] backend/local: reading remote state for workspace "default"
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: reading latest snapshot from terraform.tfstate
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: snapshot file has nil snapshot, but that's okay
+2021/08/31 20:48:56 [TRACE] statemgr.Filesystem: read nil snapshot
+2021/08/31 20:48:56 [TRACE] backend/local: retrieving local state snapshot for workspace "default"
+2021/08/31 20:48:56 [TRACE] backend/local: building context for current working directory
+2021/08/31 20:48:56 [TRACE] terraform.NewContext: starting
+2021/08/31 20:48:56 [TRACE] terraform.NewContext: resolving provider version selections
+2021/08/31 20:48:56 [TRACE] terraform.NewContext: loading provider schemas
+2021/08/31 20:48:56 [TRACE] LoadSchemas: retrieving schema for provider type "nirmata"
+2021-08-31T20:48:56.824+0530 [INFO]  plugin: configuring client automatic mTLS
+2021-08-31T20:48:56.879+0530 [DEBUG] plugin: starting plugin: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe args=[D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe]
+2021-08-31T20:48:56.884+0530 [DEBUG] plugin: plugin started: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=16804
+2021-08-31T20:48:56.884+0530 [DEBUG] plugin: waiting for RPC address: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe
+2021-08-31T20:48:56.972+0530 [INFO]  plugin.terraform-provider-nirmata.exe: configuring server automatic mTLS: timestamp=2021-08-31T20:48:56.970+0530
+2021-08-31T20:48:57.049+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: plugin address: address=127.0.0.1:10000 network=tcp timestamp=2021-08-31T20:48:57.049+0530
+2021-08-31T20:48:57.050+0530 [DEBUG] plugin: using plugin: version=5
+2021/08/31 20:48:57 [TRACE] GRPCProvider: GetSchema
+2021/08/31 20:48:57 [TRACE] GRPCProvider: Close
+2021-08-31T20:48:57.189+0530 [DEBUG] plugin: plugin process exited: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=16804
+2021-08-31T20:48:57.189+0530 [DEBUG] plugin: plugin exited
+2021/08/31 20:48:57 [TRACE] terraform.NewContext: complete
+2021/08/31 20:48:57 [TRACE] backend/local: finished building terraform.Context
+2021/08/31 20:48:57 [TRACE] backend/local: requesting interactive input, if necessary
+2021/08/31 20:48:57 [TRACE] Context.Input: Prompting for provider arguments
+2021/08/31 20:48:57 [TRACE] Context.Input: Provider provider.nirmata declared at examples\catalog_app\catalog_app.tf:1,1-19
+2021/08/31 20:48:57 [TRACE] Context.Input: Input for provider.nirmata: map[string]cty.Value{}
+2021/08/31 20:48:57 [TRACE] backend/local: running validation operation
+2021/08/31 20:48:57 [INFO] terraform: building graph: GraphTypeValidate
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2021/08/31 20:48:57 [TRACE] ConfigTransformer: Starting for path: 
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.LocalTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OutputTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.StateTransformer
+2021/08/31 20:48:57 [TRACE] StateTransformer: state is empty, so nothing to do
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2021/08/31 20:48:57 [TRACE] AttachResourceConfigTransformer: attaching to "nirmata_calatog_application.tf-catalog-app" (*terraform.NodeValidatableResource) config from examples\catalog_app\catalog_app.tf:13,1-56
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2021/08/31 20:48:57 [TRACE] ProviderConfigTransformer: attaching to "provider.nirmata" provider configuration from examples\catalog_app\catalog_app.tf:1,1-19
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2021/08/31 20:48:57 [TRACE] ProviderTransformer: nirmata_calatog_application.tf-catalog-app is provided by provider.nirmata or inherited equivalent
+2021/08/31 20:48:57 [TRACE] ProviderTransformer: exact match for provider.nirmata serving nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [DEBUG] ProviderTransformer: "nirmata_calatog_application.tf-catalog-app" (*terraform.NodeValidatableResource) needs provider.nirmata
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2021/08/31 20:48:57 [TRACE] AttachSchemaTransformer: attaching resource schema to nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.nirmata
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2021/08/31 20:48:57 [DEBUG] ReferenceTransformer: "nirmata_calatog_application.tf-catalog-app" references: []
+2021/08/31 20:48:57 [DEBUG] ReferenceTransformer: "provider.nirmata" references: []
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ForcedCBDTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ForcedCBDTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+root - terraform.graphNodeRoot
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  provider.nirmata (close) - *terraform.graphNodeCloseProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeValidatableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  provider.nirmata (close) - *terraform.graphNodeCloseProvider
+------
+2021/08/31 20:48:57 [DEBUG] Starting graph walk: walkValidate
+2021/08/31 20:48:57 [TRACE] dag/walk: updating graph
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "provider.nirmata"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "provider.nirmata (close)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "root"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "nirmata_calatog_application.tf-catalog-app" waiting on "provider.nirmata"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "provider.nirmata (close)" waiting on "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "root" waiting on "provider.nirmata (close)"
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "provider.nirmata (close)", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "nirmata_calatog_application.tf-catalog-app", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "provider.nirmata"
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata": starting visit (*terraform.NodeApplyableProvider)
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata": evaluating
+2021/08/31 20:48:57 [TRACE] [walkValidate] Entering eval tree: provider.nirmata
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2021-08-31T20:48:57.192+0530 [INFO]  plugin: configuring client automatic mTLS
+2021-08-31T20:48:57.245+0530 [DEBUG] plugin: starting plugin: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe args=[D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe]
+2021-08-31T20:48:57.250+0530 [DEBUG] plugin: plugin started: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=18124
+2021-08-31T20:48:57.250+0530 [DEBUG] plugin: waiting for RPC address: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe
+2021-08-31T20:48:57.302+0530 [INFO]  plugin.terraform-provider-nirmata.exe: configuring server automatic mTLS: timestamp=2021-08-31T20:48:57.300+0530
+2021-08-31T20:48:57.394+0530 [DEBUG] plugin: using plugin: version=5
+2021-08-31T20:48:57.394+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: plugin address: address=127.0.0.1:10000 network=tcp timestamp=2021-08-31T20:48:57.394+0530
+2021/08/31 20:48:57 [TRACE] BuiltinEvalContext: Initialized "nirmata" provider for provider.nirmata
+2021/08/31 20:48:57 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalValidateProvider
+2021/08/31 20:48:57 [TRACE] buildProviderConfig for provider.nirmata: using explicit config only
+2021/08/31 20:48:57 [TRACE] GRPCProvider: GetSchema
+2021/08/31 20:48:57 [TRACE] GRPCProvider: PrepareProviderConfig
+2021/08/31 20:48:57 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:57 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:57 [TRACE] [walkValidate] Exiting eval tree: provider.nirmata
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata": visit complete
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": starting visit (*terraform.NodeValidatableResource)
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": evaluating
+2021/08/31 20:48:57 [TRACE] [walkValidate] Entering eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalValidateResource
+2021/08/31 20:48:57 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2021/08/31 20:48:57 [TRACE] [walkValidate] Exiting eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": visit complete
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "provider.nirmata (close)"
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata (close)": starting visit (*terraform.graphNodeCloseProvider)
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata (close)": evaluating
+2021/08/31 20:48:57 [TRACE] vertex "meta.count-boundary (EachMode fixup)": starting visit (*terraform.NodeCountBoundary)
+2021/08/31 20:48:57 [TRACE] [walkValidate] Entering eval tree: provider.nirmata (close)
+2021/08/31 20:48:57 [TRACE] vertex "meta.count-boundary (EachMode fixup)": evaluating
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalCloseProvider
+2021/08/31 20:48:57 [TRACE] [walkValidate] Entering eval tree: meta.count-boundary (EachMode fixup)
+2021/08/31 20:48:57 [TRACE] GRPCProvider: Close
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2021/08/31 20:48:57 [TRACE] [walkValidate] Exiting eval tree: meta.count-boundary (EachMode fixup)
+2021/08/31 20:48:57 [TRACE] vertex "meta.count-boundary (EachMode fixup)": visit complete
+2021-08-31T20:48:57.543+0530 [DEBUG] plugin: plugin process exited: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=18124
+2021-08-31T20:48:57.543+0530 [DEBUG] plugin: plugin exited
+2021/08/31 20:48:57 [TRACE] [walkValidate] Exiting eval tree: provider.nirmata (close)
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata (close)": visit complete
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "root"
+2021/08/31 20:48:57 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2021/08/31 20:48:57 [TRACE] vertex "root": visit complete
+2021/08/31 20:48:57 [INFO] backend/local: apply calling Refresh
+2021/08/31 20:48:57 [INFO] terraform: building graph: GraphTypeRefresh
+2021/08/31 20:48:57 [TRACE] No managed resources in state during refresh; skipping managed resource transformer
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2021/08/31 20:48:57 [TRACE] ConfigTransformer: Starting for path: 
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ConfigTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.StateTransformer
+2021/08/31 20:48:57 [TRACE] StateTransformer: state is empty, so nothing to do
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.LocalTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OutputTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2021/08/31 20:48:57 [TRACE] ProviderConfigTransformer: attaching to "provider.nirmata" provider configuration from examples\catalog_app\catalog_app.tf:1,1-19
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2021/08/31 20:48:57 [DEBUG] pruning unused provider.nirmata
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer with new graph:
+------
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.graphTransformerMulti (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachDependenciesTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachDependenciesTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CloseProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+root - terraform.graphNodeRoot
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer (no changes)
+2021/08/31 20:48:57 [DEBUG] Starting graph walk: walkRefresh
+2021/08/31 20:48:57 [TRACE] dag/walk: updating graph
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "root"
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "root"
+2021/08/31 20:48:57 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2021/08/31 20:48:57 [TRACE] vertex "root": visit complete
+2021/08/31 20:48:57 [INFO] backend/local: apply calling Plan
+2021/08/31 20:48:57 [INFO] terraform: building graph: GraphTypePlan
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2021/08/31 20:48:57 [TRACE] ConfigTransformer: Starting for path: 
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.LocalTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OutputTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OrphanResourceInstanceTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OrphanResourceInstanceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.StateTransformer
+2021/08/31 20:48:57 [TRACE] StateTransformer: state is empty, so nothing to do
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.StateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2021/08/31 20:48:57 [TRACE] AttachResourceConfigTransformer: attaching to "nirmata_calatog_application.tf-catalog-app" (*terraform.NodePlannableResource) config from examples\catalog_app\catalog_app.tf:13,1-56
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2021/08/31 20:48:57 [TRACE] ProviderConfigTransformer: attaching to "provider.nirmata" provider configuration from examples\catalog_app\catalog_app.tf:1,1-19
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2021/08/31 20:48:57 [TRACE] ProviderTransformer: nirmata_calatog_application.tf-catalog-app is provided by provider.nirmata or inherited equivalent
+2021/08/31 20:48:57 [TRACE] ProviderTransformer: exact match for provider.nirmata serving nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [DEBUG] ProviderTransformer: "nirmata_calatog_application.tf-catalog-app" (*terraform.NodePlannableResource) needs provider.nirmata
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2021/08/31 20:48:57 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2021/08/31 20:48:57 [TRACE] AttachSchemaTransformer: attaching resource schema to nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.nirmata
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2021/08/31 20:48:57 [DEBUG] ReferenceTransformer: "provider.nirmata" references: []
+2021/08/31 20:48:57 [DEBUG] ReferenceTransformer: "nirmata_calatog_application.tf-catalog-app" references: []
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ForcedCBDTransformer
+2021/08/31 20:48:57 [TRACE] ForcedCBDTransformer: "nirmata_calatog_application.tf-catalog-app" (*terraform.NodePlannableResource) has no CBD descendent, so skipping
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ForcedCBDTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+root - terraform.graphNodeRoot
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  provider.nirmata (close) - *terraform.graphNodeCloseProvider
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResource
+root - terraform.graphNodeRoot
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  provider.nirmata (close) - *terraform.graphNodeCloseProvider
+------
+2021/08/31 20:48:57 [DEBUG] Starting graph walk: walkPlan
+2021/08/31 20:48:57 [TRACE] dag/walk: updating graph
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "root"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "provider.nirmata"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "provider.nirmata (close)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "provider.nirmata (close)" waiting on "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "root" waiting on "provider.nirmata (close)"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "nirmata_calatog_application.tf-catalog-app" waiting on "provider.nirmata"
+2021/08/31 20:48:57 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "provider.nirmata (close)", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "nirmata_calatog_application.tf-catalog-app", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "provider.nirmata"
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata": starting visit (*terraform.NodeApplyableProvider)
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata": evaluating
+2021/08/31 20:48:57 [TRACE] [walkPlan] Entering eval tree: provider.nirmata
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2021-08-31T20:48:57.547+0530 [INFO]  plugin: configuring client automatic mTLS
+2021-08-31T20:48:57.610+0530 [DEBUG] plugin: starting plugin: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe args=[D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe]
+2021-08-31T20:48:57.615+0530 [DEBUG] plugin: plugin started: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=13636
+2021-08-31T20:48:57.615+0530 [DEBUG] plugin: waiting for RPC address: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe
+2021-08-31T20:48:57.673+0530 [INFO]  plugin.terraform-provider-nirmata.exe: configuring server automatic mTLS: timestamp=2021-08-31T20:48:57.671+0530
+2021-08-31T20:48:57.764+0530 [DEBUG] plugin: using plugin: version=5
+2021-08-31T20:48:57.764+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: plugin address: address=127.0.0.1:10000 network=tcp timestamp=2021-08-31T20:48:57.764+0530
+2021/08/31 20:48:57 [TRACE] BuiltinEvalContext: Initialized "nirmata" provider for provider.nirmata
+2021/08/31 20:48:57 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:57 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalConfigProvider
+2021/08/31 20:48:57 [TRACE] buildProviderConfig for provider.nirmata: using explicit config only
+2021/08/31 20:48:57 [TRACE] GRPCProvider: GetSchema
+2021/08/31 20:48:57 [TRACE] GRPCProvider: Configure
+2021/08/31 20:48:57 [TRACE] [walkPlan] Exiting eval tree: provider.nirmata
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata": visit complete
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": starting visit (*terraform.NodePlannableResource)
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": evaluating
+2021/08/31 20:48:57 [TRACE] [walkPlan] Entering eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalWriteResourceState
+2021/08/31 20:48:57 [TRACE] [walkPlan] Exiting eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": expanding dynamic subgraph
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ResourceCountTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ResourceCountTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodePlannableResourceInstance
+------
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.OrphanResourceCountTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.OrphanResourceCountTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2021/08/31 20:48:57 [DEBUG] Resource instance state not found for node "nirmata_calatog_application.tf-catalog-app", instance nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2021/08/31 20:48:57 [DEBUG] ReferenceTransformer: "nirmata_calatog_application.tf-catalog-app" references: []
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] Executing graph transform *terraform.RootTransformer
+2021/08/31 20:48:57 [TRACE] Completed graph transform *terraform.RootTransformer (no changes)
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": entering dynamic subgraph
+2021/08/31 20:48:57 [TRACE] dag/walk: updating graph
+2021/08/31 20:48:57 [TRACE] dag/walk: added new vertex: "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": starting visit (*terraform.NodePlannableResourceInstance)
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": evaluating
+2021/08/31 20:48:57 [TRACE] [walkPlan] Entering eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalReadState
+2021/08/31 20:48:57 [TRACE] EvalReadState: reading state for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] EvalReadState: no state present for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalValidateSelfRef
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalDiff
+2021/08/31 20:48:57 [TRACE] Re-validating config for "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:57 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2021/08/31 20:48:57 [TRACE] GRPCProvider: PlanResourceChange
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalCheckPreventDestroy
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalWriteState
+2021/08/31 20:48:57 [TRACE] EvalWriteState: writing current state object for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalWriteDiff
+2021/08/31 20:48:57 [TRACE] EvalWriteDiff: recorded Create change for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] [walkPlan] Exiting eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": visit complete
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": dynamic subgraph completed successfully
+2021/08/31 20:48:57 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": visit complete
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "provider.nirmata (close)"
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata (close)": starting visit (*terraform.graphNodeCloseProvider)
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata (close)": evaluating
+2021/08/31 20:48:57 [TRACE] vertex "meta.count-boundary (EachMode fixup)": starting visit (*terraform.NodeCountBoundary)
+2021/08/31 20:48:57 [TRACE] [walkPlan] Entering eval tree: provider.nirmata (close)
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalCloseProvider
+2021/08/31 20:48:57 [TRACE] vertex "meta.count-boundary (EachMode fixup)": evaluating
+2021/08/31 20:48:57 [TRACE] GRPCProvider: Close
+2021/08/31 20:48:57 [TRACE] [walkPlan] Entering eval tree: meta.count-boundary (EachMode fixup)
+2021/08/31 20:48:57 [TRACE] <root>: eval: *terraform.EvalCountFixZeroOneBoundaryGlobal
+2021/08/31 20:48:57 [TRACE] [walkPlan] Exiting eval tree: meta.count-boundary (EachMode fixup)
+2021/08/31 20:48:57 [TRACE] vertex "meta.count-boundary (EachMode fixup)": visit complete
+2021-08-31T20:48:57.905+0530 [DEBUG] plugin: plugin process exited: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=13636
+2021-08-31T20:48:57.905+0530 [DEBUG] plugin: plugin exited
+2021/08/31 20:48:57 [TRACE] [walkPlan] Exiting eval tree: provider.nirmata (close)
+2021/08/31 20:48:57 [TRACE] vertex "provider.nirmata (close)": visit complete
+2021/08/31 20:48:57 [TRACE] dag/walk: visiting "root"
+2021/08/31 20:48:57 [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2021/08/31 20:48:57 [TRACE] vertex "root": visit complete
+2021/08/31 20:48:57 [DEBUG] command: asking for input: "Do you want to perform these actions?"
+2021/08/31 20:48:59 [INFO] backend/local: apply calling Apply
+2021/08/31 20:48:59 [INFO] terraform: building graph: GraphTypeApply
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.ConfigTransformer
+2021/08/31 20:48:59 [TRACE] ConfigTransformer: Starting for path: 
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.ConfigTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+------
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.DiffTransformer
+2021/08/31 20:48:59 [TRACE] DiffTransformer starting
+2021/08/31 20:48:59 [TRACE] DiffTransformer: found Create change for nirmata_calatog_application.tf-catalog-app 
+2021/08/31 20:48:59 [TRACE] DiffTransformer: nirmata_calatog_application.tf-catalog-app will be represented by nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:59 [TRACE] DiffTransformer complete
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.DiffTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+------
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.OrphanResourceTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.OrphanResourceTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.OrphanOutputTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.OrphanOutputTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.AttachResourceConfigTransformer
+2021/08/31 20:48:59 [TRACE] AttachResourceConfigTransformer: attaching to "nirmata_calatog_application.tf-catalog-app (prepare state)" (*terraform.NodeApplyableResource) config from examples\catalog_app\catalog_app.tf:13,1-56
+2021/08/31 20:48:59 [TRACE] AttachResourceConfigTransformer: attaching to "nirmata_calatog_application.tf-catalog-app" (*terraform.NodeApplyableResourceInstance) config from examples\catalog_app\catalog_app.tf:13,1-56
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.AttachResourceConfigTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.AttachStateTransformer
+2021/08/31 20:48:59 [DEBUG] Resource state not found for node "nirmata_calatog_application.tf-catalog-app", instance nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.AttachStateTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.MissingProvisionerTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.MissingProvisionerTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.ProvisionerTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.ProvisionerTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.RootVariableTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.LocalTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.LocalTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.OutputTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.OutputTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.ModuleVariableTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.ModuleVariableTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.graphTransformerMulti
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderConfigTransformer
+2021/08/31 20:48:59 [TRACE] ProviderConfigTransformer: attaching to "provider.nirmata" provider configuration from examples\catalog_app\catalog_app.tf:1,1-19
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderConfigTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.MissingProviderTransformer
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.MissingProviderTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ProviderTransformer
+2021/08/31 20:48:59 [TRACE] ProviderTransformer: nirmata_calatog_application.tf-catalog-app (prepare state) is provided by provider.nirmata or inherited equivalent
+2021/08/31 20:48:59 [TRACE] ProviderTransformer: nirmata_calatog_application.tf-catalog-app is provided by provider.nirmata or inherited equivalent
+2021/08/31 20:48:59 [TRACE] ProviderTransformer: exact match for provider.nirmata serving nirmata_calatog_application.tf-catalog-app (prepare state)
+2021/08/31 20:48:59 [DEBUG] ProviderTransformer: "nirmata_calatog_application.tf-catalog-app (prepare state)" (*terraform.NodeApplyableResource) needs provider.nirmata
+2021/08/31 20:48:59 [TRACE] ProviderTransformer: exact match for provider.nirmata serving nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:59 [DEBUG] ProviderTransformer: "nirmata_calatog_application.tf-catalog-app" (*terraform.NodeApplyableResourceInstance) needs provider.nirmata
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ProviderTransformer with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.PruneProviderTransformer
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.PruneProviderTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Executing graph transform *terraform.ParentProviderTransformer
+2021/08/31 20:48:59 [TRACE] (graphTransformerMulti) Completed graph transform *terraform.ParentProviderTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.graphTransformerMulti with new graph:
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.RemovedModuleTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.RemovedModuleTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.AttachSchemaTransformer
+2021/08/31 20:48:59 [TRACE] AttachSchemaTransformer: attaching resource schema to nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:48:59 [TRACE] AttachSchemaTransformer: attaching provider config schema to provider.nirmata
+2021/08/31 20:48:59 [TRACE] AttachSchemaTransformer: attaching resource schema to nirmata_calatog_application.tf-catalog-app (prepare state)
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.AttachSchemaTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2021/08/31 20:48:59 [DEBUG] ReferenceTransformer: "nirmata_calatog_application.tf-catalog-app (prepare state)" references: []
+2021/08/31 20:48:59 [DEBUG] ReferenceTransformer: "nirmata_calatog_application.tf-catalog-app" references: []
+2021/08/31 20:48:59 [DEBUG] ReferenceTransformer: "provider.nirmata" references: []
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.ReferenceTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.AttachDependenciesTransformer
+2021/08/31 20:48:59 [TRACE] AttachDependenciesTransformer: nirmata_calatog_application.tf-catalog-app depends on []
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.AttachDependenciesTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.DestroyEdgeTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.DestroyEdgeTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.CBDEdgeTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.CBDEdgeTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.CountBoundaryTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.CountBoundaryTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.TargetsTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.TargetsTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.CloseProviderTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.CloseProviderTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+------
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.CloseProvisionerTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.CloseProvisionerTransformer (no changes)
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.RootTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.RootTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+root - terraform.graphNodeRoot
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  provider.nirmata (close) - *terraform.graphNodeCloseProvider
+------
+2021/08/31 20:48:59 [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2021/08/31 20:48:59 [TRACE] Completed graph transform *terraform.TransitiveReductionTransformer with new graph:
+meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+  nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+nirmata_calatog_application.tf-catalog-app (prepare state) - *terraform.NodeApplyableResource
+  provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata - *terraform.NodeApplyableProvider
+provider.nirmata (close) - *terraform.graphNodeCloseProvider
+  nirmata_calatog_application.tf-catalog-app - *terraform.NodeApplyableResourceInstance
+root - terraform.graphNodeRoot
+  meta.count-boundary (EachMode fixup) - *terraform.NodeCountBoundary
+  provider.nirmata (close) - *terraform.graphNodeCloseProvider
+------
+2021/08/31 20:48:59 [DEBUG] Starting graph walk: walkApply
+2021/08/31 20:48:59 [TRACE] dag/walk: updating graph
+2021/08/31 20:48:59 [TRACE] dag/walk: added new vertex: "provider.nirmata"
+2021/08/31 20:48:59 [TRACE] dag/walk: added new vertex: "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:59 [TRACE] dag/walk: added new vertex: "provider.nirmata (close)"
+2021/08/31 20:48:59 [TRACE] dag/walk: added new vertex: "root"
+2021/08/31 20:48:59 [TRACE] dag/walk: added new vertex: "nirmata_calatog_application.tf-catalog-app (prepare state)"
+2021/08/31 20:48:59 [TRACE] dag/walk: added new vertex: "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:59 [TRACE] dag/walk: added edge: "provider.nirmata (close)" waiting on "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:59 [TRACE] dag/walk: added edge: "root" waiting on "meta.count-boundary (EachMode fixup)"
+2021/08/31 20:48:59 [TRACE] dag/walk: added edge: "nirmata_calatog_application.tf-catalog-app" waiting on "nirmata_calatog_application.tf-catalog-app (prepare state)"
+2021/08/31 20:48:59 [TRACE] dag/walk: added edge: "root" waiting on "provider.nirmata (close)"
+2021/08/31 20:48:59 [TRACE] dag/walk: added edge: "nirmata_calatog_application.tf-catalog-app (prepare state)" waiting on "provider.nirmata"
+2021/08/31 20:48:59 [TRACE] dag/walk: added edge: "meta.count-boundary (EachMode fixup)" waiting on "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:48:59 [TRACE] dag/walk: dependencies changed for "provider.nirmata (close)", sending new deps
+2021/08/31 20:48:59 [TRACE] dag/walk: dependencies changed for "root", sending new deps
+2021/08/31 20:48:59 [TRACE] dag/walk: dependencies changed for "nirmata_calatog_application.tf-catalog-app", sending new deps
+2021/08/31 20:48:59 [TRACE] dag/walk: dependencies changed for "nirmata_calatog_application.tf-catalog-app (prepare state)", sending new deps
+2021/08/31 20:48:59 [TRACE] dag/walk: dependencies changed for "meta.count-boundary (EachMode fixup)", sending new deps
+2021/08/31 20:48:59 [TRACE] dag/walk: visiting "provider.nirmata"
+2021/08/31 20:48:59 [TRACE] vertex "provider.nirmata": starting visit (*terraform.NodeApplyableProvider)
+2021/08/31 20:48:59 [TRACE] vertex "provider.nirmata": evaluating
+2021/08/31 20:48:59 [TRACE] [walkApply] Entering eval tree: provider.nirmata
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalInitProvider
+2021-08-31T20:48:59.748+0530 [INFO]  plugin: configuring client automatic mTLS
+2021-08-31T20:48:59.808+0530 [DEBUG] plugin: starting plugin: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe args=[D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe]
+2021-08-31T20:48:59.813+0530 [DEBUG] plugin: plugin started: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=32
+2021-08-31T20:48:59.813+0530 [DEBUG] plugin: waiting for RPC address: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe
+2021-08-31T20:48:59.874+0530 [INFO]  plugin.terraform-provider-nirmata.exe: configuring server automatic mTLS: timestamp=2021-08-31T20:48:59.873+0530
+2021-08-31T20:48:59.950+0530 [DEBUG] plugin: using plugin: version=5
+2021-08-31T20:48:59.950+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: plugin address: address=127.0.0.1:10000 network=tcp timestamp=2021-08-31T20:48:59.949+0530
+2021/08/31 20:48:59 [TRACE] BuiltinEvalContext: Initialized "nirmata" provider for provider.nirmata
+2021/08/31 20:48:59 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:59 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalOpFilter
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:48:59 [TRACE] <root>: eval: *terraform.EvalConfigProvider
+2021/08/31 20:48:59 [TRACE] buildProviderConfig for provider.nirmata: using explicit config only
+2021/08/31 20:48:59 [TRACE] GRPCProvider: GetSchema
+2021/08/31 20:49:00 [TRACE] GRPCProvider: Configure
+2021/08/31 20:49:00 [TRACE] [walkApply] Exiting eval tree: provider.nirmata
+2021/08/31 20:49:00 [TRACE] vertex "provider.nirmata": visit complete
+2021/08/31 20:49:00 [TRACE] dag/walk: visiting "nirmata_calatog_application.tf-catalog-app (prepare state)"
+2021/08/31 20:49:00 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app (prepare state)": starting visit (*terraform.NodeApplyableResource)
+2021/08/31 20:49:00 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app (prepare state)": evaluating
+2021/08/31 20:49:00 [TRACE] [walkApply] Entering eval tree: nirmata_calatog_application.tf-catalog-app (prepare state)
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalWriteResourceState
+2021/08/31 20:49:00 [TRACE] [walkApply] Exiting eval tree: nirmata_calatog_application.tf-catalog-app (prepare state)
+2021/08/31 20:49:00 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app (prepare state)": visit complete
+2021/08/31 20:49:00 [TRACE] dag/walk: visiting "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:49:00 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": starting visit (*terraform.NodeApplyableResourceInstance)
+2021/08/31 20:49:00 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": evaluating
+2021/08/31 20:49:00 [TRACE] [walkApply] Entering eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalSequence
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalReadDiff
+2021/08/31 20:49:00 [TRACE] EvalReadDiff: Read Create change from plan for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalIf
+2021/08/31 20:49:00 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalIf
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalReadState
+2021/08/31 20:49:00 [TRACE] EvalReadState: reading state for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] EvalReadState: no state present for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalReadDiff
+2021/08/31 20:49:00 [TRACE] EvalReadDiff: Read Create change from plan for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalDiff
+2021/08/31 20:49:00 [TRACE] Re-validating config for "nirmata_calatog_application.tf-catalog-app"
+2021/08/31 20:49:00 [TRACE] GRPCProvider: ValidateResourceTypeConfig
+2021/08/31 20:49:00 [TRACE] GRPCProvider: PlanResourceChange
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalCheckPlannedChange
+2021/08/31 20:49:00 [TRACE] EvalCheckPlannedChange: Verifying that actual change (action Create) matches planned change (action Create)
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalGetProvider
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalReadState
+2021/08/31 20:49:00 [TRACE] EvalReadState: reading state for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] EvalReadState: no state present for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalReduceDiff
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalIf
+2021/08/31 20:49:00 [TRACE] <root>: eval: terraform.EvalNoop
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalApplyPre
+2021/08/31 20:49:00 [TRACE] <root>: eval: *terraform.EvalApply
+2021/08/31 20:49:00 [DEBUG] nirmata_calatog_application.tf-catalog-app: applying the planned Create change
+2021/08/31 20:49:00 [TRACE] GRPCProvider: ApplyResourceChange
+2021-08-31T20:49:02.936+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 2021/08/31 20:49:02 [ERROR] failed to retrieve catalog details ---
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: metadata:
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   name: "kube-state-metrics"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   labels: {}
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: apiVersion: "rbac.authorization.k8s.io/v1"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: kind: "ClusterRoleBinding"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: subjects:
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: - kind: "ServiceAccount"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   name: "kube-state-metrics"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   namespace: "nirmata-monitoring"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: roleRef:
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   apiGroup: "rbac.authorization.k8s.io"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   kind: "ClusterRole"
+2021-08-31T20:49:02.937+0530 [DEBUG] plugin.terraform-provider-nirmata.exe:   name: "kube-state-metrics"
+2021-08-31T20:49:04.469+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 2021/08/31 20:49:04 Received response map[createdIds:[map[modelIndex:RoleRef service:Catalog uuid:e820bbb3-e0aa-47e8-bc82-90f7d481198a] map[modelIndex:ObjectMeta service:Catalog uuid:8fc6c729-d0ba-40f8-a8f7-5406adee89ba] map[modelIndex:ClusterRoleBinding service:Catalog uuid:970a7d35-b1ab-4955-82f0-48047e32e5dd] map[modelIndex:Subject service:Catalog uuid:db1a08a1-89ee-4bb2-8632-d48fdfddd1a5]] deletedIds:[] empty:false id:6525b661-c8ab-4a5d-98a9-24db85f124d5 metadata:map[] modifiedFields:map[empty:false] modifiedIds:[map[modelIndex:Application service:Catalog uuid:025135a7-3c14-4dbc-8cb6-2443848a0e3d]] sequenceId:31eb1f80-69bd-43c2-a87f-01e1c03e865a tenantId:45b34043-2844-48ca-b14c-a1944d322c8c timestamp:1.630423143676e+12 user:vyankatesh@neualto.com userId:f4ba12dc-58b0-4ef6-adc6-040635f2e252]
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: panic: interface conversion: interface {} is []interface {}, not map[string]map[string]interface {}
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: goroutine 39 [running]:
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: github.com/nirmata/terraform-provider-nirmata/pkg/nirmata.resourceCatalogApplicationCreate(0xc00039b110, 0x14f42c0, 0xc0007ebe60, 0x2, 0x1b99bc0)
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	D:/Terraform/terraform-provider-nirmata/pkg/nirmata/resource_catalog_application.go:52 +0x729
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: github.com/hashicorp/terraform-plugin-sdk/helper/schema.(*Resource).Apply(0xc00009abd0, 0xc0000f0aa0, 0xc0004bc360, 0x14f42c0, 0xc0007ebe60, 0x140e101, 0xc0000492c8, 0xc0000ebce0)
+2021-08-31T20:49:04.471+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/github.com/hashicorp/terraform-plugin-sdk@v1.9.0/helper/schema/resource.go:310 +0x395
+2021-08-31T20:49:04.472+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: github.com/hashicorp/terraform-plugin-sdk/helper/schema.(*Provider).Apply(0xc000098080, 0xc0007dba18, 0xc0000f0aa0, 0xc0004bc360, 0xc0001435e8, 0xc00020e528, 0x140fca0)
+2021-08-31T20:49:04.472+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/github.com/hashicorp/terraform-plugin-sdk@v1.9.0/helper/schema/provider.go:294 +0xa5
+2021-08-31T20:49:04.472+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: github.com/hashicorp/terraform-plugin-sdk/internal/helper/plugin.(*GRPCProviderServer).ApplyResourceChange(0xc00008e090, 0x1680ed0, 0xc0000eb5f0, 0xc00039a9a0, 0xc00008e090, 0xc0000eb5f0, 0xc0007d1b80)
+2021-08-31T20:49:04.472+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/github.com/hashicorp/terraform-plugin-sdk@v1.9.0/internal/helper/plugin/grpc_provider.go:885 +0x8c5
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: github.com/hashicorp/terraform-plugin-sdk/internal/tfplugin5._Provider_ApplyResourceChange_Handler(0x14db880, 0xc00008e090, 0x1680ed0, 0xc0000eb5f0, 0xc00070ca80, 0x0, 0x1680ed0, 0xc0000eb5f0, 0xc0000ac380, 0x304)
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/github.com/hashicorp/terraform-plugin-sdk@v1.9.0/internal/tfplugin5/tfplugin5.pb.go:3305 +0x222
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: google.golang.org/grpc.(*Server).processUnaryRPC(0xc00042ec00, 0x1688eb8, 0xc000084c00, 0xc0000f6100, 0xc000088a20, 0x1b456a0, 0x0, 0x0, 0x0)
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/google.golang.org/grpc@v1.27.1/server.go:1024 +0x522
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: google.golang.org/grpc.(*Server).handleStream(0xc00042ec00, 0x1688eb8, 0xc000084c00, 0xc0000f6100, 0x0)
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/google.golang.org/grpc@v1.27.1/server.go:1313 +0xd4c
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: google.golang.org/grpc.(*Server).serveStreams.func1.1(0xc00056c130, 0xc00042ec00, 0x1688eb8, 0xc000084c00, 0xc0000f6100)
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/google.golang.org/grpc@v1.27.1/server.go:722 +0xb2
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: created by google.golang.org/grpc.(*Server).serveStreams.func1
+2021-08-31T20:49:04.473+0530 [DEBUG] plugin.terraform-provider-nirmata.exe: 	C:/Users/vyank/go/pkg/mod/google.golang.org/grpc@v1.27.1/server.go:720 +0xa8
+2021/08/31 20:49:04 [DEBUG] nirmata_calatog_application.tf-catalog-app: apply errored, but we're indicating that via the Error pointer rather than returning it: rpc error: code = Unavailable desc = transport is closing
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalMaybeTainted
+2021/08/31 20:49:04 [TRACE] EvalMaybeTainted: nirmata_calatog_application.tf-catalog-app encountered an error during creation, so it is now marked as tainted
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalWriteState
+2021/08/31 20:49:04 [TRACE] EvalWriteState: removing state object for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalApplyProvisioners
+2021/08/31 20:49:04 [TRACE] EvalApplyProvisioners: nirmata_calatog_application.tf-catalog-app has no state, so skipping provisioners
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalMaybeTainted
+2021/08/31 20:49:04 [TRACE] EvalMaybeTainted: nirmata_calatog_application.tf-catalog-app encountered an error during creation, so it is now marked as tainted
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalWriteState
+2021/08/31 20:49:04 [TRACE] EvalWriteState: removing state object for nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalIf
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalIf
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalWriteDiff
+2021/08/31 20:49:04 [TRACE] <root>: eval: *terraform.EvalApplyPost
+2021/08/31 20:49:04 [ERROR] <root>: eval: *terraform.EvalApplyPost, err: rpc error: code = Unavailable desc = transport is closing
+2021/08/31 20:49:04 [ERROR] <root>: eval: *terraform.EvalSequence, err: rpc error: code = Unavailable desc = transport is closing
+2021/08/31 20:49:04 [TRACE] [walkApply] Exiting eval tree: nirmata_calatog_application.tf-catalog-app
+2021/08/31 20:49:04 [TRACE] vertex "nirmata_calatog_application.tf-catalog-app": visit complete
+2021/08/31 20:49:04 [TRACE] dag/walk: upstream of "provider.nirmata (close)" errored, so skipping
+2021/08/31 20:49:04 [TRACE] dag/walk: upstream of "meta.count-boundary (EachMode fixup)" errored, so skipping
+2021/08/31 20:49:04 [TRACE] dag/walk: upstream of "root" errored, so skipping
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: reading latest snapshot from terraform.tfstate
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: snapshot file has nil snapshot, but that's okay
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: read nil snapshot
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: no original state snapshot to back up
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: state has changed since last snapshot, so incrementing serial to 1
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: writing snapshot at terraform.tfstate
+2021-08-31T20:49:04.496+0530 [DEBUG] plugin: plugin process exited: path=D:\Terraform\terraform-provider-nirmata\terraform-provider-nirmata.exe pid=32 error="exit status 2"
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: removing lock metadata file .terraform.tfstate.lock.info
+2021/08/31 20:49:04 [TRACE] statemgr.Filesystem: unlocked by closing terraform.tfstate
+2021-08-31T20:49:04.522+0530 [DEBUG] plugin: plugin exited
