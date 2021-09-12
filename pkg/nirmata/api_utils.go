@@ -42,7 +42,7 @@ func waitForClusterState(apiClient client.Client, maxTime time.Duration, cluster
 }
 
 // waitForRollloutState waits until rollout is created or has failed
-func waitForRollutState(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
+func waitForRolloutState(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
 	states := []interface{}{"completed", "failed"}
 	state, err := apiClient.WaitForStates(rolloutID, "state", states, maxTime, "")
 	if err != nil {

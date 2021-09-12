@@ -175,7 +175,7 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	d.SetId(changeID)
 
 	rolloutID := client.NewID(client.ServiceCatalogs, "Rollout", changeID)
-	state, waitErr := waitForRollutState(apiClient, d.Timeout(schema.TimeoutCreate), rolloutID)
+	state, waitErr := waitForRolloutState(apiClient, d.Timeout(schema.TimeoutCreate), rolloutID)
 	if waitErr != nil {
 		log.Printf("[ERROR] - failed to check rollout status. Error - %v", waitErr)
 		return waitErr
