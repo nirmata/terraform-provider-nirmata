@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
@@ -86,7 +87,7 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 	catID, cerr := apiClient.QueryByName(client.ServiceCatalogs, "Catalogs", catalog)
 	if cerr != nil {
-		log.Printf("[ERROR] - failed to find catalog with name : %v", name)
+		log.Printf("[ERROR] - failed to find catalog with name : %v", catalog)
 		return cerr
 	}
 
@@ -121,9 +122,40 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		log.Printf("[ERROR] - failed to create  application %s with data %v: %v", name, appData, err)
 		return err
 	}
-	catalogAppUUID := appId["id"].(string)
-	d.SetId(catalogAppUUID)
-	log.Printf("[INFO] - created application %s %s", name, catalogAppUUID)
+	fields := []string{"version", "name"}
+	catalogGitAppUUID := appId["id"].(string)
+	gitAppID := client.NewID(client.ServiceCatalogs, "Applications", catalogGitAppUUID)
+	gitUpstream, gitUpstreamErr := apiClient.GetDescendant(gitAppID, "GitUpstream", &client.GetOptions{})
+	if gitUpstreamErr != nil {
+		log.Printf("[ERROR] - failed to create gitUpstream with data : %v", gitUpstreamErr)
+		return gitUpstreamErr
+	}
+	gitUpstreamID := client.NewID(client.ServiceCatalogs, "GitUpstream", gitUpstream["id"].(string))
+
+	state, waitErr := waitForGitSyncStatus(apiClient, d.Timeout(schema.TimeoutCreate), gitUpstreamID)
+	if waitErr != nil {
+		log.Printf("[ERROR] - failed to get git sync status. Error - %v", waitErr)
+		return waitErr
+	}
+
+	if strings.EqualFold("failed", state) {
+		status, err := getGitUpstreamStatus(apiClient, gitUpstreamID)
+		if err != nil {
+			log.Printf("[ERROR] - failed to retrieve git sync  details: %v", err)
+			return fmt.Errorf(" [ERROR] - git sync failed")
+		}
+		return fmt.Errorf(" [ERROR] - git sync failed: %s", status)
+	}
+
+	version, versionErr := apiClient.GetDescendant(gitAppID, "Version", &client.GetOptions{Fields: fields})
+	if versionErr != nil {
+		log.Printf("Error version not found - %v", versionErr)
+		return versionErr
+	}
+
+	d.SetId(catalogGitAppUUID)
+	d.Set("version", version["version"])
+	log.Printf("[INFO] - created application %s %s", name, catalogGitAppUUID)
 
 	return nil
 }

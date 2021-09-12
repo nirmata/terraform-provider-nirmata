@@ -41,7 +41,38 @@ func waitForClusterState(apiClient client.Client, maxTime time.Duration, cluster
 	return state.(string), nil
 }
 
-func waitForClusterDeletedState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
+// waitForRollloutState waits until rollout is created or has failed
+func waitForRolloutState(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
+	states := []interface{}{"completed", "failed"}
+	state, err := apiClient.WaitForStates(rolloutID, "state", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
+func getRolloutStatus(api client.Client, rolloutID client.ID) (string, error) {
+	rolloutData, err := api.Get(rolloutID, client.NewGetOptions(nil, nil))
+	if err != nil {
+		log.Printf("[ERROR] Failed to retrieve  rollout details: %v", err)
+		return "", err
+	}
+	statusMsg := rolloutData["errorInfo"].(string)
+	return statusMsg, nil
+}
+
+func getGitUpstreamStatus(api client.Client, rolloutID client.ID) (string, error) {
+	rolloutData, err := api.Get(rolloutID, client.NewGetOptions(nil, nil))
+	if err != nil {
+		log.Printf("[ERROR] Failed to retrieve gitUpstream details: %v", err)
+		return "", err
+	}
+	statusMsg := rolloutData["lastGitSyncError"].(string)
+	return statusMsg, nil
+}
+
+func waitForDeletedState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
 	states := []interface{}{"deleted"}
 	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
 	if err != nil {
@@ -69,6 +100,16 @@ func getClusterStatus(api client.Client, clusterID client.ID) (string, error) {
 	}
 
 	return statusMsg, nil
+}
+
+func waitForGitSyncStatus(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
+	states := []interface{}{"success", "failed"}
+	state, err := apiClient.WaitForStates(rolloutID, "lastGitSyncStatus", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
 }
 
 // extracts an object from a TXN POST operation
