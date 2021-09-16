@@ -154,7 +154,7 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.SetId(catalogGitAppUUID)
-	d.Set("version", version["version"])
+	d.Set("version", version["version"].(string))
 	log.Printf("[INFO] - created application %s %s", name, catalogGitAppUUID)
 
 	return nil
