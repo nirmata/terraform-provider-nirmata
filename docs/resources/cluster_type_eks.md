@@ -111,7 +111,7 @@ resource "nirmata_cluster" "eks-cluster-1" {
 * `name` - (Required) a unique name for the add-on service
 * `addon_selector` - (Required) the catalog application name
 * `catalog` - (Required) the catalog name
-* `channel` - (Required) the release channel
+* `channel` - (Required) The channel from which the application should be deployed.
 * `sequence_number` - (Optional) a sequence number to control installation order
 
 ### vault_auth

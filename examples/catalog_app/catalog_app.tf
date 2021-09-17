@@ -10,7 +10,7 @@ provider "nirmata" {
 }
 
 
-resource "nirmata_calatog_application" "tf-catalog-app" {
+resource "nirmata_catalog_application" "tf-catalog-app" {
   name              = "tf-catalog-app"
   catalog           = ""
   yamls             = file("${path.module}/fo.yaml")
