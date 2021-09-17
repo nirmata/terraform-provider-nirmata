@@ -4,7 +4,7 @@ page_title: "nirmata_promote_version Resource"
 
 # nirmata_promote_version Resource
 
- Deploy application in environments.
+ Promote release version .
 
 ## Example Usage
 
