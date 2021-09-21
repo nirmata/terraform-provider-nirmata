@@ -20,6 +20,19 @@ resource "nirmata_git_application" "tf-catalog-git-" {
   git_include_list    = []
 }
 
+output "version" {
+  value = nirmata_git_application.tf-catalog-git.version
+}
+
+resource "nirmata_run_application" "tf-catalog-run-app" {
+  name                = "tf-run-app"
+  application         = ""
+  catalog             = ""
+  version             = nirmata_git_application.tf-catalog-git.version
+  channel             = "Rapid"
+  environments        = []
+ }
+
 ```
 
 ## Argument Reference
@@ -30,3 +43,10 @@ resource "nirmata_git_application" "tf-catalog-git-" {
 * `git_branch` - (Required) the Git branch to track. name.
 * `git_directory_list` - (Optional)  the directories to track.
 * `git_include_list` - (Optional)  the file extensions to track.
+
+* `name` - (Required) A unique name to identify your application.
+* `catalog` - (Required) the name of catalog.
+* `application` - (Required) the application name.
+* `channel` - (Required) The channel from which the application should be deployed.
+* `environments` - (Required) the list of environments to deploy an application .
+* `version` - (Required)  the version for the application.
