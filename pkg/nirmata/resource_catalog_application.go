@@ -32,6 +32,14 @@ func resourceCatalogApplication() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"version": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"release_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -58,6 +66,7 @@ func resourceCatalogApplicationCreate(d *schema.ResourceData, meta interface{}) 
 		log.Printf("Error - failed to create application: %s", perr)
 		return perr
 	}
+	fields := []string{"version", "name"}
 	changes := results["changes"].(map[string]interface{})
 	modifiedIds := changes["modifiedIds"].([]interface{})
 	for _, product := range modifiedIds {
@@ -68,6 +77,14 @@ func resourceCatalogApplicationCreate(d *schema.ResourceData, meta interface{}) 
 
 	d.SetId(uuid)
 	log.Printf("[INFO] - created application %s %s", name, uuid)
+	appID := client.NewID(client.ServiceCatalogs, "Applications", uuid)
+	version, versionErr := apiClient.GetDescendant(appID, "Version", &client.GetOptions{Fields: fields})
+	if versionErr != nil {
+		log.Printf("Error version not found - %v", versionErr)
+		return versionErr
+	}
+	d.Set("version", version["version"].(string))
+	d.Set("release_name", version["name"].(string))
 
 	return nil
 }

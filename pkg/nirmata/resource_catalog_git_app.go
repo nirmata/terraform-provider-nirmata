@@ -61,6 +61,14 @@ func resourceGitApplication() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"version": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"release_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -155,6 +163,7 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 
 	d.SetId(catalogGitAppUUID)
 	d.Set("version", version["version"].(string))
+	d.Set("release_name", version["name"].(string))
 	log.Printf("[INFO] - created application %s %s", name, catalogGitAppUUID)
 
 	return nil
