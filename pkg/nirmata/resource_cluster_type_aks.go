@@ -228,6 +228,11 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	addons := addOnsSchemaToAddOns(d)
+	credential := map[string]interface{}{
+		"id":         cloudCredID.UUID(),
+		"service":    "Cluster",
+		"modelIndex": "CloudCredentials",
+	}
 
 	clusterTypeData := map[string]interface{}{
 		"name":        name,
@@ -243,7 +248,7 @@ func resourceClusterTypeCreate(d *schema.ResourceData, meta interface{}) error {
 			"addons":             addons,
 			"cloudConfigSpec": map[string]interface{}{
 				"modelIndex":               "CloudConfigSpec",
-				"credentials":              cloudCredID.UUID(),
+				"credentials":              credential,
 				"allowOverrideCredentials": allowOverrideCredentials,
 				"fieldsToOverride":         fieldsToOverride,
 				"aksConfig": map[string]interface{}{

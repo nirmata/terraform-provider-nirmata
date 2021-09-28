@@ -366,6 +366,11 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	addons := addOnsSchemaToAddOns(d)
+	credential := map[string]interface{}{
+		"id":         cloudCredID.UUID(),
+		"service":    "Cluster",
+		"modelIndex": "CloudCredentials",
+	}
 
 	clusterTypeData := map[string]interface{}{
 		"name":        name,
@@ -380,7 +385,7 @@ func resourceGkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"addons":             addons,
 			"autoSyncNamespaces": autoSyncNamespaces,
 			"cloudConfigSpec": map[string]interface{}{
-				"credentials":              cloudCredID.UUID(),
+				"credentials":              credential,
 				"allowOverrideCredentials": allowOverrideCredentials,
 				"fieldsToOverride":         fieldsToOverride,
 				"modelIndex":               "CloudConfigSpec",
