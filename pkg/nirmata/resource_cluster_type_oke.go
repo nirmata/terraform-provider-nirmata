@@ -98,6 +98,11 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 		"catalog":       "default-addon-catalog",
 	},
 	)
+	credential := map[string]interface{}{
+		"id":         cloudCredID.UUID(),
+		"service":    "Cluster",
+		"modelIndex": "CloudCredentials",
+	}
 
 	clustertype := map[string]interface{}{
 		"name":        name,
@@ -114,7 +119,7 @@ func resourceOkeClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 				"other":      otherAddons,
 			},
 			"cloudConfigSpec": map[string]interface{}{
-				"credentials":   cloudCredID.UUID(),
+				"credentials":   credential,
 				"id":            clouduuid,
 				"modelIndex":    "CloudConfigSpec",
 				"nodePoolTypes": nodepooluuid,

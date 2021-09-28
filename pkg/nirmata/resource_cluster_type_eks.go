@@ -295,6 +295,11 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	addons := addOnsSchemaToAddOns(d)
+	credential := map[string]interface{}{
+		"id":         cloudCredID.UUID(),
+		"service":    "Cluster",
+		"modelIndex": "CloudCredentials",
+	}
 
 	clusterTypeData := map[string]interface{}{
 		"name":        name,
@@ -310,7 +315,7 @@ func resourceEksClusterTypeCreate(d *schema.ResourceData, meta interface{}) erro
 			"addons":             addons,
 			"cloudConfigSpec": map[string]interface{}{
 				"modelIndex":               "CloudConfigSpec",
-				"credentials":              cloudCredID.UUID(),
+				"credentials":              credential,
 				"allowOverrideCredentials": allowOverrideCredentials,
 				"fieldsToOverride":         fieldsToOverride,
 				"eksConfig": map[string]interface{}{
