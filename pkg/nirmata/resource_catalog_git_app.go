@@ -69,6 +69,18 @@ func resourceGitApplication() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"fixed_kustomization": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"target_based_kustomization": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"kustomization_file_path": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -83,6 +95,9 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	git_directoryList := d.Get("git_directory_list")
 	git_branch := d.Get("git_branch").(string)
 	git_includeList := d.Get("git_include_list")
+	fixed_kustomization := d.Get("fixed_kustomization").(bool)
+	target_based_kustomization := d.Get("target_based_kustomization").(bool)
+	kustomization_file_path := d.Get("kustomization_file_path").(string)
 
 	credentialID := ""
 	if git_credentials != "" {
@@ -97,6 +112,27 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	if cerr != nil {
 		log.Printf("[ERROR] - failed to find catalog with name : %v", catalog)
 		return cerr
+	}
+	var kustomizeConfig, patchConfig map[string]interface{}
+
+	if fixed_kustomization && target_based_kustomization {
+		return fmt.Errorf(" [ERROR] - select only one type of kustomization")
+	}
+	if fixed_kustomization || target_based_kustomization {
+		if kustomization_file_path == "" {
+			return fmt.Errorf(" [ERROR] - kustomization file path is required")
+		}
+	}
+
+	if fixed_kustomization {
+		kustomizeConfig = map[string]interface{}{
+			"overlayFile": kustomization_file_path,
+		}
+	}
+	if target_based_kustomization {
+		patchConfig = map[string]interface{}{
+			"overlayFile": kustomization_file_path,
+		}
 	}
 
 	appData := map[string]interface{}{
@@ -116,6 +152,8 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 				"id":         credentialID,
 			},
 		},
+		"kustomizeConfig": kustomizeConfig,
+		"patchConfig":     patchConfig,
 	}
 
 	data, marshalErr := json.Marshal(appData)

@@ -18,6 +18,9 @@ resource "nirmata_git_application" "tf-catalog-git-" {
   git_branch          =""
   git_directory_list  = ["*.yaml", "*.yml"]
   git_include_list    = []
+  fixed_kustomization = true
+  target_based_kustomization = true
+  kustomization_file_path = ""
 }
 
 output "version" {
@@ -43,6 +46,10 @@ resource "nirmata_run_application" "tf-catalog-run-app" {
 * `git_branch` - (Required) the Git branch to track. name.
 * `git_directory_list` - (Optional)  the directories to track.
 * `git_include_list` - (Optional)  the file extensions to track.
+* `fixed_kustomization` - (Optional)  enable fixed kustomize to select kustomizations for your application.
+* `target_based_kustomization` - (Optional) enable target based kustomize to select kustomizations for your application.
+* `kustomization_file_path` - (Optional) the kustomization file path. kustomization file path ids required if fixed_kustomization or target_based_kustomization selected. 
+
 
 * `name` - (Required) A unique name to identify your application.
 * `catalog` - (Required) the name of catalog.
