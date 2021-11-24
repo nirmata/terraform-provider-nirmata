@@ -113,25 +113,12 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		log.Printf("[ERROR] - failed to find catalog with name : %v", catalog)
 		return cerr
 	}
-	var kustomizeConfig, patchConfig map[string]interface{}
-
 	if fixed_kustomization && target_based_kustomization {
 		return fmt.Errorf(" [ERROR] - select only one type of kustomization")
 	}
 	if fixed_kustomization || target_based_kustomization {
 		if kustomization_file_path == "" {
 			return fmt.Errorf(" [ERROR] - kustomization file path is required")
-		}
-	}
-
-	if fixed_kustomization {
-		kustomizeConfig = map[string]interface{}{
-			"overlayFile": kustomization_file_path,
-		}
-	}
-	if target_based_kustomization {
-		patchConfig = map[string]interface{}{
-			"overlayFile": kustomization_file_path,
 		}
 	}
 
@@ -152,8 +139,17 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 				"id":         credentialID,
 			},
 		},
-		"kustomizeConfig": kustomizeConfig,
-		"patchConfig":     patchConfig,
+	}
+
+	if fixed_kustomization {
+		appData["kustomizeConfig"] = map[string]interface{}{
+			"overlayFile": kustomization_file_path,
+		}
+	}
+	if target_based_kustomization {
+		appData["patchConfig"] = map[string]interface{}{
+			"overlayFile": kustomization_file_path,
+		}
 	}
 
 	data, marshalErr := json.Marshal(appData)
