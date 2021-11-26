@@ -113,6 +113,9 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		log.Printf("[ERROR] - failed to find catalog with name : %v", catalog)
 		return cerr
 	}
+	if namespace == "" {
+		namespace = name
+	}
 	if fixed_kustomization && target_based_kustomization {
 		return fmt.Errorf(" [ERROR] - select only one type of kustomization")
 	}
@@ -124,7 +127,7 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 
 	appData := map[string]interface{}{
 		"name":         name,
-		"parent":       catID.Map(),
+		"parent":       catID.UUID(),
 		"upstreamType": "git",
 		"namespace":    namespace,
 		"gitUpstream": map[string]interface{}{
@@ -141,13 +144,14 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		},
 	}
 
-	if fixed_kustomization {
-		appData["kustomizeConfig"] = map[string]interface{}{
+	if target_based_kustomization {
+		appData["patchConfig"] = map[string]interface{}{
 			"overlayFile": kustomization_file_path,
 		}
 	}
-	if target_based_kustomization {
-		appData["patchConfig"] = map[string]interface{}{
+
+	if fixed_kustomization {
+		appData["kustomizeConfig"] = map[string]interface{}{
 			"overlayFile": kustomization_file_path,
 		}
 	}
@@ -157,7 +161,6 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		fmt.Printf("Error - %v", marshalErr)
 		return marshalErr
 	}
-
 	log.Printf("[DEBUG] - creating  application %s with %+v", name, appData)
 	appId, err := apiClient.PostWithID(catID, "applications", data, nil)
 	if err != nil {
@@ -219,16 +222,25 @@ func resourceGitApplicationRead(d *schema.ResourceData, meta interface{}) error 
 }
 
 var catalogAppMap = map[string]string{
-	"git_repository":     "repository",
-	"git_directory_list": "directoryList",
-	"git_branch":         "branch",
-	"git_include_list":   "includeList",
+	"git_repository":             "repository",
+	"git_directory_list":         "directoryList",
+	"git_branch":                 "branch",
+	"git_include_list":           "includeList",
+	"fixed_kustomization":        "kustomizeConfig",
+	"target_based_kustomization": "patchConfig",
 }
 
 func resourceGitApplicationUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	id := client.NewID(client.ServiceCatalogs, "applications", d.Id())
 	appChanges := buildChanges(d, catalogAppMap, "git_repository", "git_directory_list", "git_branch", "git_include_list")
+	fixed_kustomization := buildChanges(d, catalogAppMap, "fixed_kustomization")
+	target_based_kustomization := buildChanges(d, catalogAppMap, "target_based_kustomization")
+	applicationD, err := apiClient.Get(id, &client.GetOptions{})
+	if err != nil {
+		log.Printf("[ERROR] failed to retrieve application detail %s : %v", id, err)
+		return err
+	}
 	if len(appChanges) > 0 {
 		gitUpstream, err := apiClient.GetDescendant(id, "GitUpstream", &client.GetOptions{})
 		if err != nil {
@@ -249,8 +261,38 @@ func resourceGitApplicationUpdate(d *schema.ResourceData, meta interface{}) erro
 		}
 
 		log.Printf("[DEBUG] updated %v %v", d.ID().Map(), appChanges)
-		return nil
 	}
+	if len(fixed_kustomization) > 0 || len(target_based_kustomization) > 0 {
+		txn := make(map[string]interface{})
+		modelIndex := "kustomizeConfig"
+		if d.Get("fixed_kustomization").(bool) {
+			txn["delete"] = applicationD["patchConfig"]
+		}
+
+		if d.Get("target_based_kustomization").(bool) {
+			txn["delete"] = applicationD["kustomizeConfig"]
+			modelIndex = "patchConfig"
+		}
+		parent := map[string]interface{}{
+			"id":            d.Id(),
+			"modelIndex":    "Application",
+			"service":       "Catalog",
+			"childRelation": modelIndex,
+		}
+		var createdKustomizationObj []map[string]interface{}
+		createdKustomizationObj = append(createdKustomizationObj, map[string]interface{}{
+			"overlayFile": d.Get("kustomization_file_path").(string),
+			"parent":      parent,
+			"modelIndex":  modelIndex,
+		})
+		txn["create"] = createdKustomizationObj
+		_, txnErr := apiClient.PostFromJSON(client.ServiceCatalogs, "txn", txn, nil)
+		if txnErr != nil {
+			log.Printf("[ERROR] - failed to update cluster role with data : %v", txnErr)
+			return txnErr
+		}
+	}
+
 	return nil
 }
 
