@@ -76,7 +76,7 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		log.Printf("Error: catalog not found - %v", catErr)
 		return catErr
 	}
-	fields := []string{"name", "id"}
+	fields := []string{"name", "id", "version"}
 	applicationList, appErr := apiClient.GetDescendants(catalogID, "Application", &client.GetOptions{Fields: fields})
 	if appErr != nil {
 		log.Printf("Error application not found - %v", appErr)
@@ -116,7 +116,7 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	for _, c := range versionList {
-		if version == c["name"] {
+		if version == c["version"] {
 			versionID = c["id"].(string)
 		}
 	}
