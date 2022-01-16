@@ -13,6 +13,7 @@ page_title: "nirmata_git_application Resource"
 resource "nirmata_git_application" "tf-catalog-git-" {
   name                = "tf-git-app"
   catalog             = ""
+  namespace           = ""
   git_credentials     = ""
   git_repository      = ""
   git_branch          =""
@@ -41,6 +42,7 @@ resource "nirmata_run_application" "tf-catalog-run-app" {
 ## Argument Reference
 
 * `name` - (Required) a unique name for the application in catalog.
+* `namespace` - (Optional) namespace for the git application.
 * `git_credentials` - (Required) the git credential name.
 * `git_repository` - (Required)  the repository URL as used in the git clone command.
 * `git_branch` - (Required) the Git branch to track. name.
