@@ -68,6 +68,9 @@ func getGitUpstreamStatus(api client.Client, rolloutID client.ID) (string, error
 		log.Printf("[ERROR] Failed to retrieve gitUpstream details: %v", err)
 		return "", err
 	}
+	if rolloutData["lastGitSyncError"] == nil {
+		return "", fmt.Errorf(" [ERROR] - git sync failed")
+	}
 	statusMsg := rolloutData["lastGitSyncError"].(string)
 	return statusMsg, nil
 }
