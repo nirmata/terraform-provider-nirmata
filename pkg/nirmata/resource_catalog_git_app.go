@@ -172,7 +172,7 @@ func resourceGitApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 	gitAppID := client.NewID(client.ServiceCatalogs, "Applications", catalogGitAppUUID)
 	gitUpstream, gitUpstreamErr := apiClient.GetDescendant(gitAppID, "GitUpstream", &client.GetOptions{})
 	if gitUpstreamErr != nil {
-		log.Printf("[ERROR] - failed to create gitUpstream with data : %v", gitUpstreamErr)
+		log.Printf("[ERROR] - failed to create git upstream with data : %v", gitUpstreamErr)
 		return gitUpstreamErr
 	}
 	gitUpstreamID := client.NewID(client.ServiceCatalogs, "GitUpstream", gitUpstream["id"].(string))
@@ -244,19 +244,19 @@ func resourceGitApplicationUpdate(d *schema.ResourceData, meta interface{}) erro
 	if len(appChanges) > 0 {
 		gitUpstream, err := apiClient.GetDescendant(id, "GitUpstream", &client.GetOptions{})
 		if err != nil {
-			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "GitUpstream", id.Map(), err)
+			log.Printf("[ERROR] - failed to retrieve %s from %v: %v", "git upstream", id.Map(), err)
 			return err
 		}
 
 		d, plainErr := client.NewObject(gitUpstream)
 		if plainErr != nil {
-			log.Printf("[ERROR] - failed to decode %s %v: %v", "GitUpstream", d, err)
+			log.Printf("[ERROR] - failed to decode %s %v: %v", "git upstream", d, err)
 			return err
 		}
 
 		_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), appChanges)
 		if plainErr != nil {
-			log.Printf("[ERROR] - failed to update %s %v: %v", "GitUpstream", d.ID().Map(), err)
+			log.Printf("[ERROR] - failed to update %s %v: %v", "git upstream", d.ID().Map(), err)
 			return err
 		}
 

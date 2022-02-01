@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	client "github.com/nirmata/go-client/pkg/client"
@@ -75,6 +76,10 @@ func resourceManagedCluster() *schema.Resource {
 					Schema: clusterNodePoolSchema,
 				},
 			},
+			"creation_timeout_minutes": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -110,6 +115,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	nodepools := d.Get("nodepools").([]interface{})
 	typeSelector := d.Get("cluster_type").(string)
 	credentials := d.Get("override_credentials").(string)
+	timeout := d.Get("creation_timeout_minutes").(int)
 	systemMetadata := d.Get("system_metadata")
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
@@ -154,7 +160,11 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(clusterUUID)
 
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
-	state, waitErr := waitForClusterState(apiClient, d.Timeout(schema.TimeoutCreate), clusterID)
+	var cluster_timeout = d.Timeout(schema.TimeoutCreate)
+	if timeout != 0 {
+		cluster_timeout = time.Duration(timeout) * time.Minute
+	}
+	state, waitErr := waitForClusterState(apiClient, cluster_timeout, clusterID)
 	if waitErr != nil {
 		log.Printf("[ERROR] - failed to check cluster status. Error - %v", waitErr)
 		return waitErr
