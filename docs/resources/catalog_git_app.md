@@ -10,14 +10,14 @@ page_title: "nirmata_git_application Resource"
 
 ```hcl
 
-resource "nirmata_git_application" "tf-catalog-git-" {
+resource "nirmata_git_application" "tf-catalog-git" {
   name                = "tf-git-app"
-  catalog             = ""
-  namespace           = ""
-  git_credentials     = ""
-  git_repository      = ""
-  git_branch          =""
-  git_directory_list  = []
+  catalog             = "test-catalog"
+  namespace           = "test-namespace"
+  git_credentials     = "test-creden"
+  git_repository      = "repo_path"
+  git_branch          = "main"
+  git_directory_list  = ["/test"]
   git_include_list    = ["*.yaml", "*.yml"]
   fixed_kustomization = false
   target_based_kustomization = true
@@ -30,11 +30,12 @@ output "version" {
 
 resource "nirmata_run_application" "tf-catalog-run-app" {
   name                = "tf-run-app"
-  application         = ""
-  catalog             = ""
+  application         = "test_application"
+  catalog             = "test-catalog"
   version             = nirmata_git_application.tf-catalog-git.version
   channel             = "Rapid"
-  environments        = []
+  environments        = ["test-env", "test-envs"]
+  depends_on          = [nirmata_git_application.tf-catalog-git]
  }
 
 ```
