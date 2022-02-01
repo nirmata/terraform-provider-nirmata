@@ -38,6 +38,14 @@ resource "nirmata_run_application" "tf-catalog-run-app" {
   depends_on          = [nirmata_git_application.tf-catalog-git]
  }
 
+resource "nirmata_promote_version" "tf-catalog-promote-version" {
+  rollout_name        = "tf-version"
+  catalog             = "test-catalog"
+  application         = "test-application"
+  version             = nirmata_git_application.tf-catalog-git.version
+  channel             = "Rapid"
+  depends_on          = [nirmata_git_application.tf-catalog-git]
+ }
 ```
 
 ## Argument Reference
@@ -59,4 +67,10 @@ resource "nirmata_run_application" "tf-catalog-run-app" {
 * `application` - (Required) the application name.
 * `channel` - (Required) The channel from which the application should be deployed.
 * `environments` - (Required) the list of environments to deploy an application .
+* `version` - (Required)  the version for the application.
+
+* `rollout_name` - (Required) A unique name for rollout.
+* `catalog` - (Required) the name of catalog.
+* `application` - (Required) the application name.
+* `channel` - (Required) The channel from which the application should be deployed.
 * `version` - (Required)  the version for the application.

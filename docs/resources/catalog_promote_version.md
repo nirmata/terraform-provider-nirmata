@@ -12,9 +12,9 @@ page_title: "nirmata_promote_version Resource"
 
 resource "nirmata_promote_version" "tf-catalog-promote-version" {
   rollout_name        = "tf-version"
-  catalog             = ""
-  application         = ""
-  version             = ""
+  catalog             = "test-catalog"
+  application         = "test-application"
+  version             = "version"
   channel             = "Rapid"
  }
 
