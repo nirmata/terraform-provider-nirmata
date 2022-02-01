@@ -12,7 +12,7 @@ page_title: "nirmata_catalog_application Resource"
 
 resource "nirmata_catalog_application" "tf-catalog-app" {
   name              = "tf-catalog-app"
-  catalog           = ""
+  catalog           = "test-catalog"
   yamls             = file("${path.module}/fo.yaml")
 }
 
