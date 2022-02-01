@@ -22,15 +22,34 @@ provider "nirmata" {
 ```
 
 ```hcl
-# create a cluster using the Nirmata provider and an existing cluster type
-resource "nirmata_cluster" "gke-1" {
-  name = "gke-1"
-  cluster_type = "gke-us-west"
-  node_count = 1
+# create a cluster using the Nirmata provider
+resource "nirmata_cluster" "eks-eu" {
+  name = "eks-eu"
+  cluster_type = "eks-eu-prod"
+  labels  = {foo = "bar"}
+   nodepools {
+      node_count                = 1 
+      enable_auto_scaling       = false
+      min_count                 = 1
+      max_count                 = 4
+   }
+   delete_action = "remove"
 }
 ```
 
 ## Argument Reference
 
-* `url` - (Required) Nirmata API url. Also configurable using the `NIRMATA_URL` environment variable.
-* `token` - (Optional/Sensitive) Nirmata API access token. Also configurable using the `NIRMATA_TOKEN` environment variable.
+* `name` - (Required) a unique name for the cluster.
+* `cluster_type` - (Required) the type of cluster to create.
+* `nodepools` - A list of [nodepool](#nodepool) types.
+* `labels` - (Optional) labels to set on cluster.
+* `delete_action` - (Optional) if delete_action set to `remove`, cluster only get removed from the Nirmata not from the original provider and delete_action set to `delete` cluster deleted from nirmata as well as original provider.
+
+## Nested Blocks
+
+### nodepool
+
+* `node_count` - (Required) the number of worker nodes for the cluster
+* `enable_auto_scaling` - (Optional) Enable autoscaling for cluster. default valie is disable.
+* `min_count` - (Optional) Set minimun node count value for cluster. `enable_auto_scaling` must set true to set min_count.
+* `max_count` - (Optional) Set max node count value for cluster. `enable_auto_scaling` must set true to set max_count.
