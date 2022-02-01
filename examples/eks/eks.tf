@@ -38,7 +38,7 @@ resource "nirmata_cluster_type_eks" "eks-cluster-type-1" {
 resource "nirmata_cluster" "eks-cluster-1" {
   name                 = "eks-cluster-1"
   cluster_type         = nirmata_cluster_type_eks.eks-cluster-type-1.name
-  creation_timeout     = 30
+  creation_timeout_minutes     = 30
      nodepools {
       node_count                = 1 
       enable_auto_scaling       = false

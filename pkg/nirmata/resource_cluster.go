@@ -76,7 +76,7 @@ func resourceManagedCluster() *schema.Resource {
 					Schema: clusterNodePoolSchema,
 				},
 			},
-			"creation_timeout": {
+			"creation_timeout_minutes": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
@@ -115,7 +115,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	nodepools := d.Get("nodepools").([]interface{})
 	typeSelector := d.Get("cluster_type").(string)
 	credentials := d.Get("override_credentials").(string)
-	timeout := d.Get("creation_timeout").(int)
+	timeout := d.Get("creation_timeout_minutes").(int)
 	systemMetadata := d.Get("system_metadata")
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
