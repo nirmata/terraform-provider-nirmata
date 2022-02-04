@@ -22,6 +22,7 @@ resource "nirmata_cluster" "eks-eu-1" {
       max_count                 = 4
    }
    delete_action = "remove"
+   creation_timeout_minutes = 30
 }
 
 ```
@@ -32,6 +33,8 @@ resource "nirmata_cluster" "eks-eu-1" {
 * `cluster_type` - (Required) the type of cluster to create.
 * `nodepools` - A list of [nodepool](#nodepool) types.
 * `labels` - (Optional) labels to set on cluster.
+* `delete_action` - (Optional) if delete_action set to `remove`, cluster only get removed from the Nirmata not from the original provider and delete_action set to `delete` cluster deleted from nirmata as well as original provider.
+`creation_timeout_minutes` - (Optional) set maximum time to create cluster.
 
 ## Nested Blocks
 

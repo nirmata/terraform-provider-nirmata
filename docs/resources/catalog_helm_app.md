@@ -17,7 +17,7 @@ resource "nirmata_helm_application" "tf-helm-git" {
   location            = "https://charts.bitnami.com/bitnami/airflow-0.0.1.tgz"
   app_version         = "1.10.3"
   chart_version       = "0.0.1"
-  catalog             = ""
+  catalog             = "test-catalog"
 
 }
 
