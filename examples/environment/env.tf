@@ -15,6 +15,7 @@ resource "nirmata_environment" "tf-env" {
   type        = "medium"
   cluster     = "cluster-name"
   namespace   = "namespace-name"
-  labels = {foo = "bar"}
-  environment_update_action   = "update"
+  environment_update_action   = "update" 
+  labels      = { foo = "bar"}
+  
 }
