@@ -10,10 +10,11 @@ provider "nirmata" {
 }
 
 #  An Environment is used to run application
-resource "nirmata_environment" "tf-env-1" {
-  name        = "tf-env-1"
+resource "nirmata_environment" "tf-env" {
+  name        = "environment-name"
   type        = "medium"
-  cluster     = "prod-demo"
-  namespace   = "tf-ns-1"
+  cluster     = "cluster-name"
+  namespace   = "namespace-name"
   labels = {foo = "bar"}
+  environment_update_action   = "update"
 }
