@@ -12,11 +12,11 @@ Deploy an application in environments.
 
 resource "nirmata_run_application" "tf-catalog-run-app" {
   name                = "tf-run-app"
-  catalog             = ""
-  application         = ""
-  version             = ""
+  application         = "application-name"
+  catalog             = "catlog-name"
+  version             = "version-name"
   channel             = "Rapid"
-  environments        = []
+  environments        = ["env1","env2"]
  }
 
 ```
@@ -28,4 +28,4 @@ resource "nirmata_run_application" "tf-catalog-run-app" {
 * `application` - (Required) the application name.
 * `channel` - (Required) The channel from which the application should be deployed.
 * `environments` - (Required) the list of environments to deploy an application .
-* `version` - (Required)  the version for the application.
+* `version` - (Optional)  the version for the application.
