@@ -29,7 +29,7 @@ func resourceRunApplication() *schema.Resource {
 			},
 			"version": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"channel": {
 				Type:     schema.TypeString,
@@ -114,11 +114,14 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		log.Printf("Error version not found - %v", versionErr)
 		return versionErr
 	}
-
-	for _, c := range versionList {
-		if version == c["version"] {
-			versionID = c["id"].(string)
+	if version != "" {
+		for _, c := range versionList {
+			if version == c["version"] {
+				versionID = c["id"].(string)
+			}
 		}
+	} else {
+		versionID = versionList[len(versionList)-1]["id"].(string)
 	}
 
 	var catalogEnvArr = make([]interface{}, 0)
@@ -155,6 +158,7 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
+	log.Printf("=========>Error application not found versionID============================> - %v", versionID)
 	txnData := map[string]interface{}{
 		"runName":    name,
 		"name":       name + "-" + fmt.Sprint(rand.Int()),
