@@ -37,6 +37,10 @@ func resourceEnvironment() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"update_policy": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"labels": {
 				Type:     schema.TypeMap,
 				Optional: true,
@@ -55,6 +59,11 @@ func resourceEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
 	clusterNameOrID := d.Get("cluster").(string)
 	namespace := d.Get("namespace").(string)
 	labels := d.Get("labels")
+	policy := d.Get("environment_update_action").(string)
+
+	if policy == "" || policy != "update" {
+		policy = "notify"
+	}
 
 	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
 	if err != nil {
@@ -68,6 +77,9 @@ func resourceEnvironmentCreate(d *schema.ResourceData, meta interface{}) error {
 		"hostCluster":  clusterID.Map(),
 		"namespace":    namespace,
 		"labels":       labels,
+		"updatePolicy": map[string]interface{}{
+			"configUpdateAction": policy,
+		},
 	}
 
 	log.Printf("[DEBUG] - creating environment %s with %+v", name, data)

@@ -16,6 +16,7 @@ resource "nirmata_environment" "tf-env-1" {
   cluster     = "prod-demo"
   namespace   = "tf-ns-1"
   labels = {foo = "bar"}
+  environment_update_action   = "notify" 
 }
 
 ```
@@ -27,3 +28,4 @@ resource "nirmata_environment" "tf-env-1" {
 * `cluster` - (Required)  the kubernetes cluster.
 * `labels` - (Optional) labels to set on the add-on application's environment.
 * `namespace` - (Optional) the cluster namespace bound to this environment. Defaults to the environment name.
+* `environment_update_action` - (Optional) By default value set to notify.Set to update if channges want to apply automatically,
