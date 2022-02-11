@@ -158,7 +158,6 @@ func resourceRunApplicationCreate(d *schema.ResourceData, meta interface{}) erro
 		}
 	}
 
-	log.Printf("=========>Error application not found versionID============================> - %v", versionID)
 	txnData := map[string]interface{}{
 		"runName":    name,
 		"name":       name + "-" + fmt.Sprint(rand.Int()),
