@@ -11,9 +11,9 @@ provider "nirmata" {
 
 resource "nirmata_run_application" "tf-catalog-run-app" {
   name                = "tf-run-app"
-  application         = ""
-  catalog             = ""
-  version             = ""
+  application         = "application-name"
+  catalog             = "catlog-name"
+  ## version          = "version-name"
   channel             = "Rapid"
-  environments        = []
+  environments        = ["env1","env2"]
  }
