@@ -10,7 +10,7 @@ A reusable configuration set the aws cloud credential.
 
 ```hcl
 
-resource "nirmata_aws_role_credentials" "aws_role" {
+resource "nirmata_aws_cloud_credentials" "aws_cloud_credential" {
   name                      = "aws-credential"
   access_type               = "access_key"  // value are access_key or assume_role
   description               = "AWS Account"
