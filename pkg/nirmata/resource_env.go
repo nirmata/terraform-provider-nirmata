@@ -37,7 +37,7 @@ func resourceEnvironment() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"update_policy": {
+			"environment_update_action": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
