@@ -115,6 +115,17 @@ func waitForGitSyncStatus(apiClient client.Client, maxTime time.Duration, rollou
 	return state.(string), nil
 }
 
+func waitForAddonState(apiClient client.Client, maxTime time.Duration, addonID client.ID) (string, error) {
+	states := []interface{}{"running", "failed"}
+
+	state, err := apiClient.WaitForStates(addonID, "runningState", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
 // extracts an object from a TXN POST operation
 func extractCreateFromTxnResult(data map[string]interface{}, modelIndex string) (client.Object, error) {
 	if data["create"] == nil {

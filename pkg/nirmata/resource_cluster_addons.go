@@ -3,6 +3,7 @@ package nirmata
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
@@ -70,7 +71,8 @@ func resourceClusterAddOnCreate(d *schema.ResourceData, meta interface{}) error 
 	environment := d.Get("environment").(string)
 	labels := d.Get("labels")
 	isAppPresent := false
-	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
+
+	clusterID, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
 	if err != nil {
 		log.Printf("[ERROR] - failed to resolve cluster %s %v", clusterNameOrID, err)
 		return err
@@ -140,6 +142,18 @@ func resourceClusterAddOnCreate(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	addOnUUID := addonData["id"].(string)
+
+	addonID := client.NewID(client.ServiceClusters, "ClusterAddOn", addOnUUID)
+	state, waitErr := waitForAddonState(apiClient, d.Timeout(schema.TimeoutCreate), addonID)
+	if waitErr != nil {
+		log.Printf("[ERROR] - failed to check add-on status. Error - %v", waitErr)
+		return waitErr
+	}
+
+	if strings.EqualFold("failed", state) {
+		return fmt.Errorf("cluster add-on creation failed")
+	}
+
 	d.SetId(addOnUUID)
 	log.Printf("[INFO] - created cluster addon %s %s", name, addOnUUID)
 
