@@ -32,8 +32,8 @@ func clientID(d *schema.ResourceData, s client.Service, model string) client.ID 
 
 // waitForClusterState waits until cluster is created or has failed
 func waitForClusterState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
-	states := []interface{}{"ready", "failed"}
-	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
+	states := []interface{}{"completed", "failed"}
+	state, err := apiClient.WaitForStates(clusterID, "configurationState", states, maxTime, "")
 	if err != nil {
 		return "", err
 	}

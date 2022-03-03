@@ -160,7 +160,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(clusterUUID)
 
 	clusterID := client.NewID(client.ServiceClusters, "KubernetesCluster", clusterUUID)
-	var cluster_timeout = d.Timeout(schema.TimeoutCreate)
+	var cluster_timeout = 30 * time.Minute
 	if timeout != 0 {
 		cluster_timeout = time.Duration(timeout) * time.Minute
 	}
