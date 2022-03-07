@@ -52,6 +52,16 @@ func waitForRolloutState(apiClient client.Client, maxTime time.Duration, rollout
 	return state.(string), nil
 }
 
+func waitForConfigurationState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
+	states := []interface{}{"completed", "failed"}
+	state, err := apiClient.WaitForStates(clusterID, "configurationState", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
 func getRolloutStatus(api client.Client, rolloutID client.ID) (string, error) {
 	rolloutData, err := api.Get(rolloutID, client.NewGetOptions(nil, nil))
 	if err != nil {
