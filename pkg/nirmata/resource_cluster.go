@@ -120,7 +120,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	clusterFieldOverride := d.Get("cluster_field_override")
 	nodepoolFieldOverride := d.Get("nodepool_field_override")
 
-	spec, _, nodepool, err := getClusterTypeSpec(apiClient, typeSelector, nodepools)
+	spec, _, nodepool, addonLen, err := getClusterTypeSpec(apiClient, typeSelector, nodepools)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
 		return err
@@ -178,20 +178,60 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 		return fmt.Errorf("cluster creation failed: %s", status)
 	}
+	checkClusterAddonStatus(apiClient, addonLen, clusterID)
+
+	configurationState, waitErr := waitForConfigurationState(apiClient, cluster_timeout, clusterID)
+	if waitErr != nil {
+		log.Printf("[ERROR] - failed to check cluster status. Error - %v", waitErr)
+		return waitErr
+	}
+
+	if strings.EqualFold("failed", configurationState) {
+		return fmt.Errorf("cluster add-on creation failed")
+	}
 
 	log.Printf("[INFO] created cluster %s with ID %s", name, clusterID)
 	return nil
 }
 
-func getClusterTypeSpec(api client.Client, typeSelector string, nodepools []interface{}) (map[string]interface{}, []map[string]interface{}, []interface{}, error) {
+func checkClusterAddonStatus(apiClient client.Client, addonLen int, clusterID client.ID) {
+
+	fields := []string{"name", "id", "runningState"}
+	addonList, addonErr := apiClient.GetDescendants(clusterID, "ClusterAddOn", &client.GetOptions{Fields: fields})
+	if addonErr != nil {
+		log.Printf("Error add-on not found - %v", addonErr)
+		return
+	}
+	if addonLen == len(addonList) {
+		return
+	}
+	time.Sleep(10 * time.Second)
+	checkClusterAddonStatus(apiClient, addonLen, clusterID)
+}
+
+func getClusterTypeSpec(api client.Client, typeSelector string, nodepools []interface{}) (map[string]interface{}, []map[string]interface{}, []interface{}, int, error) {
 	typeID, err := api.QueryByName(client.ServiceClusters, "ClusterType", typeSelector)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
-		return nil, nil, nil, err
+		return nil, nil, nil, 0, err
+	}
+	fields := []string{"name"}
+	clusterAddOns, err := api.GetDescendants(typeID, "AddOnSpec", &client.GetOptions{Fields: fields})
+	if err != nil {
+		log.Printf("[ERROR] - %v", err)
+		return nil, nil, nil, len(clusterAddOns), err
 	}
 	var nodePoolObjArr = make([]interface{}, 0)
-	nodepoolTypes, _ := api.GetDescendants(typeID, "NodePoolType", nil)
-	cloudConfigSpec, _ := api.GetDescendants(typeID, "CloudConfigSpec", nil)
+	nodepoolTypes, nerr := api.GetDescendants(typeID, "NodePoolType", nil)
+	if nerr != nil {
+		log.Printf("[ERROR] - %v", err)
+		return nil, nil, nil, len(clusterAddOns), err
+	}
+	cloudConfigSpec, cerr := api.GetDescendants(typeID, "CloudConfigSpec", nil)
+	if cerr != nil {
+		log.Printf("[ERROR] - %v", err)
+		return nil, nil, nil, len(clusterAddOns), err
+	}
 
 	for key, nodepool := range nodepools {
 		element, ok := nodepool.(map[string]interface{})
@@ -219,9 +259,9 @@ func getClusterTypeSpec(api client.Client, typeSelector string, nodepools []inte
 	spec, err := api.GetRelation(typeID, "clusterSpecs")
 	if err != nil {
 		fmt.Println(err)
-		return nil, nil, nil, err
+		return nil, nil, nil, len(clusterAddOns), err
 	}
-	return spec, cloudConfigSpec, nodePoolObjArr, nil
+	return spec, cloudConfigSpec, nodePoolObjArr, len(clusterAddOns), nil
 }
 
 func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
