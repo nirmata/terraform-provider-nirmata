@@ -261,7 +261,7 @@ func getClusterTypeSpec(api client.Client, typeSelector string, nodepools []inte
 	spec, err := api.GetRelation(typeID, "clusterSpecs")
 	if err != nil {
 		fmt.Println(err)
-		return nil, nil, nil, len(clusterAddOns), err
+		return nil, nil, nil, addOnCount, err
 	}
 	return spec, cloudConfigSpec, nodePoolObjArr, addOnCount, nil
 }
