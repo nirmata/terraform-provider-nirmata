@@ -32,8 +32,8 @@ func clientID(d *schema.ResourceData, s client.Service, model string) client.ID 
 
 // waitForClusterState waits until cluster is created or has failed
 func waitForClusterState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
-	states := []interface{}{"completed", "failed"}
-	state, err := apiClient.WaitForStates(clusterID, "configurationState", states, maxTime, "")
+	states := []interface{}{"ready", "failed"}
+	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
 	if err != nil {
 		return "", err
 	}
@@ -45,6 +45,16 @@ func waitForClusterState(apiClient client.Client, maxTime time.Duration, cluster
 func waitForRolloutState(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
 	states := []interface{}{"completed", "failed"}
 	state, err := apiClient.WaitForStates(rolloutID, "state", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
+func waitForConfigurationState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
+	states := []interface{}{"completed", "failed"}
+	state, err := apiClient.WaitForStates(clusterID, "configurationState", states, maxTime, "")
 	if err != nil {
 		return "", err
 	}
