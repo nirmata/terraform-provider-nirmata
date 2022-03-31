@@ -163,12 +163,12 @@ func resourceClusterAddOnCreate(d *schema.ResourceData, meta interface{}) error 
 func resourceClusterAddOnRead(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	cluster := d.Get("cluster").(string)
-	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", cluster)
+	_, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", cluster)
 	if err != nil {
-		log.Printf("[INFO] cluster  %+v not found", clusterID.Map())
-		d.SetId("")
+		log.Printf("[INFO] cluster  %+v not found", err)
 		return err
 	}
+	d.SetId("")
 
 	return nil
 }
@@ -189,12 +189,12 @@ func resourceClusterAddOnUpdate(d *schema.ResourceData, meta interface{}) error 
 		}
 		d, plainErr := client.NewObject(addOnData)
 		if plainErr != nil {
-			log.Printf("[ERROR] - failed to decode %s %v: %v", "cluster ad-don", d, err)
+			log.Printf("[ERROR] - failed to decode %s %v: %v", "cluster ad-don", d, plainErr)
 			return err
 		}
 		_, plainErr = apiClient.PutWithIDFromJSON(d.ID(), addOnChanges)
 		if plainErr != nil {
-			log.Printf("[ERROR] - failed to update %s %v: %v", "cluster", d.ID().Map(), err)
+			log.Printf("[ERROR] - failed to update %s %v: %v", "cluster", d.ID().Map(), plainErr)
 			return err
 		}
 		log.Printf("[DEBUG] updated %v %v", d.ID().Map(), addOnChanges)
