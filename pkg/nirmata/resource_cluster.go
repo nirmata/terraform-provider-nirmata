@@ -300,6 +300,11 @@ func resourceClusterRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceClusterUpdate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
+
+	if d.HasChanges("name") {
+		return fmt.Errorf("[ERROR] - cluster name can not be updated")
+	}
+
 	if err := updateNodeCount(d, apiClient); err != nil {
 		return err
 	}
