@@ -46,6 +46,7 @@ provider "kubectl" {
     ]
   }
 }
+
 data "kubectl_filename_list" "manifests" {
   pattern = "${nirmata_cluster_registered.eks-registered.controller_yamls_folder}/*"
 }
