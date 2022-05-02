@@ -20,7 +20,7 @@ Register an existing KIND cluster using Kubernetes credentials. The new cluster 
 ```hcl
 
 resource "nirmata_cluster_registered" "kind-registered" {
-  name         = "gke-cluster"
+  name         = "kind-cluster"
   cluster_type = "default-add-ons"
 }
 
