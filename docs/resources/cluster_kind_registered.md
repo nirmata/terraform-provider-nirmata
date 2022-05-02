@@ -73,9 +73,6 @@ cluster_ca_certificate = "LS0tLS1CRUdJTiB..."
 
 * `name` - (Required) a unique name for the cluster.
 * `cluster_type` - (Required) the cluster type to apply.
-* `controller_yamls` - (Computed) the controller YAML
-* `controller_yamls_folder` - (Computed) a local temporary folder with the controller YAML files
-* `controller_yamls_count` - (Computed) the controller YAML file count
 * `labels` - (Optional) labels to set on cluster.
 * `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
 
