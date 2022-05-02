@@ -1,14 +1,14 @@
 ---
-page_title: "nirmata_cluster_registered Resource"
+page_title: "nirmata_kind_cluster_registered Resource"
 ---
 
 # nirmata_cluster_registered Resource
 
-An existing cluster that is registered using local Kubernetes credentials.
+An existing kind cluster that is registered using local Kubernetes credentials.
 
 ## Example Usage
 
-Register an existing KIND cluster using Kubernetes credentials. The new cluster is created and the controller YAMLs are downloaded to a temporary folder. The YAMLs are then applied to the existing cluster using the `kubectl` providers.
+Register an existing KIND cluster using Kubernetes credentials. The new cluster is created and the controller YAMLs are downloaded to a temporary folder. The YAMLs are then applied to the existing kind cluster using the `kubectl` providers.
 
 **NOTE:** this example needs to be applied in two phases, as the YAML file count is computed during the apply phase of the nirmata_cluster_registered resource. Steps:
 1. terraform init
