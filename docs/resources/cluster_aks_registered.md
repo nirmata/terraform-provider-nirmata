@@ -8,7 +8,7 @@ An existing aks cluster that is registered using local Kubernetes credentials.
 
 ## Example Usage
 
-Register an existing AKS cluster using Kubernetes credentials. The new cluster is created and the controller YAMLs are downloaded to a temporary folder. The YAMLs are then applied to the existing aks cluster using the `kubectl` providers.
+Register an existing AKS cluster using Kubernetes credentials. The new cluster is created and the controller YAMLs are downloaded to a temporary folder. The YAMLs are then applied to the existing aks cluster using the `kubectl` and `azurerm` providers.
 
 **NOTE:** this example needs to be applied in two phases, as the YAML file count is computed during the apply phase of the nirmata_cluster_registered resource. Steps:
 1. terraform init
