@@ -77,7 +77,7 @@ terraform show
 9. Run `destroy` to delete the created resources:
 
 ````bash
-terraform destroy samples/cloud_provider/gke
+terraform destroy 
 ````
 
 ## Troubleshooting
