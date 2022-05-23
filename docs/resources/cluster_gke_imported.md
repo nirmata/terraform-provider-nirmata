@@ -1,5 +1,5 @@
 ---
-page_title: "nirmata_cluster_imported Resource"
+page_title: "nirmata_gke_cluster_imported Resource"
 ---
 
 # nirmata_cluster_imported Resource
