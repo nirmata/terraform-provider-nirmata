@@ -6,6 +6,7 @@ require (
 	github.com/andybalholm/brotli v1.0.1 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
 	github.com/google/uuid v1.1.1
+	github.com/hashicorp/go-getter v1.4.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk v1.9.0
 	github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
 	github.com/klauspost/compress v1.11.4 // indirect
