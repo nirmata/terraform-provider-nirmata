@@ -17,6 +17,10 @@ var importedClusterSchema = map[string]*schema.Schema{
 		Required:     true,
 		ValidateFunc: validateName,
 	},
+	"cluster": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
 	"credentials": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -31,7 +35,7 @@ var importedClusterSchema = map[string]*schema.Schema{
 	},
 	"project": {
 		Type:     schema.TypeString,
-		Required: true,
+		Optional: true,
 	},
 	"delete_action": {
 		Type:         schema.TypeString,
@@ -83,6 +87,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	labels := d.Get("labels")
+	cluster := d.Get("cluster").(string)
 	credentials := d.Get("credentials").(string)
 	region := d.Get("region").(string)
 	clusterType := d.Get("cluster_type").(string)
@@ -99,13 +104,14 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 		return err
 	}
 
-	data := map[string]interface{}{
-		"mode":                "providerManaged",
-		"labels":              labels,
-		"systemMetadata":      systemMetadata,
-		"clusterTypeSelector": clusterType,
-		"credentialsRef":      cloudCredID.UUID(),
-		"clusters": map[string]interface{}{
+	clusterJson := map[string]interface{}{}
+	if cluster == "gke" {
+		if project == nil || project == "" {
+			log.Printf("project name is required to import gke cluster.")
+			return fmt.Errorf("project name is required to import gke cluster.")
+		}
+
+		clusterJson = map[string]interface{}{
 			name: map[string]interface{}{
 				"name":           name,
 				"region":         region,
@@ -113,7 +119,34 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 				"id":             name,
 				"systemMetadata": systemMetadata,
 			},
-		},
+		}
+	} else if cluster == "eks" {
+		b, _, err := api.GetURLWithID(credentialsID, "fetchClusters?region="+region)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		data := map[string]interface{}{}
+		if err := json.Unmarshal(b, &data); err != nil {
+			return err
+		}
+		nodeapps := extractCollection(data["clusters"])
+		for _, v := range nodeapps {
+			if name == v["name"] {
+				clusterJson = map[string]interface{}{
+					name: v,
+				}
+			}
+		}
+	}
+
+	data := map[string]interface{}{
+		"mode":                "providerManaged",
+		"labels":              labels,
+		"systemMetadata":      systemMetadata,
+		"clusterTypeSelector": clusterType,
+		"credentialsRef":      cloudCredID.UUID(),
+		"clusters":            clusterJson,
 	}
 
 	log.Printf("[DEBUG] - importing cluster %s with %+v", name, data)
