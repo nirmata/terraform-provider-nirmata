@@ -35,7 +35,7 @@ var importedClusterSchema = map[string]*schema.Schema{
 	},
 	"project": {
 		Type:     schema.TypeString,
-		Required: true,
+		Optional: true,
 	},
 	"delete_action": {
 		Type:         schema.TypeString,
@@ -106,6 +106,11 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 
 	clusterJson := map[string]interface{}{}
 	if cluster == "gke" {
+		if project == nil || project == "" {
+			log.Printf("project name is required to import gke cluster.")
+			return fmt.Errorf("project name is required to import gke cluster.")
+		}
+
 		clusterJson = map[string]interface{}{
 			name: map[string]interface{}{
 				"name":           name,
