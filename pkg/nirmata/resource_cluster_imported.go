@@ -106,7 +106,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 
 	clusterJson := map[string]interface{}{}
 	if cluster == "gke" {
-		if project == nil || project == "" {
+		if project == "" {
 			log.Printf("project name is required to import gke cluster.")
 			return fmt.Errorf("project name is required to import gke cluster.")
 		}
@@ -121,7 +121,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 			},
 		}
 	} else if cluster == "eks" {
-		b, _, err := api.GetURLWithID(credentialsID, "fetchClusters?region="+region)
+		b, _, err := apiClient.GetURLWithID(cloudCredID, "fetchClusters?region="+region)
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -187,7 +187,7 @@ func resourceClusterImportedCreate(d *schema.ResourceData, meta interface{}) err
 	}
 
 	d.SetId(clusterID.UUID())
-	log.Printf("[INFO] registered cluster %s with ID %s", name, clusterID)
+	log.Printf("[INFO] import cluster %s with ID %s", name, clusterID)
 	return nil
 }
 
@@ -249,4 +249,13 @@ func getJSON(data interface{}) string {
 	}
 
 	return string(jsonBytes)
+}
+
+func extractCollection(data interface{}) []map[string]interface{} {
+	results := make([]map[string]interface{}, 0)
+	for _, e := range data.([]interface{}) {
+		m := e.(map[string]interface{})
+		results = append(results, m)
+	}
+	return results
 }
