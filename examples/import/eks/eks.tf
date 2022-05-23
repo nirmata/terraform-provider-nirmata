@@ -11,6 +11,7 @@ resource "nirmata_cluster_imported" "eks-import" {
   name = "my-cluster-1"
   credentials = "eks-test"
   cluster_type  =  "eks-test"
+  cluster = "eks"
   region = "us-west-1"
   delete_action = "remove"
 }

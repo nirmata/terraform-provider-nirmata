@@ -18,6 +18,7 @@ resource "nirmata_cluster_imported" "eks-import" {
   cluster_type  =  "eks-test"
   region = "us-west-1"
   delete_action = "remove"
+  cluster = "eks"
   system_metadata = {
     cluster = "import"
   }
@@ -32,6 +33,7 @@ resource "nirmata_cluster_imported" "eks-import" {
 * `name` - (Required) a unique name for the cluster.
 * `credentials` - (Required) the cloud credentials to use to locate and import the cluster.
 * `cluster_type` - (Required) the cluster type to apply.
+* `cluster` - (Required) the type cluster (gke/eks).
 * `region` - (Required) the region the cluster is located in.
 * `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
 * `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
