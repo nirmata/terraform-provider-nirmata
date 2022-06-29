@@ -85,6 +85,19 @@ func getGitUpstreamStatus(api client.Client, rolloutID client.ID) (string, error
 	return statusMsg, nil
 }
 
+func getPolicyGroupStatus(api client.Client, ID client.ID) (string, error) {
+	data, err := api.Get(ID, client.NewGetOptions(nil, nil))
+	if err != nil {
+		log.Printf("[ERROR] Failed to retrieve policy group  details: %v", err)
+		return "", err
+	}
+	if data["syncError"] == nil {
+		return "", fmt.Errorf(" [ERROR] - policy group sync failed")
+	}
+	statusMsg := data["syncError"].(string)
+	return statusMsg, nil
+}
+
 func waitForDeletedState(apiClient client.Client, maxTime time.Duration, clusterID client.ID) (string, error) {
 	states := []interface{}{"deleted"}
 	state, err := apiClient.WaitForStates(clusterID, "state", states, maxTime, "")
@@ -118,6 +131,16 @@ func getClusterStatus(api client.Client, clusterID client.ID) (string, error) {
 func waitForGitSyncStatus(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
 	states := []interface{}{"success", "failed"}
 	state, err := apiClient.WaitForStates(rolloutID, "lastGitSyncStatus", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
+func waitForPolicySetSyncStatus(apiClient client.Client, maxTime time.Duration, ID client.ID) (string, error) {
+	states := []interface{}{"success", "failed"}
+	state, err := apiClient.WaitForStates(ID, "syncState", states, maxTime, "")
 	if err != nil {
 		return "", err
 	}
@@ -217,4 +240,27 @@ func deleteObj(d *schema.ResourceData, meta interface{}, service client.Service,
 
 	log.Printf("[INFO] Deleted cluster type %s", name)
 	return nil
+}
+
+func waitForPolicyDeploySetSyncStatus(apiClient client.Client, maxTime time.Duration, rolloutID client.ID) (string, error) {
+	states := []interface{}{"completed", "failed"}
+	state, err := apiClient.WaitForStates(rolloutID, "rolloutState", states, maxTime, "")
+	if err != nil {
+		return "", err
+	}
+
+	return state.(string), nil
+}
+
+func getPolicyDeployGroupStatus(api client.Client, ID client.ID) (string, error) {
+	data, err := api.Get(ID, client.NewGetOptions(nil, nil))
+	if err != nil {
+		log.Printf("[ERROR] Failed to retrieve deployed policy group details: %v", err)
+		return "", err
+	}
+	if data["rolloutError"] == nil {
+		return "", fmt.Errorf(" [ERROR] - policy group rollout failed")
+	}
+	statusMsg := data["rolloutError"].(string)
+	return statusMsg, nil
 }
