@@ -12,7 +12,7 @@ provider "nirmata" {
 resource "nirmata_policy_set" "create-policy-set" {
   name                        = "policy-set-name"
   is_default                  = false
-  git_credentials             = ""
+  git_credentials             = "Dolis"
   git_repository              = "https://github.com/nirmata-add-ons/policies.git"
   git_branch                  = "test"
   git_directory_list          = ["/testpolicies"]
@@ -24,7 +24,7 @@ resource "nirmata_policy_set" "create-policy-set" {
 
 resource "nirmata_deploy_policy_set" "tf-policy-set-deploy" {
   policy_set_name                = "policy-set-name"
-  cluster                         = "cluster-name"
+  cluster                         = "test-csi-3"
   delete_from_cluster             = true
   depends_on                      = [nirmata_policy_set.create-policy-set]
 }
