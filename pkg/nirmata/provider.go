@@ -48,6 +48,8 @@ func Provider() *schema.Provider {
 			"nirmata_helm_application":          resourceHelmApplication(),
 			"nirmata_catalog_application":       resourceCatalogApplication(),
 			"nirmata_aws_cloud_credentials":     resourceAWSCloudCredentials(),
+			"nirmata_policy_set":                resourcePolicySet(),
+			"nirmata_deploy_policy_set":         resourceDeployPolicySet(),
 		},
 
 		ConfigureFunc: configureProvider,
