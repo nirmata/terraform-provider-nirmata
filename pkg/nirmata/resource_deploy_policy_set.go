@@ -22,7 +22,7 @@ func resourceDeployPolicySet() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"policy_grop_name": {
+			"policy_set_name": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validateName,
@@ -42,7 +42,7 @@ func resourceDeployPolicySet() *schema.Resource {
 
 func resourceDeployPolicySetCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
-	nameOrID := d.Get("policy_grop_name").(string)
+	nameOrID := d.Get("policy_set_name").(string)
 	clusterNameOrID := d.Get("cluster").(string)
 
 	clusterID, err := fetchID(apiClient, client.ServiceClusters, "KubernetesCluster", clusterNameOrID)
