@@ -12,7 +12,7 @@ A reusable configuration set the aws cloud credential.
 
 resource "nirmata_aws_cloud_credentials" "aws_cloud_credential" {
   name                      = "aws-credential"
-  access_type               = "access_key"  // value are access_key or assume_role
+  access_type               = "access_key"  // The value should be either access_key or assume_role.
   description               = "AWS Account"
   region                    = "us-west-1"
   access_key_id             = ""            
@@ -24,10 +24,9 @@ resource "nirmata_aws_cloud_credentials" "aws_cloud_credential" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the credentials.
-* `region` - (Required) use as the default credentials.
-* `access_type` - (Required) select type for credentials ( access_key or assume_role).
-* `aws_access_key_id` - (Optional) The AWS access key ID.Required if  access_type is access_key 
-* `aws_secret_key` - (Optional) The AWS secret access key. Required if access_type is access_key 
-* `aws_role_arn` - (Optional) The Amazon Resource Name (ARN) of the role to assume. Required if access_type is assume_role 
-
+* `name` - (Required) A unique name for the AWS cloud credentials.
+* `region` - (Required) Use "default credentials" as the value for this field.
+* `access_type` - (Required) Select the access type for the AWS credentials (it is either access_key or assume_role).
+* `aws_access_key_id` - (Optional) The AWS access key ID. This value is required if the access_type is access_key. 
+* `aws_secret_key` - (Optional) Enter the AWS secret access key. This value is required if the access_type is access_key. 
+* `aws_role_arn` - (Optional) The Amazon Resource Name (ARN) is the unique identifier of AWS resources. It is the role that is assumed for access type. This value is required if the access_type is assume_role. 
