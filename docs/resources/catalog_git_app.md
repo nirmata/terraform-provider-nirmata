@@ -73,4 +73,4 @@ resource "nirmata_promote_version" "tf-catalog-promote-version" {
 * `catalog` - (Required) the name of catalog.
 * `application` - (Required) the application name.
 * `channel` - (Required) The channel from which the application should be deployed.
-* `version` - (Required)  the version for the application.
+* `version` - (Required) The version for the application.
