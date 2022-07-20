@@ -59,10 +59,10 @@ resource "kubectl_manifest" "test" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `cluster_type` - (Required) the cluster type to apply.
-* `labels` - (Optional) labels to set on cluster.
-* `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
+* `name` - (Required) Enter a unique name for the cluster.
+* `cluster_type` - (Required) Enter the cluster type to apply.
+* `labels` - (Optional) This field indicates the labels to be set on cluster.
+* `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is to `remove`.
 
 
 

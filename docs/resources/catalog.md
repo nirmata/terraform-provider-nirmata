@@ -18,6 +18,6 @@ resource "nirmata_catalog" "tf-catalog-1" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the catalog.
-* `description` - (Optional) description of catalog.
-* `labels` - (Optional) labels to set on the catalog.
+* `name` - (Required) Enter a unique name for the catalog.
+* `description` - (Optional) This field indicates the description for the catalog.
+* `labels` - (Optional) This field indicates the labels to be set on the catalog.

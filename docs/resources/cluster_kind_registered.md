@@ -71,10 +71,10 @@ cluster_ca_certificate = "LS0tLS1CRUdJTiB..."
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `cluster_type` - (Required) the cluster type to apply.
-* `labels` - (Optional) labels to set on cluster.
-* `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
+* `name` - (Required) Enter a unique name for the cluster.
+* `cluster_type` - (Required) Enter the cluster type to be applied to the cluster.
+* `labels` - (Optional) This field indicates the labels to be set on the cluster.
+* `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is `remove`.
 
 * `host` -  clusters.cluster.server.
 * `client_certificate` - users.user.client-certificate.

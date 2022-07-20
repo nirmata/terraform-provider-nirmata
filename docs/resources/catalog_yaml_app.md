@@ -20,6 +20,6 @@ resource "nirmata_catalog_application" "tf-catalog-app" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the application in catalog.
-* `catalog` - (Required) the name of catalog.
-* `yamls` - (Required)  path for yaml file.
+* `name` - (Required) Enter a unique name for the application in the catalog.
+* `catalog` - (Required) Enter the name of the catalog.
+* `yamls` - (Required)  Enter the path for the yaml file.
