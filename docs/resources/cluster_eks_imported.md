@@ -4,7 +4,7 @@ page_title: "nirmata_eks_cluster_imported Resource"
 
 # nirmata_cluster_imported Resource
 
-An existing cloud provider managed cluster that is discovered and imported using cloud provider credentials.
+An existing cloud provider-managed cluster that is discovered and imported using cloud provider credentials.
 
 ## Example Usage
 
@@ -30,12 +30,12 @@ resource "nirmata_cluster_imported" "eks-import" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `credentials` - (Required) the cloud credentials to use to locate and import the cluster.
-* `cluster_type` - (Required) the cluster type to apply.
-* `cluster` - (Required) the type cluster (gke/eks).
-* `region` - (Required) the region the cluster is located in.
-* `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
-* `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
-* `labels` - (Optional) labels to set on  cluster.
+* `name` - (Required) Enter a unique name for the cluster.
+* `credentials` - (Required) Enter the cloud credentials that is used to locate and import the cluster.
+* `cluster_type` - (Required) Enter the cluster type to apply for the cluster.
+* `cluster` - (Required) Enter the type of cluster (example, gke/eks).
+* `region` - (Required) Enter the region of the cluster that is located in.
+* `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is `remove`.
+* `system_metadata` - (Optional) This field indicates the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
+* `labels` - (Optional) This field indicates the labels to be set on the cluster.
 

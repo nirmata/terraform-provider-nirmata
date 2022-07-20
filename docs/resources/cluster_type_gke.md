@@ -58,38 +58,38 @@ resource "nirmata_cluster_type_gke" "gke-us-west" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `version` - (Required) the GKE version (e.g. 1.16.12-gke.3)
-* `credentials` - (Required) the cloud credentials to use.
-* `location_type` - (Required) Regional or Zonal. A regional cluster has multiple replicas of the control plane, running in multiple zones within a given region. A zonal cluster has a single replica of the control plane running in a single zone.
-* `region` - (Optional) the GCP region into which the cluster should be deployed (e.g. "us-central1"). Required when location_type is `Regional`.
-* `zone` - (Optional) the GCP zone into which the cluster should be deployed (e.g. "us-central1-a"). Required if location_type is `Zonal`.
-* `node_locations` - (Optional) the nodes should be deployed. Selecting more than one zone increases availability. (e.g. ["asia-east1-a"]). Required if location_type is `Regional`.
-* `enable_secrets_encryption` - (Optional) enables envelope encryption for Kubernetes Secrets.
-* `enable_workload_identity` - (Optional) Workload Identity is the recommended way to access Google Cloud services from applications running within GKE due to its improved security properties and manageability.
-* `workload_pool` - (Optional) Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters. Required if enable_secrets_encryption is true
-* `secrets_encryption_key` - (Optional) the Resource ID of the key you want to use (e.g. projects/project-name/locations/global/keyRings/my-keyring/cryptoKeys/my-key). Required if enable_workload_identity is true.
-* `network` - (Required) the cluster network (e.g. "default")
-* `subnetwork` - (Required) the node subnetwork (e.g. "default")
-* `cluster_ipv4_cidr` - (Optional) All pods in the cluster are assigned an IP address from this range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. This setting is permanent.
-* `services_ipv4_cidr` - (Optional) Cluster services will be assigned an IP address from this IP address range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. This setting is permanent.
-* `cloud_run` - (Optional) Cloud Run for Anthos enables you to easily deploy stateless apps and functions to this cluster using the Cloud Run experience. Cloud Run for Anthos automatically manages underlying resources and scales your app based on requests.
-* `enable_network_policy` - (Optional) The Kubernetes Network Policy API allows the cluster administrator to specify what pods are allowed to communicate with each other. Google Kubernetes Engine has partnered with Tigera to provide Project Calico  to enforce network policies within your cluster.
-* `enable_http_load_balancing` - (Optional) The HTTP Load Balancing add-on is required to use the Google Cloud Load Balancer with Kubernetes Ingress. If enabled, a controller will be installed to coordinate applying load balancing configuration changes to your GCP project
+* `name` - (Required) Enter a unique name for the cluster.
+* `version` - (Required) Enter the GKE version (example, 1.16.12-gke.3)
+* `credentials` - (Required) Enter the cloud credentials to be used for the cluster.
+* `location_type` - (Required) Enter the location type as Regional or Zonal. A regional cluster has multiple replicas of the control plane running in multiple zones within a given region. A zonal cluster has a single replica of the control plane running in a single zone.
+* `region` - (Optional) This field indicates the GCP region into which the cluster should be deployed (e.g. "us-central1"). This value is required when location_type is `Regional`.
+* `zone` - (Optional) This field indicates the GCP zone into which the cluster should be deployed (example, "us-central1-a"). This value is required if location_type is `Zonal`.
+* `node_locations` - (Optional) This field indicates the nodes that should be deployed. Selecting more than one zone increases availability. (example, ["asia-east1-a"]). This value is required if location_type is `Regional`.
+* `enable_secrets_encryption` - (Optional) This value enables envelope encryption for Kubernetes Secrets.
+* `enable_workload_identity` - (Optional) This field indicates that the Workload Identity is the recommended way to access Google Cloud services from an applications running within GKE, due to its improved security properties and manageability.
+* `workload_pool` - (Optional) This field indicates that the Workload Identity relies on a Workload Pool to aggregate identity across multiple clusters. This value is required if enable_secrets_encryption is set to true.
+* `secrets_encryption_key` - (Optional) This field indicates that the Resource ID of the key you want to use (example, projects/project-name/locations/global/keyRings/my-keyring/cryptoKeys/my-key). This value is required if enable_workload_identity is set to true.
+* `network` - (Required) Enter the cluster network (example, "default")
+* `subnetwork` - (Required) Enter the node subnetwork (example, "default")
+* `cluster_ipv4_cidr` - (Optional) This field indicates that all pods in the cluster are assigned an IP address from this range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. This setting is permanent.
+* `services_ipv4_cidr` - (Optional) This field indicates that the cluster services will be assigned an IP address from this IP address range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. This setting is permanent.
+* `cloud_run` - (Optional) The Cloud Run for Anthos enables you to easily deploy stateless apps and functions to the cluster using the Cloud Run experience. Cloud Run for Anthos automatically manages underlying resources and scales your app, based on requests.
+* `enable_network_policy` - (Optional) The Kubernetes Network Policy API allows the cluster administrator to specify what pods are allowed to communicate with each other. Google Kubernetes Engine has partnered with Tigera to provide Project Calico to enforce network policies within your cluster.
+* `enable_http_load_balancing` - (Optional) The HTTP Load Balancing add-on is required to use the Google Cloud Load Balancer with Kubernetes Ingress. It enables, a controller install to coordinate applying load balancing configuration changes to your GCP project.
 * `enable_vertical_pod_autoscaling` - (Optional) Vertical Pod Autoscaling automatically analyzes and adjusts your containers' CPU requests and memory requests.
 * `enable_horizontal_pod_autoscaling` - 
-* `enable_maintenance_policy` - (Optional) To specify regular times for maintenance, enable maintenance windows. Normally, routine Kubernetes Engine maintenance may run at any time on your cluster.
-* `maintenance_start_time` - (Optional) Start time for the maintenance window.
-* `maintenance_duration` - (Optional) Duration for the maintenance window in hours.
-* `maintenance_recurrence` -  (Optional) Recurrence rule specification (RRULE) for the maintenance window. Example RRule to run maintenance during weekends: 'FREQ=WEEKLY;BYDAY=SA,SU'.
-* `maintenance_exclusion_timewindow` - (Optional) To specify times when routine, non-emergency maintenance won't happen, set up to 3 maintenance exclusions. Normally, routine Kubernetes Engine maintenance may run at any time on your cluster.
-* `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
-* `allow_override_credentials` - (Optional) Allow passing in cloud credentials when a cluster is created using this cluster type.
-* `cluster_field_override` - (Optional) Allow override of cluster settings ('network' and 'subnetwork') when a cluster is created using this cluster type.
-* `nodepool_field_override` - (Optional)  Allow override of node fields ('disk_size' and 'machine_type') when a cluster is created using this cluster type.
-* `nodepools` - (Optional) A list of [nodepool](#nodepool) types.
-* `addons` - (Optional) a list of add-on services.
-* `vault_auth` - (Optional) vault authentication configuration.
+* `enable_maintenance_policy` - (Optional) This field specifies regular time for maintenance and enables maintenance windows. Normally, routine Kubernetes Engine maintenance may run at any time on your cluster.
+* `maintenance_start_time` - (Optional) This field indicates the start time for the maintenance window.
+* `maintenance_duration` - (Optional) This field indicates the duration for the maintenance window in hours.
+* `maintenance_recurrence` -  (Optional) This field indicates the Recurrence Rule specification (RRULE) for the maintenance window. Example RRule to run maintenance during weekends: 'FREQ=WEEKLY;BYDAY=SA,SU'.
+* `maintenance_exclusion_timewindow` - (Optional) This field specifies the time when routine, non-emergency maintenance will not happen. It is set up to 3 maintenance exclusions. Normally, routine Kubernetes Engine maintenance may run at any time on your cluster.
+* `system_metadata` - (Optional) This field indicates that the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
+* `allow_override_credentials` - (Optional) This value allows passing in cloud credentials when a cluster is created using this cluster type.
+* `cluster_field_override` - (Optional) This value allows override of cluster settings ('network' and 'subnetwork') when a cluster is created using this cluster type.
+* `nodepool_field_override` - (Optional)  This value allows override of node fields ('disk_size' and 'machine_type') when a cluster is created using this cluster type.
+* `nodepools` - (Optional) This field indicates a list of [nodepool](#nodepool) types.
+* `addons` - (Optional) This field indicates a list of add-on services.
+* `vault_auth` - (Optional) This field indicates the vault authentication configuration.
 
 ## Nested Blocks
 
@@ -104,24 +104,24 @@ resource "nirmata_cluster_type_gke" "gke-us-west" {
 
 ### addons
 
-* `name` - (Required) a unique name for the add-on service
-* `addon_selector` - (Required) the catalog application name
-* `catalog` - (Required) the catalog name
-* `channel` - (Required) The channel from which the application should be deployed.
-* `sequence_number` - (Optional) a sequence number to control installation order
+* `name` - (Required) Enter a unique name for the add-on service.
+* `addon_selector` - (Required) Enter the catalog application name.
+* `catalog` - (Required) Enter the catalog name.
+* `channel` - (Required) Enter the channel from which the application should be deployed.
+* `sequence_number` - (Optional) This field indicates a sequence number to control the installation order.
 
 ### vault_auth
 
-* `name` - (Required) a unique name
-* `path` - (Required) the vault authentication path. The variable $(cluster.name) is allowed in the path for uniquenes.
-* `addon_name` - (Required) the associated Vault Agent Injector add-on
-* `credentials_name` - (Required) the Vault credentials to use 
-* `roles` - (Required) a list of application roles to configure for add-on services
-* `delete_auth_path` - (Optional) delete auth path on cluster delete
+* `name` - (Required) Enter a unique name for the vault authentication.
+* `path` - (Required) Enter the vault authentication path. The variable $(cluster.name) is allowed in the path for uniquenes.
+* `addon_name` - (Required) Enter the associated Vault Agent Injector add-on.
+* `credentials_name` - (Required) Enter the Vault credentials to use.
+* `roles` - (Required) Enter a list of application roles to configure for the add-on services.
+* `delete_auth_path` - (Optional) This field indicates the delete authentication path on cluster delete.
 
 #### roles
 
-* `name` - (Required) a unique name
-* `service_account_name` - (Required) the allowed service account name
-* `namespace` - (Required) the allowed namespace
-* `policies` - (Required) the applied policies
+* `name` - (Required) Enter a unique name for roles.
+* `service_account_name` - (Required) Enter the allowed service account name.
+* `namespace` - (Required) Enter the allowed namespace.
+* `policies` - (Required) Enter the applied policies.

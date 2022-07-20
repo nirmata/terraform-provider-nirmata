@@ -27,16 +27,16 @@ resource "nirmata_policy_set" "create-policy-set" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the policy set.
-* `is_default` - (Optional) set this policy set as default. Default policy sets will be automatically deployed to new clusters..
-* `git_credentials` - (Required) the git credential name.
-* `git_repository` - (Required)  the repository URL as used in the git clone command.
-* `git_branch` - (Required) the Git branch to track. name.
-* `git_directory_list` - (Optional)  the directories to track.
-* `fixed_kustomization` - (Optional)  enable fixed kustomize to select kustomizations for your application.
-* `target_based_kustomization` - (Optional) enable target based kustomize to select kustomizations for your application.
-* `kustomization_file_path` - (Required if fixed_kustomization or target_based_kustomization is set) the kustomization file path. kustomization file path required if fixed_kustomization or target_based_kustomization selected. 
-* `delete_from_cluster` - (Optional) should be delete from cluster.
+* `name` - (Required) Enter a unique name for the policy set.
+* `is_default` - (Optional) This field indicates that the policy is set as default. The default policy set will be automatically deployed to new clusters.
+* `git_credentials` - (Required) Enter the git credential name.
+* `git_repository` - (Required)  Enter the repository URL as used in the git clone command.
+* `git_branch` - (Required) Enter the Git branch to track. It indicates the name.
+* `git_directory_list` - (Optional) This field indicates the directories to track.
+* `fixed_kustomization` - (Optional)  This field enables fixed kustomize to select kustomizations for your application.
+* `target_based_kustomization` - (Optional) This field enables target based kustomize to select kustomizations for your application.
+* `kustomization_file_path` - (Required if fixed_kustomization or target_based_kustomization is set) Enter the kustomization file path. kustomization file path is required if you select fixed_kustomization or target_based_kustomization. 
+* `delete_from_cluster` - (Optional) This field indicates the delete from cluster.
 
 
 # nirmata_deploy_policy_set Resource
@@ -55,6 +55,6 @@ resource "nirmata_deploy_policy_set" "tf-policy-set-deploy" {
 ```
 
 ## Argument Reference
-* `policy_set_name` - (Required) deploy policy set name.
-* `cluster` - (Required) cluster name in which policy set to be deploy.
-* `delete_from_cluster` - (Optional) should be delete from cluster.
+* `policy_set_name` - (Required) Enter deploy policy set name.
+* `cluster` - (Required) Enter the cluster name in which the policy is set to deploy.
+* `delete_from_cluster` - (Optional) This field indicates the delete from cluster.

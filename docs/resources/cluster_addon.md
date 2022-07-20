@@ -22,11 +22,11 @@ resource "nirmata_cluster_addons" "cluster_addon" {
 
 ## Argument Reference
 
-* `name` - (Required) unique name for the cluster add-on service.
-* `cluster` - (Required) the kubernetes cluster.
-* `catalog` - (Required) the catalog name.
-* `application` - (Required) the application name.
-* `namespace` - (Optional) defaults to the application name.
-* `environment` - (Optional) defaults to the application name and cluster name.
-* `channel` - (Required) The channel from which the application should be deployed.
-* `labels` - (Optional) labels to set on  cluster add-on.
+* `name` - (Required) Enter a unique name for the cluster add-on service.
+* `cluster` - (Required) Enter the kubernetes cluster.
+* `catalog` - (Required) Enter the catalog name.
+* `application` - (Required) Enter the application name.
+* `namespace` - (Optional) This field indicates the default value to the application name.
+* `environment` - (Optional) This field indicates the defaults to the application name and the cluster name.
+* `channel` - (Required) Enter the channel from which the application should be deployed.
+* `labels` - (Optional) This field indicates the labels set on cluster add-on.

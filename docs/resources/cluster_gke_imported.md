@@ -45,32 +45,32 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `credentials` - (Required) the cloud credentials to use to locate and import the cluster.
-* `cluster_type` - (Required) the cluster type to apply.
-* `region` - (Required) the region the cluster is located in.
-* `cluster` - (Required) the type cluster (gke/eks).
-* `project` - (Required) the project the cluster is located in.
-* `delete_action` - (Optional) whether to delete or remove the cluster on destroy. Defaults to `remove`.
-* `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
-* `labels` - (Optional) labels to set on  cluster.
+* `name` - (Required) Enter a unique name for the cluster.
+* `credentials` - (Required) Enter the cloud credentials to locate and import the cluster.
+* `cluster_type` - (Required) Enter the cluster type to apply.
+* `region` - (Required) Enter the region where the cluster is located.
+* `cluster` - (Required) Enter the type of cluster (gke/eks).
+* `project` - (Required) Enter the project where the cluster is located.
+* `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is set to `remove`.
+* `system_metadata` - (Optional) This field indicates the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
+* `labels` - (Optional) This field indicates the labels set on cluster.
 
 
 ### vault_auth
 
-* `name` - (Required) a unique name
-* `path` - (Required) the vault authentication path. The variable $(cluster.name) is allowed in the path for uniquenes.
-* `addon_name` - (Required) the associated Vault Agent Injector add-on
-* `credentials_name` - (Required) the Vault credentials to use 
-* `roles` - (Required) a list of application roles to configure for add-on services
-* `delete_auth_path` - (Optional) delete auth path on cluster delete
+* `name` - (Required) Enter a unique name for vault authentication. 
+* `path` - (Required) Enter the vault authentication path. The variable $(cluster.name) is allowed in the path for uniquenes.
+* `addon_name` - (Required) Enter the associated Vault Agent Injector add-on.
+* `credentials_name` - (Required) Enter the Vault credentials to be used. 
+* `roles` - (Required) Enter a list of application roles to configure for the add-on services.
+* `delete_auth_path` - (Optional) This field indicates the delete authentication path on cluster delete.
 
 #### roles
 
-* `name` - (Required) a unique name
-* `service_account_name` - (Required) the allowed service account name
-* `namespace` - (Required) the allowed namespace
-* `policies` - (Required) the applied policies
+* `name` - (Required) Enter a unique name for roles.
+* `service_account_name` - (Required) Enter the allowed service account name.
+* `namespace` - (Required) Enter the allowed namespace.
+* `policies` - (Required) Enter the applied policies.
 
 
 

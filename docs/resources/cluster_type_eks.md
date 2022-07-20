@@ -68,66 +68,66 @@ resource "nirmata_cluster" "eks-cluster-1" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `version` - (Required) the EKS version (e.g. 1.18)
-* `credentials` - (Required) the cloud credentials to use.
-* `region` - (Required) the AWS region for the cluster.
-* `vpc_id` - (Required) the AWS VPC ID for the cluster.
-* `subnet_id` - (Required) a list of AWS VPC subnets to use for the cluster.
-* `security_groups` - (Required) a list of AWS VPC security groups to use for the cluster.
-* `cluster_role_arn` - (Required) the cluster role ARN.
-* `enable_private_endpoint` - (Optional) specify if the cluster API seerver endpoint should be in a private network.
-* `enable_identity_provider` - (Optional) enable IAM roles for service accounts.
-* `auto_sync_namespaces` - (Optional) enable automatic synchronization of cluster namespaces to Nirmata.
-* `enable_secrets_encryption` - (Optional) enable encryption at rest for secrets.
-* `kms_key_arn` - (Optional) the KMS key ARN to use for secrets encryption.
-* `log_types` - (Optional) the log types to collect.
-* `enable_fargate` - (Optional) enable Fargate to provision nodes based on workload resource requests.
-* `system_metadata` - (Optional) key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
-* `allow_override_credentials` - (Optional) Allow passing in cloud credentials when a cluster is created using this cluster type.
-* `cluster_field_override` - (Optional) Allow override of cluster settings ('network' and 'subnetwork') when a cluster is created using this cluster type.
-* `nodepool_field_override` - (Optional)  Allow override of node fields ('disk_size' and 'machine_type') when a cluster is created using this cluster type.
-* `nodepools` - (Optional) A list of [nodepool](#nodepool) types.
-* `addons` - (Optional) a list of add-on services.
-* `vault_auth` - (Optional) vault authentication configuration.
+* `name` - (Required) Enter a unique name for the cluster.
+* `version` - (Required) Enter the EKS version (example, 1.18).
+* `credentials` - (Required) Enter the cloud credentials that is used.
+* `region` - (Required) Enter the AWS region for the cluster.
+* `vpc_id` - (Required) Enter the AWS VPC ID for the cluster.
+* `subnet_id` - (Required) Enter a list of AWS VPC subnets to be used for the cluster.
+* `security_groups` - (Required) Enter a list of AWS VPC security groups to be used for the cluster.
+* `cluster_role_arn` - (Required) Enter the cluster role ARN.
+* `enable_private_endpoint` - (Optional) This field indicates if the cluster API server endpoint should be in a private network.
+* `enable_identity_provider` - (Optional) This value enables IAM roles for service accounts.
+* `auto_sync_namespaces` - (Optional) This value enables automatic synchronization of cluster namespaces for Nirmata.
+* `enable_secrets_encryption` - (Optional) This value enables encryption at REST for secrets.
+* `kms_key_arn` - (Optional) This field indicates the KMS key ARN to be used for the secrets encryption.
+* `log_types` - (Optional) This field indicates the log types to be collected.
+* `enable_fargate` - (Optional) This value enables Fargate to provision nodes based on the workload resource requests.
+* `system_metadata` - (Optional) This is the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
+* `allow_override_credentials` - (Optional) This allows the passing of cloud credentials when a cluster is created using this cluster type.
+* `cluster_field_override` - (Optional) This allows the override of cluster settings ('network' and 'subnetwork') when a cluster is created using this cluster type.
+* `nodepool_field_override` - (Optional)  This allows the override of node fields ('disk_size' and 'machine_type') when a cluster is created using this cluster type.
+* `nodepools` - (Optional) This field indicates a list of [nodepool](#nodepool) types.
+* `addons` - (Optional) This field indicates a list of add-on services.
+* `vault_auth` - (Optional) This field indicates the vault authentication configuration.
 
 ## Nested Blocks
 
 ### nodepool
 
-* `name` - (Required) a unique name for the node pool.
-* `instance_type` - (Required) the EC2 instance type (e.g. "t3.medium").
-* `disk_size` - (Required) the worker node disk size in GB (e.g. 60).
-* `ssh_key_name` - (Required) the SSK key pair to access nodes.
-* `security_groups` - (Required) the Node security groups.  
-* `iam_role` - (Required) the IAM role to use for nodes.
-* `ami_type` - (Required) the EKS-optimized Amazon Machine Image (AMI) type to use for node images.
-* `image_id` - (Optional) an Amazon Machine Image (AMI) IS to use for node images.
-* `node_annotations` -  (Optional) Annotations to set on each node in this pool. This setting is permanent.
-* `node_labels` - (Optional) Labels to set on each Kubernetes node in this node pool. This setting is permanent.
+* `name` - (Required) Enter a unique name for the node pool.
+* `instance_type` - (Required) Enter the EC2 instance type (example, "t3.medium").
+* `disk_size` - (Required) Enter the worker node disk size in GB (example, 60).
+* `ssh_key_name` - (Required) Enter the SSK key pair to access nodes.
+* `security_groups` - (Required) Enter the node security groups.  
+* `iam_role` - (Required) Enter the IAM role to be used for nodes.
+* `ami_type` - (Required) Enter the EKS-optimized Amazon Machine Image (AMI) type to be used for node images.
+* `image_id` - (Optional) Enter the Amazon Machine Image (AMI) IS to be used for node images.
+* `node_annotations` -  (Optional) This value indicates the annotations to be set on each node in this pool. This setting is permanent.
+* `node_labels` - (Optional) This value indicates the labels to be set on each Kubernetes node in this node pool. This setting is permanent.
 
 ### addons
 
-* `name` - (Required) a unique name for the add-on service
-* `addon_selector` - (Required) the catalog application name
-* `catalog` - (Required) the catalog name
-* `channel` - (Required) The channel from which the application should be deployed.
-* `sequence_number` - (Optional) a sequence number to control installation order
+* `name` - (Required) Enter a unique name for the add-on service.
+* `addon_selector` - (Required) Enter the catalog application name.
+* `catalog` - (Required) Enter the catalog name.
+* `channel` - (Required) Enter the channel from which the application should be deployed.
+* `sequence_number` - (Optional) This feild indicates a sequence number that control installation order.
 
 ### vault_auth
 
-* `name` - (Required) a unique name
-* `path` - (Required) the vault authentication path. The variable $(cluster.name) is allowed for uniquenes.
-* `addon_name` - (Required) the associated Vault Agent Injector add-on
-* `credentials_name` - (Required) the Vault credentials to use 
-* `roles` - (Required) a list of application roles to configure for add-on services
-* `delete_auth_path` - (Optional) delete auth path on cluster delete
+* `name` - (Required) Enter a unique name for the vault authentication.
+* `path` - (Required) Enter the vault authentication path. The variable $(cluster.name) is allowed for uniquenes.
+* `addon_name` - (Required) Enter the associated Vault Agent Injector add-on.
+* `credentials_name` - (Required) Enter the Vault credentials to be used for the authentication. 
+* `roles` - (Required) Enter a list of application roles to be configured for the add-on services.
+* `delete_auth_path` - (Optional) This field indicates the delete authentication path on cluster delete.
 
 #### roles
 
-* `name` - (Required) a unique name
-* `service_account_name` - (Required) the allowed service account name
-* `namespace` - (Required) the allowed namespace
-* `policies` - (Required) the applied policies
+* `name` - (Required) Enter a unique name for roles.
+* `service_account_name` - (Required) Enter the allowed service account name.
+* `namespace` - (Required) Enter the allowed namespace.
+* `policies` - (Required) Enter the applied policies.
 
 

@@ -4,7 +4,7 @@ page_title: "nirmata_git_application Resource"
 
 # nirmata_git_application Resource
 
- Application is a group of workloads, routing and storage configurations.
+ Application is a group of workloads, routing, and storage configurations.
 
 ## Example Usage
 
@@ -50,27 +50,27 @@ resource "nirmata_promote_version" "tf-catalog-promote-version" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the application in catalog.
-* `namespace` - (Optional) namespace for the git application.
-* `git_credentials` - (Required) the git credential name.
-* `git_repository` - (Required)  the repository URL as used in the git clone command.
-* `git_branch` - (Required) the Git branch to track. name.
-* `git_directory_list` - (Optional)  the directories to track.
+* `name` - (Required) A unique name for the application in the catalog.
+* `namespace` - (Optional) This field indicates the namespace for the git application.
+* `git_credentials` - (Required) This field indicates the git credentials name.
+* `git_repository` - (Required)  This is the repository URL as used in the git clone command.
+* `git_branch` - (Required) Enter the git branch name to track.
+* `git_directory_list` - (Optional)  This field indicates the git directories to track.
 * `git_include_list` - (Optional)  the file extensions to track.
 * `fixed_kustomization` - (Optional)  enable fixed kustomize to select kustomizations for your application.
 * `target_based_kustomization` - (Optional) enable target based kustomize to select kustomizations for your application.
 * `kustomization_file_path` - (Required if fixed_kustomization or target_based_kustomization is set) the kustomization file path. kustomization file path required if fixed_kustomization or target_based_kustomization selected. 
 
 
-* `name` - (Required) A unique name to identify your application.
-* `catalog` - (Required) the name of catalog.
-* `application` - (Required) the application name.
-* `channel` - (Required) The channel from which the application should be deployed.
-* `environments` - (Required) the list of environments to deploy an application .
-* `version` - (Required)  the version for the application.
+* `name` - (Required) Enter a unique name to identify your application.
+* `catalog` - (Required) Enter the name of the catalog.
+* `application` - (Required) Enter the application name.
+* `channel` - (Required) Enter the channel from which the application should be deployed.
+* `environments` - (Required) Enter the list of environments to deploy an application.
+* `version` - (Required) Enter the version for the application.
 
-* `rollout_name` - (Required) A unique name for rollout.
-* `catalog` - (Required) the name of catalog.
-* `application` - (Required) the application name.
-* `channel` - (Required) The channel from which the application should be deployed.
-* `version` - (Required)  the version for the application.
+* `rollout_name` - (Required) Enter a unique name for rollout.
+* `catalog` - (Required) Enter the name of the catalog.
+* `application` - (Required) Enter the application name.
+* `channel` - (Required) Enter the channel from which the application should be deployed.
+* `version` - (Required) Enter the version of the application.

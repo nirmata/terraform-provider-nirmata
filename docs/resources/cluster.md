@@ -29,19 +29,19 @@ resource "nirmata_cluster" "eks-eu-1" {
 
 ## Argument Reference
 
-* `name` - (Required) a unique name for the cluster.
-* `cluster_type` - (Required) the type of cluster to create.
-* `nodepools` - A list of [nodepool](#nodepool) types.
-* `labels` - (Optional) labels to set on cluster.
-* `delete_action` - (Optional) if delete_action set to `remove`, cluster only get removed from the Nirmata not from the original provider and delete_action set to `delete` cluster deleted from nirmata as well as original provider.
-* `creation_timeout_minutes` - (Optional) set maximum time to create cluster.
+* `name` - (Required) Enter a unique name for the cluster.
+* `cluster_type` - (Required) Enter the type of cluster to create.
+* `nodepools` - Indicates a list of [nodepool](#nodepool) types.
+* `labels` - (Optional) This field indicates the labels to be set on the cluster.
+* `delete_action` - (Optional) This field indicates that if delete_action is set to `remove`, then the cluster gets removed from the Nirmata platform and not from the original provider. If delete_action is set to `delete`, then the cluster gets deleted from the Nirmata platform as well as from the original provider.
+* `creation_timeout_minutes` - (Optional) This field is set to maximum time to create a cluster.
 
 ## Nested Blocks
 
 ### nodepool
 
-* `node_count` - (Required) the number of worker nodes for the cluster
-* `enable_auto_scaling` - (Optional) Enable autoscaling for cluster. default valie is disable.
-* `min_count` - (Optional) Set minimun node count value for cluster. `enable_auto_scaling` must set true to set min_count.
-* `max_count` - (Optional) Set max node count value for cluster. `enable_auto_scaling` must set true to set max_count.
+* `node_count` - (Required) Enter the number of worker nodes for the cluster
+* `enable_auto_scaling` - (Optional) This field indicates to enable autoscaling for the cluster. The default value is "disable".
+* `min_count` - (Optional) This field indicates to set the minimum node count value for the cluster. To set this value, you must set  `enable_auto_scaling` to true.
+* `max_count` - (Optional) This field indicates the set max node count value for the cluster. To set this value, you must set `enable_auto_scaling` to true.
 
