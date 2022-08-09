@@ -12,7 +12,7 @@ Register an existing AKS cluster using Kubernetes credentials. The new cluster i
 
 **NOTE:** this example needs to be applied in two phases, as the YAML file count is computed during the apply phase of the nirmata_cluster_registered resource. Steps:
 1. terraform init
-2. terraform plan 
+2. terraform plan  -target nirmata_cluster_registered.aks-registered
 3. terraform apply -target nirmata_cluster_registered.aks-registered
 4. terraform plan
 5. terraform apply
