@@ -7,6 +7,7 @@ import (
 	"log"
 	"strings"
 	"time"
+	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
@@ -69,6 +70,8 @@ func resourceClusterRegistered() *schema.Resource {
 }
 
 func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) error {
+    f, err := os.Create("/tmp/tf.log")
+    defer f.Close()
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	labels := d.Get("labels")
@@ -114,6 +117,8 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 
 	clusterData, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
 	if err != nil {
+	    errString := fmt.Sprintf("[ERROR] - %v", err)
+	    f.WriteString(errString)
     	log.Printf("[ERROR] - %v", err)
     	return err
     }
