@@ -112,7 +112,11 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	clusterUUID := clusterObj["id"].(string)
 	d.SetId(clusterUUID)
 
-	clusterData, _ := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	clusterData, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	if err != nil {
+    	log.Printf("[ERROR] - %v", err)
+    	return err
+    }
 	b, _, err := apiClient.GetURLWithID(clusterData, "controllerYAML")
 	if err != nil {
 		log.Printf("[ERROR] - Failed to fetch controller YAML %s: %v \n", name, err)
