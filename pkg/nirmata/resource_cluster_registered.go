@@ -119,6 +119,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	if err != nil {
 	    errString := fmt.Sprintf("[ERROR] - %v", err)
 	    f.WriteString(errString)
+	    f.Sync()
     	log.Printf("[ERROR] - %v", err)
     	return err
     }
