@@ -112,7 +112,11 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	clusterUUID := clusterObj["id"].(string)
 	d.SetId(clusterUUID)
 
-	clusterData, _ := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	clusterData, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	if err != nil {
+		log.Printf("[ERROR] - %v", err)
+		return err
+	}
 	b, _, err := apiClient.GetURLWithID(clusterData, "controllerYAML")
 	if err != nil {
 		log.Printf("[ERROR] - Failed to fetch controller YAML %s: %v \n", name, err)
@@ -161,22 +165,22 @@ func writeToTempDir(data []byte) (path string, count int, err error) {
 
 	result := strings.Split(string(data), "---")
 	count = 0
-	for i := range result {
-		if result[i] != "" {
-			fmt.Println(result[i])
-			f, err := ioutil.TempFile(path, "temp-")
-			if err != nil {
-				return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
-			}
-
-			if _, err = f.Write([]byte(result[i])); err != nil {
-				return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
-			}
-
-			count += 1
-			f.Close()
+	for _, r := range result {
+		if r == "" {
+			continue
 		}
-	}
 
+		f, err := ioutil.TempFile(path, "temp-")
+		if err != nil {
+			return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
+		}
+
+		if _, err = f.Write([]byte(r)); err != nil {
+			return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
+		}
+
+		count += 1
+		f.Close()
+	}
 	return
 }
