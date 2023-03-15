@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 	"time"
-	"os"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/nirmata/go-client/pkg/client"
@@ -70,8 +70,8 @@ func resourceClusterRegistered() *schema.Resource {
 }
 
 func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) error {
-    f, err := os.Create("/tmp/tf.log")
-    defer f.Close()
+	f, err := os.Create("/tmp/tf.log")
+	defer f.Close()
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	labels := d.Get("labels")
@@ -117,12 +117,9 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 
 	clusterData, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
 	if err != nil {
-	    errString := fmt.Sprintf("[ERROR] - %v", err)
-	    f.WriteString(errString)
-	    f.Sync()
-    	log.Printf("[ERROR] - %v", err)
-    	return err
-    }
+		log.Printf("[ERROR] - %v", err)
+		return err
+	}
 	b, _, err := apiClient.GetURLWithID(clusterData, "controllerYAML")
 	if err != nil {
 		log.Printf("[ERROR] - Failed to fetch controller YAML %s: %v \n", name, err)
@@ -171,22 +168,22 @@ func writeToTempDir(data []byte) (path string, count int, err error) {
 
 	result := strings.Split(string(data), "---")
 	count = 0
-	for i := range result {
-		if result[i] != "" {
-			fmt.Println(result[i])
-			f, err := ioutil.TempFile(path, "temp-")
-			if err != nil {
-				return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
-			}
-
-			if _, err = f.Write([]byte(result[i])); err != nil {
-				return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
-			}
-
-			count += 1
-			f.Close()
+	for _, r := range result {
+		if r == "" {
+			continue
 		}
-	}
 
+		f, err := ioutil.TempFile(path, "temp-")
+		if err != nil {
+			return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
+		}
+
+		if _, err = f.Write([]byte(r)); err != nil {
+			return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
+		}
+
+		count += 1
+		f.Close()
+	}
 	return
 }
