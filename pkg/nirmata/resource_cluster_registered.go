@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"time"
 
@@ -70,8 +69,6 @@ func resourceClusterRegistered() *schema.Resource {
 }
 
 func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) error {
-	f, err := os.Create("/tmp/tf.log")
-	defer f.Close()
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	labels := d.Get("labels")
