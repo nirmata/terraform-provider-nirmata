@@ -22,6 +22,7 @@ Register an existing AKS cluster using Kubernetes credentials. The new cluster i
 resource "nirmata_cluster_registered" "aks-registered" {
   name         = "aks-cluster"
   cluster_type = "default-add-ons"
+  endpoint     = "kubernetes cluster API server url"
 }
 
 # Retrieve AKS cluster information
@@ -63,7 +64,4 @@ resource "kubectl_manifest" "test" {
 * `cluster_type` - (Required) Enter the cluster type to apply to the cluster.
 * `labels` - (Optional) This field indicates the labels to be set on cluster.
 * `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is `remove`.
-
-
-
-
+* `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.

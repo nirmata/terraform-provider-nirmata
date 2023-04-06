@@ -23,7 +23,7 @@ resource "nirmata_cluster_imported" "eks-import" {
     cluster = "import"
   }
   labels = {foo = "bar"}
-
+  endpoint = "kubernetes cluster API server url"
 }
 
 ```
@@ -38,4 +38,5 @@ resource "nirmata_cluster_imported" "eks-import" {
 * `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is `remove`.
 * `system_metadata` - (Optional) This field indicates the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
 * `labels` - (Optional) This field indicates the labels to be set on the cluster.
+* `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.
 

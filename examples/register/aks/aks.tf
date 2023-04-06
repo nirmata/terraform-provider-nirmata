@@ -12,6 +12,7 @@
 resource "nirmata_cluster_registered" "aks-registered" {
   name         = "aks-cluster"
   cluster_type = "default-add-ons"
+  endpoint     = "https://endpoint"
 }
 
 # Retrieve AKS cluster information
@@ -21,7 +22,7 @@ provider "azurerm" {
 
 data "azurerm_kubernetes_cluster" "cluster" {
   name                = "tf-test"
-  resource_group_name = "nirmata-mustufa-poc"
+  resource_group_name = "tf-test-group"
 }
 
 provider "kubectl" {

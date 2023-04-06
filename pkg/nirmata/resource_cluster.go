@@ -80,6 +80,10 @@ func resourceManagedCluster() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"endpoint": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -112,6 +116,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	labels := d.Get("labels")
+	endpoint := d.Get("endpoint").(string)
 	nodepools := d.Get("nodepools").([]interface{})
 	typeSelector := d.Get("cluster_type").(string)
 	credentials := d.Get("override_credentials").(string)
@@ -147,6 +152,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		"cloudProvider":  spec["cloud"],
 		"systemMetadata": systemMetadata,
 		"overrideValues": fieldsToOverride,
+		"endpoint": 	  endpoint,
 	}
 
 	data["nodePools"] = nodepool

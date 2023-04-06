@@ -24,6 +24,7 @@ resource "nirmata_cluster_imported" "gke-import-1" {
     cluster = "import"
   }
   labels = {foo = "bar"}
+  endpoint = "kubernetes cluster API server url"
 
   vault_auth {
     name             = "vault-auth"
@@ -54,7 +55,7 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 * `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is set to `remove`.
 * `system_metadata` - (Optional) This field indicates the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
 * `labels` - (Optional) This field indicates the labels set on cluster.
-
+* `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.
 
 ### vault_auth
 

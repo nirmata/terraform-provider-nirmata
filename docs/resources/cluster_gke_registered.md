@@ -23,6 +23,7 @@ Register an existing GKE cluster using Kubernetes credentials. The new cluster i
 resource "nirmata_cluster_registered" "gke-registered" {
   name         = "gke-cluster"
   cluster_type = "default-add-ons"
+  endpoint = "kubernetes cluster API server url"
 }
 
 // fetch the GKE cluster details (requires external configuration)
@@ -63,6 +64,4 @@ resource "kubectl_manifest" "test" {
 * `cluster_type` - (Required) Enter the cluster type to apply.
 * `labels` - (Optional) This field indicates the labels to be set on cluster.
 * `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is to `remove`.
-
-
-
+* `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.
