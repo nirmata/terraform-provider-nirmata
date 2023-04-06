@@ -50,6 +50,10 @@ var registeredClusterSchema = map[string]*schema.Schema{
 			Type: schema.TypeString,
 		},
 	},
+	"endpoint": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
 }
 
 func resourceClusterRegistered() *schema.Resource {
@@ -72,6 +76,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	apiClient := meta.(client.Client)
 	name := d.Get("name").(string)
 	labels := d.Get("labels")
+	endpoint := d.Get("endpoint").(string)
 	clusterType := d.Get("cluster_type").(string)
 
 	deleteAction := d.Get("delete_action").(string)
@@ -100,6 +105,13 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 		"mode":         mode,
 		"labels":       labels,
 		"typeSelector": clusterType,
+	}
+
+	data["config"] = map[string]interface{}{
+		"modelIndex":     "ClusterConfig",
+		"version":        spec["version"],
+		"cloudProvider":  spec["cloud"],
+		"endpoint": 	  endpoint,
 	}
 
 	log.Printf("[DEBUG] - registering cluster %s with %+v", name, data)
