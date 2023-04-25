@@ -56,6 +56,18 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 * `system_metadata` - (Optional) This field indicates the key-value pairs that will be provisioned as a ConfigMap called system-metadata-map in the cluster.
 * `labels` - (Optional) This field indicates the labels set on cluster.
 * `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.
+* `owner_info` - (Optional) The [owner_info](#owner_info) for this cluster, if it has to be overridden.
+* `access_control_list` - (Optional) List of additional [ACLs](#access_control_list) for this cluster.
+
+
+### owner_info
+* `owner_type` - (Required) The type of the owner. Valid values are user or team.
+* `owner_name` - (Required) The name of the user/team.
+
+### access_control_list
+* `entity_type` - (Required) The type of entity. Valid values are user or team.
+* `permission` - (Required) The permission. Valid values are admin, edit, view.
+* `name` - (Required) The name of the user/team.
 
 ### vault_auth
 

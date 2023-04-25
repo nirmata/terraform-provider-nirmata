@@ -77,11 +77,24 @@ cluster_ca_certificate = "LS0tLS1CRUdJTiB..."
 * `labels` - (Optional) This field indicates the labels to be set on the cluster.
 * `delete_action` - (Optional) This field indicates whether to delete or remove the cluster on destroy. The default value is `remove`.
 * `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.
+* `owner_info` - (Optional) The [owner_info](#owner_info) for this cluster, if it has to be overridden.
+* `access_control_list` - (Optional) List of additional [ACLs](#access_control_list) for this cluster.
+
 
 * `host` -  clusters.cluster.server.
 * `client_certificate` - users.user.client-certificate.
 * `client_key` - users.user.client-key.
 * `cluster_ca_certificate` - clusters.cluster.certificate-authority-data.
+
+
+### owner_info
+* `owner_type` - (Required) The type of the owner. Valid values are user or team.
+* `owner_name` - (Required) The name of the user/team.
+
+### access_control_list
+* `entity_type` - (Required) The type of entity. Valid values are user or team.
+* `permission` - (Required) The permission. Valid values are admin, edit, view.
+* `name` - (Required) The name of the user/team.
 
 
 

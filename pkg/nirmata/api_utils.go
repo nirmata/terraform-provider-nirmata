@@ -264,3 +264,27 @@ func getPolicyDeployGroupStatus(api client.Client, ID client.ID) (string, error)
 	statusMsg := data["rolloutError"].(string)
 	return statusMsg, nil
 }
+
+func getUsers(api client.Client) ([]map[string]interface{}, error) {
+	opts := &client.GetOptions{}
+	opts.Fields = []string{"id", "name", "modelIndex", "service"}
+	objs, err := api.GetCollection(client.ServiceUsers, "User", opts)
+	if err != nil {
+		log.Printf("[ERROR] Failed to fetch users: %v", err)
+		return nil, err
+	}
+
+	return objs, nil
+}
+
+func getTeams(api client.Client) ([]map[string]interface{}, error) {
+	opts := &client.GetOptions{}
+	opts.Fields = []string{"id", "name", "modelIndex", "service"}
+	objs, err := api.GetCollection(client.ServiceUsers, "Team", opts)
+	if err != nil {
+		log.Printf("[ERROR] Failed to fetch teams: %v", err)
+		return nil, err
+	}
+
+	return objs, nil
+}
