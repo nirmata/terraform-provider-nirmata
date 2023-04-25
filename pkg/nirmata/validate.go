@@ -78,3 +78,23 @@ func validateDeleteAction(v interface{}, k string) (ws []string, errors []error)
 
 	return
 }
+
+func validatePermission(v interface{}, k string) (ws []string, errors []error) {
+	val := v.(string)
+	if val != "admin" && val != "edit" && val != "view" {
+		errors = append(errors, fmt.Errorf(
+			"%s is not a valid permission; expected 'admin' or 'edit' or 'view'", val))
+	}
+
+	return
+}
+
+func validateEntity(v interface{}, k string) (ws []string, errors []error) {
+	val := v.(string)
+	if val != "user" && val != "team" {
+		errors = append(errors, fmt.Errorf(
+			"%s is not a valid entity; expected 'user' or 'team'", val))
+	}
+
+	return
+}

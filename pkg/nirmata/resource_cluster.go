@@ -152,7 +152,7 @@ func resourceClusterCreate(d *schema.ResourceData, meta interface{}) error {
 		"cloudProvider":  spec["cloud"],
 		"systemMetadata": systemMetadata,
 		"overrideValues": fieldsToOverride,
-		"endpoint": 	  endpoint,
+		"endpoint":       endpoint,
 	}
 
 	data["nodePools"] = nodepool
