@@ -148,7 +148,7 @@ func makeAccessControlListObj(ownerInfo []interface{}, users, teams []map[string
 				owner_id, err := fetchOwnerId(owner_type, owner_name, users, teams)
 				if err != nil {
 					log.Printf("[ERROR] - No entity of type %s with name %s found in the cluster", owner_type, owner_name)
-					return nil, fmt.Errorf("[ERROR] - Invalid owner '%s/%s' provided", owner_type, owner_name)
+					return nil, fmt.Errorf("Invalid owner '%s/%s' provided", owner_type, owner_name)
 				}
 				accessControlListObj = map[string]interface{}{
 					"modelIndex": "AccessControlList",
@@ -168,7 +168,7 @@ func makeAccessControlListObj(ownerInfo []interface{}, users, teams []map[string
 	return accessControlListObj, nil
 }
 
-func makeAccessControlList(accessControlList []interface{}, users, teams []map[string]interface{}) ([]interface{}, error) {
+func makeAccessControls(accessControlList []interface{}, users, teams []map[string]interface{}) ([]interface{}, error) {
 	var acObArr = make([]interface{}, 0)
 
 	if accessControlList != nil {
@@ -181,7 +181,7 @@ func makeAccessControlList(accessControlList []interface{}, users, teams []map[s
 				entity_id, err := fetchOwnerId(entity_type, entity_name, users, teams)
 				if err != nil {
 					log.Printf("[ERROR] - No entity of type %s with name %s found in the cluster", entity_type, entity_name)
-					return nil, fmt.Errorf("[ERROR] - Invalid entity '%s/%s' provided", entity_type, entity_name)
+					return nil, fmt.Errorf("Invalid entity '%s/%s' provided", entity_type, entity_name)
 				}
 				acOb := map[string]interface{}{
 					"modelIndex": "AccessControl",
@@ -190,12 +190,73 @@ func makeAccessControlList(accessControlList []interface{}, users, teams []map[s
 					"permission": elem["permission"],
 					"entityId":   entity_id,
 				}
-				log.Printf("[DEBUG] - Printing accessControlList - acOb %v", acOb)
+				log.Printf("[DEBUG] - accessControlList: %v", acOb)
 				acObArr = append(acObArr, acOb)
 			}
 		}
 	}
 	return acObArr, nil
+}
+
+/*
+  - An example of accesscontrollist is this
+  - "accessControlList": [
+    {
+    "ownerType": "user",
+    "ownerId": "ce36b44d-74e0-417f-8b8f-7eb6f793f344",
+    "ownerName": "user1@foo.com",
+    "modelIndex": "AccessControlList",
+    "accessControls": [
+    {
+    "entityType": "user",
+    "entityId": "331977cc-2086-455b-bf4c-614cab868616",
+    "permission": "admin",
+    "entityName": "user2@foo.com",
+    "modelIndex": "AccessControl"
+    },
+    {
+    "entityType": "team",
+    "entityId": "e2424edf-d7ee-4b86-9ec4-cde4659bd231",
+    "permission": "edit",
+    "entityName": "team1",
+    "modelIndex": "AccessControl"
+    },
+    {
+    "entityType": "user",
+    "entityId": "1e71e1f4-102c-47a2-87f7-3398e0d92472",
+    "permission": "view",
+    "entityName": "user3@foo.com",
+    "modelIndex": "AccessControl"
+    }
+    ]
+    }
+    ]
+    This method creates the above structure
+*/
+func makeAccessControlList(d *schema.ResourceData, users, teams []map[string]interface{}) ([]interface{}, error) {
+	var aclArr = make([]interface{}, 0)
+	var accessControlListObj map[string]interface{}
+
+	ownerInfo := d.Get("owner_info").([]interface{})
+	log.Printf("[DEBUG] - owner_info %v", ownerInfo)
+
+	accessControlListObj, err := makeAccessControlListObj(ownerInfo, users, teams)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("[DEBUG] - accessControlListObj %v", accessControlListObj)
+
+	accessControlList := d.Get("access_control_list").([]interface{})
+	log.Printf("[DEBUG] - accessControlList %v", accessControlList)
+	acs, err := makeAccessControls(accessControlList, users, teams)
+	if err != nil {
+		return nil, err
+	}
+	accessControlListObj["accessControls"] = acs
+	log.Println("[DEBUG] - accessControlList", accessControlListObj)
+
+	aclArr = append(aclArr, accessControlListObj)
+	return aclArr, nil
 }
 
 func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) error {
@@ -208,9 +269,9 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	users, err := getUsers(apiClient)
 	if err != nil {
 		log.Printf("[ERROR] - failed to retrieve users: %v", err)
-		return fmt.Errorf("[ERROR] - Fetching users failed")
+		return fmt.Errorf("Fetching users failed")
 	}
-	log.Println("[DEBUG] - Printing users")
+	log.Println("[DEBUG] - users")
 	for _, u := range users {
 		for k, v := range u {
 			log.Printf("[DEBUG] - key: %s - value: %s", k, v)
@@ -220,32 +281,14 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	teams, err := getTeams(apiClient)
 	if err != nil {
 		log.Printf("[ERROR] - failed to retrieve teams: %v", err)
-		return fmt.Errorf("[ERROR] - Fetching teams failed")
+		return fmt.Errorf("Fetching teams failed")
 	}
-	log.Println("[DEBUG] - Printing teams")
+	log.Println("[DEBUG] - teams")
 	for _, t := range teams {
 		for k, v := range t {
 			log.Printf("[DEBUG] - key: %s - value: %s", k, v)
 		}
 	}
-
-	ownerInfo := d.Get("owner_info").([]interface{})
-	log.Printf("[DEBUG] - Printing owner_info from resource %v", ownerInfo)
-
-	accessControlListObj, err := makeAccessControlListObj(ownerInfo, users, teams)
-	if err != nil {
-		return err
-	}
-	log.Printf("[DEBUG] - Printing accessControlListObj %v", accessControlListObj)
-
-	accessControlList := d.Get("access_control_list").([]interface{})
-	log.Printf("[DEBUG] - Printing accessControlList %v", accessControlList)
-	acObArr, err := makeAccessControlList(accessControlList, users, teams)
-	if err != nil {
-		return err
-	}
-	accessControlListObj["accessControls"] = acObArr
-	log.Println("[DEBUG] - Printing accessControlList", accessControlListObj)
 
 	deleteAction := d.Get("delete_action").(string)
 	if deleteAction == "" {
@@ -282,9 +325,12 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 		"endpoint":      endpoint,
 	}
 
-	var aclArr = make([]interface{}, 0)
-	aclArr = append(aclArr, accessControlListObj)
-	data["accessControlList"] = aclArr
+	accessControlList, err := makeAccessControlList(d, users, teams)
+	if err != nil {
+		log.Printf("[ERROR] - failed to create access control list")
+		return err
+	}
+	data["accessControlList"] = accessControlList
 
 	log.Printf("[DEBUG] - registering cluster %s with %+v", name, data)
 	clusterObj, err := apiClient.PostFromJSON(client.ServiceClusters, "KubernetesCluster", data, nil)
