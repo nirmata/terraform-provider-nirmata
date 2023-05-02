@@ -124,7 +124,13 @@ func fetchOwnerId(owner_type, owner_name string, users, teams []map[string]inter
 		data = teams
 	}
 	for _, d := range data {
-		if owner_name == d["name"] {
+		var name string
+		if owner_type == "user" {
+			name = d["email"].(string)
+		} else {
+			name = d["name"].(string)
+		}
+		if owner_name == name {
 			id := d["id"].(string)
 			log.Printf("[DEBUG] - Found match for owner_name %s with id %s", owner_name, id)
 			return id, nil

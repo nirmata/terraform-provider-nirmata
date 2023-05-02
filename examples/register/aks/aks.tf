@@ -13,6 +13,25 @@ resource "nirmata_cluster_registered" "aks-registered" {
   name         = "aks-cluster"
   cluster_type = "default-add-ons"
   endpoint     = "https://endpoint"
+  owner_info {
+    owner_type = "team"
+    owner_name = "team1"
+  }
+  access_control_list {
+    entity_type = "user"
+    permission  = "admin"
+    name        = "user1@myorg.com"
+  }
+  access_control_list {
+    entity_type = "team"
+    permission  = "view"
+    name        = "team2"
+  }
+  access_control_list {
+    entity_type = "user"
+    permission  = "edit"
+    name        = "user2@myorg.com"
+  }
 }
 
 # Retrieve AKS cluster information
@@ -21,8 +40,8 @@ provider "azurerm" {
 }
 
 data "azurerm_kubernetes_cluster" "cluster" {
-  name                = "tf-test"
-  resource_group_name = "tf-test-group"
+  name                = "test-01"
+  resource_group_name = "test-0_group"
 }
 
 provider "kubectl" {

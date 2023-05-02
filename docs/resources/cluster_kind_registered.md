@@ -89,12 +89,12 @@ cluster_ca_certificate = "LS0tLS1CRUdJTiB..."
 
 ### owner_info
 * `owner_type` - (Required) The type of the owner. Valid values are user or team.
-* `owner_name` - (Required) The name of the user/team.
+* `owner_name` - (Required) The email of the user or the name of the team.
 
 ### access_control_list
 * `entity_type` - (Required) The type of entity. Valid values are user or team.
 * `permission` - (Required) The permission. Valid values are admin, edit, view.
-* `name` - (Required) The name of the user/team.
+* `name` - (Required) The email of the user or the name of the team.
 
 
 
