@@ -267,7 +267,7 @@ func getPolicyDeployGroupStatus(api client.Client, ID client.ID) (string, error)
 
 func getUsers(api client.Client) ([]map[string]interface{}, error) {
 	opts := &client.GetOptions{}
-	opts.Fields = []string{"id", "name", "modelIndex", "service"}
+	opts.Fields = []string{"id", "name", "email", "modelIndex", "service"}
 	objs, err := api.GetCollection(client.ServiceUsers, "User", opts)
 	if err != nil {
 		log.Printf("[ERROR] Failed to fetch users: %v", err)
