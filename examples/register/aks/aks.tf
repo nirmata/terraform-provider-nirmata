@@ -15,7 +15,7 @@ resource "nirmata_cluster_registered" "aks-registered" {
   endpoint     = "https://endpoint"
   owner_info {
     owner_type = "team"
-	  owner_name = "team1"
+    owner_name = "team1"
   }
   access_control_list {
     entity_type = "user"
