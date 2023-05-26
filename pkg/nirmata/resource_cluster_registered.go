@@ -3,8 +3,10 @@ package nirmata
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -61,6 +63,7 @@ var registeredClusterSchema = map[string]*schema.Schema{
 	},
 	"controller_yamls_folder": {
 		Type:     schema.TypeString,
+		Optional: true,
 		Computed: true,
 	},
 	"controller_yamls_count": {
@@ -271,6 +274,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	labels := d.Get("labels")
 	endpoint := d.Get("endpoint").(string)
 	clusterType := d.Get("cluster_type").(string)
+	controller_yamls_folder := d.Get("controller_yamls_folder").(string)
 
 	users, err := getUsers(apiClient)
 	if err != nil {
@@ -368,7 +372,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	d.Set("controller_yamls", yaml)
 	d.Set("state", clusterObj["state"])
 
-	path, count, ferr := writeToTempDir([]byte(yaml))
+	path, count, ferr := writeToTempDir(controller_yamls_folder, []byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("failed to write temporary files: %v", ferr)
 	}
@@ -393,10 +397,35 @@ func getCtrlYAML(b []byte) (string, error) {
 	return "", fmt.Errorf("invalid controller YAML: %v", m)
 }
 
-func writeToTempDir(data []byte) (path string, count int, err error) {
-	path, err = ioutil.TempDir("", "controller-")
+func IsDirEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
 	if err != nil {
-		fmt.Println(err)
+		return false, err
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err
+}
+
+func writeToTempDir(controller_yamls_folder string, data []byte) (path string, count int, err error) {
+	if controller_yamls_folder != "" {
+		if _, err := os.Stat(controller_yamls_folder); os.IsNotExist(err) {
+			return "", 0, fmt.Errorf("Folder '%s' does not exist", controller_yamls_folder)
+		}
+		empty, _ := IsDirEmpty(controller_yamls_folder)
+		if !empty {
+			return "", 0, fmt.Errorf("Folder '%s' is not empty", controller_yamls_folder)
+		}
+		path = controller_yamls_folder
+	} else {
+		path, err = ioutil.TempDir(controller_yamls_folder, "controller-")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	result := strings.Split(string(data), "---")
