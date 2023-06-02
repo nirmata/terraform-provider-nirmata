@@ -58,6 +58,7 @@ resource "nirmata_cluster_imported" "gke-import-1" {
 * `endpoint` - (Optional) This field indicates the url of the kubernetes cluster API server.
 * `owner_info` - (Optional) The [owner_info](#owner_info) for this cluster, if it has to be overridden.
 * `access_control_list` - (Optional) List of additional [ACLs](#access_control_list) for this cluster.
+* `controller_yamls_folder` - (Optional) Location of folder where the controller files will be saved. default is a folder in `/tmp/` with prefix `controller-`
 
 
 ### owner_info
