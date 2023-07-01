@@ -70,6 +70,18 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeInt,
 		Computed: true,
 	},
+	"controller_ns_yamls_count": {
+		Type:     schema.TypeInt,
+		Computed: true,
+	},
+	"controller_crd_yamls_count": {
+		Type:     schema.TypeInt,
+		Computed: true,
+	},
+	"controller_deploy_yamls_count": {
+		Type:     schema.TypeInt,
+		Computed: true,
+	},
 	"delete_action": {
 		Type:         schema.TypeString,
 		Optional:     true,
@@ -372,7 +384,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	d.Set("controller_yamls", yaml)
 	d.Set("state", clusterObj["state"])
 
-	path, count, ferr := writeToTempDir(controller_yamls_folder, []byte(yaml))
+	path, count, count_ns, count_crd, count_deploy, ferr := writeToTempDir(controller_yamls_folder, []byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("failed to write temporary files: %v", ferr)
 	}
@@ -380,6 +392,9 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[INFO] - wrote temporary YAMLs files to %s:", path)
 
 	d.Set("controller_yamls_count", count)
+	d.Set("controller_ns_yamls_count", count_ns)
+	d.Set("controller_crd_yamls_count", count_crd)
+	d.Set("controller_deploy_yamls_count", count_deploy)
 	d.Set("controller_yamls_folder", path)
 	return nil
 }
@@ -411,14 +426,14 @@ func IsDirEmpty(name string) (bool, error) {
 	return false, err
 }
 
-func writeToTempDir(controller_yamls_folder string, data []byte) (path string, count int, err error) {
+func writeToTempDir(controller_yamls_folder string, data []byte) (path string, count, count_ns, count_crd, count_deploy int, err error) {
 	if controller_yamls_folder != "" {
 		if _, err := os.Stat(controller_yamls_folder); os.IsNotExist(err) {
-			return "", 0, fmt.Errorf("Folder '%s' does not exist", controller_yamls_folder)
+			return "", 0, 0, 0, 0, fmt.Errorf("Folder '%s' does not exist", controller_yamls_folder)
 		}
 		empty, _ := IsDirEmpty(controller_yamls_folder)
 		if !empty {
-			return "", 0, fmt.Errorf("Folder '%s' is not empty", controller_yamls_folder)
+			return "", 0, 0, 0, 0, fmt.Errorf("Folder '%s' is not empty", controller_yamls_folder)
 		}
 		path = controller_yamls_folder
 	} else {
@@ -430,18 +445,34 @@ func writeToTempDir(controller_yamls_folder string, data []byte) (path string, c
 
 	result := strings.Split(string(data), "---")
 	count = 0
+	count_ns = 0
+	count_crd = 0
+	count_deploy = 0
 	for _, r := range result {
 		if r == "" {
 			continue
 		}
 
-		f, err := ioutil.TempFile(path, "temp-")
+		fileContents := fmt.Sprintf("%s", r)
+		prefix := "temp%s"
+		log.Printf("[DEBUG] fileContents %s", fileContents)
+		if (strings.Contains(fileContents, "kind: Namespace") || strings.Contains(fileContents, "kind: \"Namespace\"")) {
+			prefix = fmt.Sprintf(prefix, "-01-")
+			count_ns += 1
+		} else if (strings.Contains(fileContents, "kind: Deployment") || strings.Contains(fileContents, "kind: \"Deployment\"")) {
+			prefix = fmt.Sprintf(prefix, "-03-")
+			count_deploy += 1
+		} else {
+			prefix = fmt.Sprintf(prefix, "-02-")
+			count_crd += 1
+		}
+		f, err := ioutil.TempFile(path, prefix)
 		if err != nil {
-			return "", 0, fmt.Errorf("cannot create temporary file: %v", err)
+			return "", 0, 0, 0, 0, fmt.Errorf("cannot create temporary file: %v", err)
 		}
 
 		if _, err = f.Write([]byte(r)); err != nil {
-			return "", 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
+			return "", 0, 0, 0, 0, fmt.Errorf("failed to write temporary file %s: %v", f.Name(), err)
 		}
 
 		count += 1
