@@ -10,9 +10,8 @@
 
 // create a new cluster and download the controller YAMLs
 resource "nirmata_cluster_registered" "aks-registered" {
-  name         = "aks-cluster-test-03"
+  name         = "aks-cluster-test"
   cluster_type = "default-add-ons"
-  controller_yamls_folder = "/Users/atul/Work/git/nirmata/terraform-provider-nirmata/examples/register/aks/yamls"
 }
 
 provider "nirmata" {
@@ -21,7 +20,7 @@ provider "nirmata" {
   url = "https://nirmata.io"
 
   // Nirmata API Key. Also configurable using the environment variable NIRMATA_TOKEN.
-  token = "im+0Qe/LaV6V0CYkjc2gdTMdzKl23gIGSTZVbnnKXLeRAJld9ivWA2vlCNo6pbV6+Cm4FO5E/NU2kPCz1Bajrw=="
+  token = ""
 }
 
 # Retrieve AKS cluster information
@@ -30,8 +29,8 @@ provider "azurerm" {
 }
 
 data "azurerm_kubernetes_cluster" "cluster" {
-  name                = "atul-test-02"
-  resource_group_name = "atul-test-0_group"
+  name                = "test"
+  resource_group_name = "test-0_group"
 }
 
 provider "kubectl" {
