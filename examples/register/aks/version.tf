@@ -3,7 +3,7 @@ terraform {
   required_providers {
     nirmata = {
       source = "nirmata/nirmata"
-      version = "1.1.8"
+      version = "1.1.10-rc2"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
