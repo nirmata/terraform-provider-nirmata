@@ -364,7 +364,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	clusterUUID := clusterObj["id"].(string)
 	d.SetId(clusterUUID)
 
-	clusterData, err := apiClient.QueryByName(client.ServiceClusters, "KubernetesCluster", name)
+	clusterData, err := apiClient.QueryById(client.ServiceClusters, "KubernetesCluster", clusterUUID)
 	if err != nil {
 		log.Printf("[ERROR] - %v", err)
 		return err
