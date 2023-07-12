@@ -161,8 +161,8 @@ github.com/mitchellh/reflectwalk v1.0.1 h1:FVzMWA5RllMAKIdUSC8mdWo3XtwoecrH79BY7
 github.com/mitchellh/reflectwalk v1.0.1/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/nirmata/go-client v1.0.6 h1:fZ7PcHy3eLBkFxk8WpB8zxVog8m1mEbGOsadO3atiPQ=
-github.com/nirmata/go-client v1.0.6/go.mod h1:jUmiMEmk8PbxpJETAyB5L7PMz81u0RxHPj8/OO7rgnc=
+github.com/nirmata/go-client v1.0.7 h1:fLrgsN5XCOpKtAA8hce514VWGON1bTj/fhCRZf4B46Y=
+github.com/nirmata/go-client v1.0.7/go.mod h1:jUmiMEmk8PbxpJETAyB5L7PMz81u0RxHPj8/OO7rgnc=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
