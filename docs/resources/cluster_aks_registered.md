@@ -62,12 +62,16 @@ data "kubectl_filename_list" "namespace" {
    pattern = "${nirmata_cluster_registered.aks-registered.controller_yamls_folder}/temp-01-*"
 }
 
-data "kubectl_filename_list" "crd" {
+data "kubectl_filename_list" "secret" {
    pattern = "${nirmata_cluster_registered.aks-registered.controller_yamls_folder}/temp-02-*"
 }
 
-data "kubectl_filename_list" "deployment" {
+data "kubectl_filename_list" "crd" {
    pattern = "${nirmata_cluster_registered.aks-registered.controller_yamls_folder}/temp-03-*"
+}
+
+data "kubectl_filename_list" "deployment" {
+   pattern = "${nirmata_cluster_registered.aks-registered.controller_yamls_folder}/temp-04-*"
 }
 
 
@@ -83,6 +87,15 @@ resource "kubectl_manifest" "namespace" {
   count       = nirmata_cluster_registered.aks-registered.controller_ns_yamls_count
   yaml_body   = file(element(data.kubectl_filename_list.namespace.matches, count.index))
   apply_only  = true
+  depends_on  = [nirmata_cluster_registered.aks-registered]
+}
+
+resource "kubectl_manifest" "secret" {
+  wait        = true
+  count       = nirmata_cluster_registered.aks-registered.controller_secret_yamls_count
+  yaml_body   = file(element(data.kubectl_filename_list.secret.matches, count.index))
+  apply_only  = true
+  depends_on  = [kubectl_manifest.namespace]
 }
 
 resource "kubectl_manifest" "crd" {
@@ -90,7 +103,7 @@ resource "kubectl_manifest" "crd" {
   count       = nirmata_cluster_registered.aks-registered.controller_crd_yamls_count
   yaml_body   = file(element(data.kubectl_filename_list.crd.matches, count.index))
   apply_only  = true
-  depends_on  = [kubectl_manifest.namespace]
+  depends_on  = [kubectl_manifest.secret]
 }
 
 resource "kubectl_manifest" "deployment" {
