@@ -59,6 +59,13 @@ data "kubectl_filename_list" "deployment" {
    pattern = "${nirmata_cluster_registered.eks-registered.controller_yamls_folder}/temp-03-*"
 }
 
+
+// Register Nirmata Cluster
+resource "nirmata_cluster_registered" "eks-registered" {
+  name         = var.nirmata_cluster_name
+  cluster_type = var.nirmata_cluster_type
+}
+
 // apply the controller YAMLs
 resource "kubectl_manifest" "namespace" {
   wait        = true
