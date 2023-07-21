@@ -78,7 +78,7 @@ var registeredClusterSchema = map[string]*schema.Schema{
 		Type:     schema.TypeInt,
 		Computed: true,
 	},
-	"controller_secret_yamls_count": {
+	"controller_sa_yamls_count": {
 		Type:     schema.TypeInt,
 		Computed: true,
 	},
@@ -388,7 +388,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	d.Set("controller_yamls", yaml)
 	d.Set("state", clusterObj["state"])
 
-	path, count, count_ns, count_crd, count_secret, count_deploy, ferr := writeToTempDir(controller_yamls_folder, []byte(yaml))
+	path, count, count_ns, count_crd, count_sa, count_deploy, ferr := writeToTempDir(controller_yamls_folder, []byte(yaml))
 	if ferr != nil {
 		return fmt.Errorf("failed to write temporary files: %v", ferr)
 	}
@@ -398,7 +398,7 @@ func resourceClusterRegisteredCreate(d *schema.ResourceData, meta interface{}) e
 	d.Set("controller_yamls_count", count)
 	d.Set("controller_ns_yamls_count", count_ns)
 	d.Set("controller_crd_yamls_count", count_crd)
-	d.Set("controller_secret_yamls_count", count_secret)
+	d.Set("controller_sa_yamls_count", count_sa)
 	d.Set("controller_deploy_yamls_count", count_deploy)
 	d.Set("controller_yamls_folder", path)
 	return nil
@@ -431,7 +431,7 @@ func IsDirEmpty(name string) (bool, error) {
 	return false, err
 }
 
-func writeToTempDir(controller_yamls_folder string, data []byte) (path string, count, count_ns, count_crd, count_secret, count_deploy int, err error) {
+func writeToTempDir(controller_yamls_folder string, data []byte) (path string, count, count_ns, count_crd, count_sa, count_deploy int, err error) {
 	if controller_yamls_folder != "" {
 		if _, err := os.Stat(controller_yamls_folder); os.IsNotExist(err) {
 			return "", 0, 0, 0, 0, 0, fmt.Errorf("Folder '%s' does not exist", controller_yamls_folder)
@@ -452,12 +452,12 @@ func writeToTempDir(controller_yamls_folder string, data []byte) (path string, c
 	count = 0
 	count_ns = 0
 	count_crd = 0
-	count_secret = 0
+	count_sa = 0
 	count_deploy = 0
 	ch_ns := 'a'
 	ch_crd := 'a'
 	ch_deploy := 'a'
-	ch_secret := 'a'
+	ch_sa := 'a'
 	for _, r := range result {
 		if r == "" {
 			continue
@@ -470,10 +470,10 @@ func writeToTempDir(controller_yamls_folder string, data []byte) (path string, c
 			prefix = fmt.Sprintf(prefix, "01", ch_ns)
 			count_ns += 1
 			ch_ns++
-		} else if (strings.Contains(fileContents, "kind: Secret") || strings.Contains(fileContents, "kind: \"Secret\"")) {
-			prefix = fmt.Sprintf(prefix, "02", ch_secret)
-			count_secret += 1
-			ch_secret++
+		} else if (strings.Contains(fileContents, "kind: ServiceAccount") && !strings.Contains(fileContents, "- kind: ServiceAccount")) {
+			prefix = fmt.Sprintf(prefix, "02", ch_sa)
+			count_sa += 1
+			ch_sa++
 		} else if (strings.Contains(fileContents, "kind: Deployment") || strings.Contains(fileContents, "kind: \"Deployment\"")) {
 			prefix = fmt.Sprintf(prefix, "04", ch_deploy)
 			count_deploy += 1

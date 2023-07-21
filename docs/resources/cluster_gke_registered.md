@@ -48,7 +48,7 @@ data "kubectl_filename_list" "namespace" {
    pattern = "${nirmata_cluster_registered.gke-registered.controller_yamls_folder}/temp-01-*"
 }
 
-data "kubectl_filename_list" "secret" {
+data "kubectl_filename_list" "sa" {
    pattern = "${nirmata_cluster_registered.gke-registered.controller_yamls_folder}/temp-02-*"
 }
 
@@ -76,10 +76,10 @@ resource "kubectl_manifest" "namespace" {
   depends_on  = [nirmata_cluster_registered.gke-registered]
 }
 
-resource "kubectl_manifest" "secret" {
+resource "kubectl_manifest" "sa" {
   wait        = true
-  count       = nirmata_cluster_registered.gke-registered.controller_secret_yamls_count
-  yaml_body   = file(element(data.kubectl_filename_list.secret.matches, count.index))
+  count       = nirmata_cluster_registered.gke-registered.controller_sa_yamls_count
+  yaml_body   = file(element(data.kubectl_filename_list.sa.matches, count.index))
   apply_only  = true
   depends_on  = [kubectl_manifest.namespace]
 }
@@ -89,7 +89,7 @@ resource "kubectl_manifest" "crd" {
   count       = nirmata_cluster_registered.gke-registered.controller_crd_yamls_count
   yaml_body   = file(element(data.kubectl_filename_list.crd.matches, count.index))
   apply_only  = true
-  depends_on  = [kubectl_manifest.secret]
+  depends_on  = [kubectl_manifest.sa]
 }
 
 resource "kubectl_manifest" "deployment" {
